@@ -34,7 +34,8 @@ interface Tournament {
 
 interface UserProfile {
   id: string;
-  display_name: string;
+  first_name: string;
+  last_name: string;
   avatar_url: string | null;
 }
 
@@ -80,7 +81,7 @@ export default function RegisterPage() {
         if (currentUser) {
           const { data: profileData } = await supabase
             .from('user_profiles')
-            .select('id, display_name, avatar_url')
+            .select('id, first_name, last_name, avatar_url')
             .eq('id', currentUser.id)
             .single();
 
@@ -123,7 +124,7 @@ export default function RegisterPage() {
         .insert({
           tournament_id: tournament.id,
           user_id: user.id,
-          name: profile.display_name,
+          name: `${profile.first_name} ${profile.last_name}`.trim(),
           avatar_url: profile.avatar_url,
         });
 
@@ -287,7 +288,7 @@ export default function RegisterPage() {
             </div>
           )}
           <span className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>
-            {profile?.display_name || 'لاعب'}
+            {profile ? `${profile.first_name} ${profile.last_name}`.trim() : 'لاعب'}
           </span>
         </div>
 
