@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FIFA رمضان - تطبيق البطولة
 
-## Getting Started
+تطبيق لإدارة بطولة فيفا الرمضانية باستخدام Next.js (App Router) + Supabase.
 
-First, run the development server:
+## المتطلبات
+- Node.js 18+
+- حساب Supabase
+
+
+## إعداد Supabase
+1) أنشئ مشروعًا جديدًا في Supabase.
+2) افتح SQL Editor ثم نفّذ الملف `supabase/migrations/001_init.sql` لإنشاء الجداول وسياسات RLS.
+3) أنشئ مستخدمًا (Email/Password) عبر صفحة التسجيل أو Supabase Auth.
+4) أول مستخدم يسجل دخوله سيصبح مشرفًا تلقائيًا إذا كان جدول المشرفين فارغًا (لا حاجة لأي خطوات إضافية).
+	 - يمكنك التأكد من ذلك عبر صفحة `/admin/bootstrap`.
+	 - إذا واجهت مشكلة، انسخ معرفك (UID) من نفس الصفحة ونفذ SQL يدويًا:
+		 ```sql
+		 insert into public.admins (user_id) values ('[ضع الـ UID هنا]');
+		 ```
+
+
+## متغيرات البيئة
+انسخ ملف البيئة المثال ثم ضع مفاتيح Supabase:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+أضف القيم التالية:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY` (مطلوب للتهيئة التلقائية لأول مشرف)
+## البدء السريع (Quick Start)
+1. أنشئ حساب مستخدم جديد (تسجيل أو عبر Supabase Auth).
+2. انتقل إلى `/admin/bootstrap`:
+	- إذا كان بريدك في القائمة المسموحة، اضغط "تهيئة نفسي كمشرف".
+	- أو انسخ الـ UID ونفّذ SQL لإضافتك كمشرف.
+3. ادخل لوحة المشرف `/admin`.
+4. أنشئ بطولة جديدة.
+5. فعّل التسجيل العام إذا رغبت بذلك.
+6. أغلق التسجيل عند اكتمال المشاركين.
+7. اختر نوع البطولة (دوري/خروج مغلوب) وأنشئ القرعة.
+8. أدخل نتائج المباريات حتى نهاية البطولة.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## تشغيل محلي
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## خطوات إدارة البطولة
+1) سجّل دخول المشرف عبر `/admin/login`.
+2) أنشئ البطولة.
+3) أضف المشاركين يدويًا أو عبر الإدخال الجماعي.
+4) أغلق التسجيل.
+5) اختر نوع البطولة وأنشئ القرعة.
+6) ابدأ البطولة ثم أدخل النتائج.
 
-## Learn More
+## نشر على Vercel
+1) أنشئ مشروع جديد في Vercel وربطه بالمستودع.
+2) أضف متغيرات البيئة نفسها الموجودة في `.env.local`.
+3) نفّذ عملية النشر.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ملاحظات
+- التسجيل العام يعمل فقط عند تفعيل المشرف له وحالة البطولة `registration_open`.
+- نتائج الدوري تُحسب تلقائيًا وفق (3 فوز، 1 تعادل، 0 خسارة).

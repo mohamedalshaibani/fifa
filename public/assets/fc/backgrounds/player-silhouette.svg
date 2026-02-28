@@ -1,0 +1,35 @@
+<svg width="400" height="600" viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Generic footballer silhouette (no identifiable features) -->
+  <defs>
+    <linearGradient id="playerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a34a;stop-opacity:0.8"/>
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#064e3b;stop-opacity:0.4"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Player silhouette -->
+  <g fill="url(#playerGradient)">
+    <!-- Head -->
+    <circle cx="200" cy="70" r="35"/>
+    
+    <!-- Body -->
+    <rect x="170" y="100" width="60" height="120" rx="25"/>
+    
+    <!-- Arms -->
+    <ellipse cx="140" cy="130" rx="15" ry="40" transform="rotate(-20 140 130)"/>
+    <ellipse cx="260" cy="130" rx="15" ry="40" transform="rotate(20 260 130)"/>
+    
+    <!-- Legs -->
+    <ellipse cx="185" cy="280" rx="20" ry="60"/>
+    <ellipse cx="215" cy="280" rx="20" ry="60"/>
+    
+    <!-- Lower legs -->
+    <ellipse cx="180" cy="380" rx="15" ry="50"/>
+    <ellipse cx="220" cy="380" rx="15" ry="50"/>
+    
+    <!-- Football -->
+    <circle cx="150" cy="450" r="25" fill="#ffffff" opacity="0.9"/>
+    <path d="M135,450 Q150,435 165,450 Q150,465 135,450" fill="#000000" opacity="0.3"/>
+  </g>
+</svg>

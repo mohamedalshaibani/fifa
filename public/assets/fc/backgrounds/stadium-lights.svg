@@ -1,0 +1,35 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Stadium atmosphere with light rays -->
+  <defs>
+    <radialGradient id="stadiumGlow" cx="50%" cy="80%" r="70%">
+      <stop offset="0%" style="stop-color:#16a34a;stop-opacity:0.3"/>
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#064e3b;stop-opacity:0.1"/>
+    </radialGradient>
+    <linearGradient id="lightRay1" x1="0%" y1="100%" x2="20%" y2="0%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.4"/>
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="lightRay2" x1="80%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Base stadium atmosphere -->
+  <rect width="1920" height="1080" fill="url(#stadiumGlow)"/>
+  
+  <!-- Light rays from stadium lights -->
+  <polygon points="0,1080 200,1080 400,0 0,0" fill="url(#lightRay1)" opacity="0.6"/>
+  <polygon points="1520,0 1720,1080 1920,1080 1920,0" fill="url(#lightRay2)" opacity="0.6"/>
+  
+  <!-- Subtle crowd silhouette -->
+  <path d="M0,800 Q480,750 960,770 Q1440,750 1920,800 L1920,1080 L0,1080 Z" fill="#0f172a" opacity="0.15"/>
+  
+  <!-- Abstract geometric elements -->
+  <circle cx="1700" cy="200" r="100" fill="#16a34a" opacity="0.1"/>
+  <circle cx="220" cy="900" r="60" fill="#059669" opacity="0.15"/>
+  <polygon points="1600,50 1650,100 1600,150 1550,100" fill="#f59e0b" opacity="0.2"/>
+</svg>
