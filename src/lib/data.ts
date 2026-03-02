@@ -244,23 +244,54 @@ export async function getMatches(tournamentId: string) {
       if (m.away_participant_id) participantIds.add(m.away_participant_id);
     });
 
-    // Fetch participant names
-    const { data: participants } = await supabase
-      .from("participants")
-      .select("id, name")
-      .in("id", Array.from(participantIds));
-
-    const participantMap = new Map<string, string>();
-    participants?.forEach(p => {
-      participantMap.set(p.id, p.name);
+    // Get all team IDs from matches
+    const teamIds = new Set<string>();
+    matches.forEach(m => {
+      if (m.home_team_id) teamIds.add(m.home_team_id);
+      if (m.away_team_id) teamIds.add(m.away_team_id);
     });
 
-    // Attach names to matches
-    const matchesWithNames = matches.map(m => ({
-      ...m,
-      home_name: m.home_participant_id ? participantMap.get(m.home_participant_id) || null : null,
-      away_name: m.away_participant_id ? participantMap.get(m.away_participant_id) || null : null,
-    }));
+    // Fetch participant names
+    const participantMap = new Map<string, string>();
+    if (participantIds.size > 0) {
+      const { data: participants } = await supabase
+        .from("participants")
+        .select("id, name")
+        .in("id", Array.from(participantIds));
+      
+      participants?.forEach(p => {
+        participantMap.set(p.id, p.name);
+      });
+    }
+
+    // Fetch team names
+    const teamMap = new Map<string, string>();
+    if (teamIds.size > 0) {
+      const { data: teams } = await supabase
+        .from("teams")
+        .select("id, name")
+        .in("id", Array.from(teamIds));
+      
+      teams?.forEach(t => {
+        teamMap.set(t.id, t.name);
+      });
+    }
+
+    // Attach names to matches - prioritize team names for team-based tournaments
+    const matchesWithNames = matches.map(m => {
+      // For team-based matches, use team names
+      const isTeamMatch = m.home_team_id || m.away_team_id;
+      
+      return {
+        ...m,
+        home_name: isTeamMatch
+          ? (m.home_team_id ? teamMap.get(m.home_team_id) || null : null)
+          : (m.home_participant_id ? participantMap.get(m.home_participant_id) || null : null),
+        away_name: isTeamMatch
+          ? (m.away_team_id ? teamMap.get(m.away_team_id) || null : null)
+          : (m.away_participant_id ? participantMap.get(m.away_participant_id) || null : null),
+      };
+    });
     
     return matchesWithNames as (Match & { home_name: string | null; away_name: string | null })[];
   } catch (err) {

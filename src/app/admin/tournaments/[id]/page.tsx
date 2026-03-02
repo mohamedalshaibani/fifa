@@ -1,7 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import { getTournamentById, getParticipants, getMatches } from "@/lib/data";
+import { getTournamentById, getParticipants, getMatches, getTeams, getTeamMembersByTournament } from "@/lib/data";
 import { 
   addParticipant, 
   addParticipantsBulk, 
@@ -9,7 +9,14 @@ import {
   closeRegistration,
   openRegistration,
   startTournament,
-  generateMatchesAction
+  generateMatchesAction,
+  runTeamDrawAction,
+  setTournamentType,
+  resetToRegistrationOpen,
+  resetToRegistrationClosed,
+  resetToTypeSelection,
+  resetToAfterTeamDraw,
+  resetToAfterMatchGeneration
 } from "@/app/admin/actions";
 import Container from "@/components/Container";
 import AdminLayout from "@/components/AdminLayout";
@@ -17,6 +24,7 @@ import SportCard from "@/components/ui/SportCard";
 import SportButton from "@/components/ui/SportButton";
 import SportBadge from "@/components/ui/SportBadge";
 import { DeleteButton } from "@/components/DeleteButton";
+import ResetToStage from "@/components/ResetToStage";
 import { 
   ArrowLeft, 
   Users, 
@@ -27,7 +35,9 @@ import {
   Lock,
   Unlock,
   Trash2,
-  Swords
+  Swords,
+  Shuffle,
+  UsersRound
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -54,6 +64,27 @@ export default async function TournamentDashboard(props: Props) {
 
   const participants = await getParticipants(tournamentId);
   const matches = await getMatches(tournamentId);
+  const teams = await getTeams(tournamentId);
+  const teamMembers = await getTeamMembersByTournament(tournamentId);
+
+  // Team tournament detection
+  const isTeamTournament = (tournament.players_per_team ?? 1) > 1;
+  const isRandomDraw = tournament.team_formation_mode === "random_draw";
+  const needsTeamDraw = isTeamTournament && isRandomDraw && teams.length === 0;
+  const hasTeams = teams.length > 0;
+
+  // Build team-to-members map
+  const teamMembersMap = new Map<string, { participantId: string; participantName: string }[]>();
+  for (const tm of teamMembers) {
+    if (!teamMembersMap.has(tm.team_id)) {
+      teamMembersMap.set(tm.team_id, []);
+    }
+    const participant = participants.find(p => p.id === tm.participant_id);
+    teamMembersMap.get(tm.team_id)!.push({
+      participantId: tm.participant_id || "",
+      participantName: participant?.name || "غير معروف"
+    });
+  }
 
   const statusLabels: Record<string, string> = {
     pending: "قيد الانتظار",
@@ -153,6 +184,62 @@ export default async function TournamentDashboard(props: Props) {
             </SportCard>
           </div>
 
+          {/* Tournament Type Selection - only show when type not set and no matches */}
+          {!tournament.type && matches.length === 0 && (
+            <SportCard padding="lg" variant="elevated">
+              <h2 className="text-xl font-black text-foreground mb-4">⚙️ اختيار نوع البطولة</h2>
+              <p className="text-sm text-muted mb-4">يجب اختيار نوع البطولة قبل إنشاء المباريات</p>
+              <div className="flex flex-wrap gap-3">
+                <form action={setTournamentType}>
+                  <input type="hidden" name="tournamentId" value={tournamentId} />
+                  <input type="hidden" name="type" value="league" />
+                  <SportButton type="submit" variant="primary" size="sm">
+                    🏆 دوري (كل فريق يلعب مع الآخرين)
+                  </SportButton>
+                </form>
+                <form action={setTournamentType}>
+                  <input type="hidden" name="tournamentId" value={tournamentId} />
+                  <input type="hidden" name="type" value="knockout" />
+                  <SportButton type="submit" variant="secondary" size="sm">
+                    ⚡ خروج مباشر (إقصائي)
+                  </SportButton>
+                </form>
+              </div>
+            </SportCard>
+          )}
+
+          {/* Show current type if set */}
+          {tournament.type && matches.length === 0 && (
+            <SportCard padding="lg" variant="default">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">
+                    {tournament.type === "league" ? "🏆" : "⚡"}
+                  </span>
+                  <div>
+                    <span className="font-bold text-foreground">
+                      نوع البطولة: {tournament.type === "league" ? "دوري" : "خروج مباشر"}
+                    </span>
+                    {isTeamTournament && (
+                      <span className="text-muted text-sm mr-2">
+                        • {isRandomDraw ? "قرعة عشوائية" : "فرق جاهزة"} (2v2)
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <form action={setTournamentType}>
+                    <input type="hidden" name="tournamentId" value={tournamentId} />
+                    <input type="hidden" name="type" value={tournament.type === "league" ? "knockout" : "league"} />
+                    <SportButton type="submit" variant="secondary" size="sm">
+                      تغيير إلى {tournament.type === "league" ? "خروج مباشر" : "دوري"}
+                    </SportButton>
+                  </form>
+                </div>
+              </div>
+            </SportCard>
+          )}
+
           {/* Actions */}
           <SportCard padding="lg" variant="elevated">
             <h2 className="text-xl font-black text-foreground mb-4">إجراءات سريعة</h2>
@@ -185,13 +272,37 @@ export default async function TournamentDashboard(props: Props) {
                 </>
               )}
               {(tournament.status === "running" || tournament.status === "registration_closed") && matches.length === 0 && (
-                <form action={generateMatchesAction}>
-                  <input type="hidden" name="tournamentId" value={tournamentId} />
-                  <SportButton type="submit" variant="success" size="sm">
-                    <Swords className="w-4 h-4" />
-                    إنشاء المباريات
-                  </SportButton>
-                </form>
+                <>
+                  {/* Team Draw button for random team tournaments */}
+                  {isTeamTournament && isRandomDraw && (
+                    <form action={runTeamDrawAction}>
+                      <input type="hidden" name="tournamentId" value={tournamentId} />
+                      <SportButton type="submit" variant={hasTeams ? "secondary" : "success"} size="sm">
+                        <Shuffle className="w-4 h-4" />
+                        {hasTeams ? "إعادة القرعة" : "سحب الفرق"}
+                      </SportButton>
+                    </form>
+                  )}
+                  {/* Generate Matches button - disabled if team tournament needs draw first OR type not set */}
+                  <form action={generateMatchesAction}>
+                    <input type="hidden" name="tournamentId" value={tournamentId} />
+                    <SportButton 
+                      type="submit" 
+                      variant="success" 
+                      size="sm"
+                      disabled={needsTeamDraw || !tournament.type}
+                    >
+                      <Swords className="w-4 h-4" />
+                      إنشاء المباريات
+                    </SportButton>
+                  </form>
+                  {needsTeamDraw && (
+                    <span className="text-sm text-warning">⚠️ يجب سحب الفرق أولاً</span>
+                  )}
+                  {!tournament.type && (
+                    <span className="text-sm text-warning">⚠️ يجب تحديد نوع البطولة أولاً</span>
+                  )}
+                </>
               )}
             </div>
           </SportCard>
@@ -276,6 +387,63 @@ export default async function TournamentDashboard(props: Props) {
             )}
           </SportCard>
 
+          {/* Teams Section - only show for team tournaments */}
+          {isTeamTournament && (
+            <SportCard padding="lg" variant="elevated">
+              <h2 className="text-xl font-black text-foreground mb-4 flex items-center gap-2">
+                <UsersRound className="w-5 h-5 text-accent" />
+                الفرق ({teams.length})
+                {isRandomDraw && (
+                  <SportBadge variant="info">قرعة عشوائية</SportBadge>
+                )}
+              </h2>
+              {teams.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted">لم يتم سحب الفرق بعد</p>
+                  {participants.length >= 4 && (
+                    <p className="text-sm text-muted mt-2">
+                      استخدم زر "سحب الفرق" أعلاه لإجراء القرعة
+                    </p>
+                  )}
+                  {participants.length < 4 && (
+                    <p className="text-sm text-warning mt-2">
+                      ⚠️ يجب وجود 4 مشاركين على الأقل لسحب الفرق
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {teams.map((team, index) => {
+                    const members = teamMembersMap.get(team.id) || [];
+                    return (
+                      <div 
+                        key={team.id} 
+                        className="p-4 rounded-lg bg-surface border border-border"
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-sm font-bold text-accent">
+                            {index + 1}
+                          </span>
+                          <span className="font-black text-foreground">{team.name}</span>
+                        </div>
+                        <div className="space-y-1">
+                          {members.map((member, idx) => (
+                            <div key={member.participantId} className="flex items-center gap-2 text-sm text-muted">
+                              <span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+                                {idx + 1}
+                              </span>
+                              <span>{member.participantName}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </SportCard>
+          )}
+
           {/* Matches */}
           {matches.length > 0 && (
             <SportCard padding="lg" variant="elevated">
@@ -317,6 +485,21 @@ export default async function TournamentDashboard(props: Props) {
               </div>
             </SportCard>
           )}
+
+          {/* Reset Tournament to Stage */}
+          <ResetToStage
+            tournamentId={tournamentId}
+            status={tournament.status}
+            hasType={!!tournament.type}
+            hasTeams={hasTeams}
+            hasMatches={matches.length > 0}
+            isTeamBased={isTeamTournament}
+            onResetToRegistrationOpen={resetToRegistrationOpen}
+            onResetToRegistrationClosed={resetToRegistrationClosed}
+            onResetToTypeSelection={resetToTypeSelection}
+            onResetToAfterTeamDraw={resetToAfterTeamDraw}
+            onResetToAfterMatchGeneration={resetToAfterMatchGeneration}
+          />
         </div>
       </Container>
     </AdminLayout>

@@ -172,50 +172,238 @@ export async function generateMatchesAction(formData: FormData) {
   const tournamentId = String(formData.get("tournamentId"));
   const supabase = createAdminClient();
   
-  // Get tournament info
+  // Get tournament info including team settings
   const { data: tournament } = await supabase
     .from("tournaments")
-    .select("type, players_per_team")
+    .select("type, players_per_team, team_formation_mode")
     .eq("id", tournamentId)
     .single();
     
-  if (!tournament) throw new Error("Tournament not found");
+  if (!tournament) throw new Error("البطولة غير موجودة");
   
-  // Get participants
+  // Validate tournament type is set
+  if (!tournament.type || !["league", "knockout"].includes(tournament.type)) {
+    throw new Error("يجب تحديد نوع البطولة (دوري أو خروج مباشر) قبل إنشاء المباريات");
+  }
+  
+  // Delete existing matches first to allow re-generation
+  const { error: deleteError } = await supabase
+    .from("matches")
+    .delete()
+    .eq("tournament_id", tournamentId);
+  if (deleteError) throw deleteError;
+  
+  const isTeamTournament = tournament.players_per_team === 2;
+  const isRandomDraw = tournament.team_formation_mode === "random_draw";
+  const isKnockout = tournament.type === "knockout";
+  
+  // ========== TEAM TOURNAMENT (2v2) ==========
+  if (isTeamTournament) {
+    // Get teams
+    const { data: teams } = await supabase
+      .from("teams")
+      .select("*")
+      .eq("tournament_id", tournamentId);
+    
+    // VALIDATION: For random_draw mode, teams MUST be created first via runTeamDrawAction
+    if (isRandomDraw && (!teams || teams.length === 0)) {
+      throw new Error("يجب تشكيل الفرق أولاً قبل إنشاء المباريات. اضغط على 'تشكيل الفرق بالقرعة' أولاً.");
+    }
+    
+    if (!teams || teams.length < 2) {
+      throw new Error("لا توجد فرق كافية لإنشاء المباريات. تأكد من تكوين الفرق أولاً.");
+    }
+    
+    // Validate all teams have proper members
+    const { data: teamMembers } = await supabase
+      .from("team_members")
+      .select("team_id")
+      .in("team_id", teams.map(t => t.id));
+    
+    const teamsWithMembers = new Set((teamMembers || []).map(m => m.team_id));
+    const incompleteTeams = teams.filter(t => !teamsWithMembers.has(t.id));
+    
+    if (incompleteTeams.length > 0) {
+      throw new Error(`يوجد ${incompleteTeams.length} فريق بدون أعضاء. تأكد من اكتمال تشكيل الفرق.`);
+    }
+    
+    // Generate team-based matches
+    let teamMatches;
+    if (isKnockout) {
+      teamMatches = generateKnockoutRoundOneTeams(teams);
+    } else {
+      teamMatches = generateLeagueScheduleTeams(teams);
+    }
+    
+    // Insert team matches
+    const matchInserts = teamMatches.map((match) => ({
+      tournament_id: tournamentId,
+      home_team_id: match.homeTeamId,
+      away_team_id: match.awayTeamId,
+      home_participant_id: null,
+      away_participant_id: null,
+      round: match.round || 1,
+      status: "scheduled",
+    }));
+    
+    const { error } = await supabase.from("matches").insert(matchInserts);
+    if (error) throw error;
+  } 
+  // ========== INDIVIDUAL TOURNAMENT (1v1) ==========
+  else {
+    // Get participants
+    const { data: participants } = await supabase
+      .from("participants")
+      .select("id, name")
+      .eq("tournament_id", tournamentId);
+      
+    if (!participants || participants.length < 2) {
+      throw new Error("يجب أن يكون هناك مشاركين اثنين على الأقل");
+    }
+    
+    // Generate individual matches
+    let matches;
+    if (isKnockout) {
+      matches = generateKnockoutRoundOne(participants);
+    } else {
+      matches = generateLeagueSchedule(participants);
+    }
+    
+    // Insert matches
+    const matchInserts = matches.map((match) => ({
+      tournament_id: tournamentId,
+      home_participant_id: match.homeParticipantId,
+      away_participant_id: match.awayParticipantId,
+      home_team_id: null,
+      away_team_id: null,
+      round: match.round || 1,
+      status: "scheduled",
+    }));
+    
+    const { error } = await supabase.from("matches").insert(matchInserts);
+    if (error) throw error;
+  }
+  
+  revalidatePath("/admin");
+  revalidatePath("/admin/tournaments");
+  revalidatePath(`/admin/tournaments/${tournamentId}`);
+}
+
+/**
+ * Run Team Draw / Lottery for 2v2 tournaments with random_draw mode
+ * Creates teams and assigns participants randomly (2 per team)
+ * Must be called BEFORE generateMatchesAction for team tournaments
+ */
+export async function runTeamDrawAction(formData: FormData) {
+  await assertAdmin();
+  const tournamentId = String(formData.get("tournamentId"));
+  const supabase = createAdminClient();
+  
+  // Get tournament info
+  const { data: tournament } = await supabase
+    .from("tournaments")
+    .select("players_per_team, team_formation_mode")
+    .eq("id", tournamentId)
+    .single();
+    
+  if (!tournament) throw new Error("البطولة غير موجودة");
+  
+  if (tournament.players_per_team !== 2) {
+    throw new Error("تشكيل الفرق متاح فقط لبطولات 2v2");
+  }
+  
+  if (tournament.team_formation_mode !== "random_draw") {
+    throw new Error("هذه البطولة ليست بنظام القرعة العشوائية");
+  }
+  
+  // Get all participants
   const { data: participants } = await supabase
     .from("participants")
     .select("id, name")
     .eq("tournament_id", tournamentId);
     
-  if (!participants || participants.length < 2) {
-    throw new Error("Not enough participants");
+  if (!participants || participants.length < 4) {
+    throw new Error("يجب أن يكون هناك 4 مشاركين على الأقل للعب 2v2");
   }
   
-  // Generate matches based on tournament type
-  const isKnockout = tournament.type === "knockout";
-  let matches;
-  
-  if (isKnockout) {
-    matches = generateKnockoutRoundOne(participants);
-  } else {
-    matches = generateLeagueSchedule(participants);
+  // Validate even number of participants
+  if (participants.length % 2 !== 0) {
+    throw new Error(`عدد المشاركين (${participants.length}) غير مناسب لتكوين فرق - لازم عدد زوجي`);
   }
   
-  // Insert matches - map from ScheduledMatch format to database format
-  const matchInserts = matches.map((match) => ({
-    tournament_id: tournamentId,
-    home_participant_id: match.homeParticipantId,
-    away_participant_id: match.awayParticipantId,
-    round: match.round || 1,
-    status: "scheduled",
-  }));
+  // Delete existing teams and team_members for this tournament (allows re-draw)
+  const { data: existingTeams } = await supabase
+    .from("teams")
+    .select("id")
+    .eq("tournament_id", tournamentId);
   
-  const { error } = await supabase.from("matches").insert(matchInserts);
-  if (error) throw error;
+  if (existingTeams && existingTeams.length > 0) {
+    // Delete team members first (foreign key constraint)
+    await supabase
+      .from("team_members")
+      .delete()
+      .in("team_id", existingTeams.map(t => t.id));
+    
+    // Delete teams
+    await supabase
+      .from("teams")
+      .delete()
+      .eq("tournament_id", tournamentId);
+  }
+  
+  // Shuffle participants randomly using Fisher-Yates
+  const shuffled = [...participants];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  
+  const numTeams = shuffled.length / 2;
+  
+  // Create team names (فريق A, فريق B, etc.)
+  const teamLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const teamsToInsert = [];
+  for (let i = 0; i < numTeams; i++) {
+    teamsToInsert.push({
+      tournament_id: tournamentId,
+      name: `فريق ${teamLetters[i] ?? i + 1}`,
+    });
+  }
+  
+  const { data: insertedTeams, error: insertTeamsError } = await supabase
+    .from("teams")
+    .insert(teamsToInsert)
+    .select();
+  
+  if (insertTeamsError) throw insertTeamsError;
+  if (!insertedTeams || insertedTeams.length === 0) {
+    throw new Error("فشل في إنشاء الفرق");
+  }
+  
+  // Assign 2 participants per team
+  const teamMembersToInsert = [];
+  let participantIndex = 0;
+  
+  for (const team of insertedTeams) {
+    for (let j = 0; j < 2 && participantIndex < shuffled.length; j++) {
+      teamMembersToInsert.push({
+        team_id: team.id,
+        participant_id: shuffled[participantIndex].id,
+      });
+      participantIndex++;
+    }
+  }
+  
+  const { error: insertMembersError } = await supabase
+    .from("team_members")
+    .insert(teamMembersToInsert);
+  
+  if (insertMembersError) throw insertMembersError;
   
   revalidatePath("/admin");
   revalidatePath("/admin/tournaments");
   revalidatePath(`/admin/tournaments/${tournamentId}`);
+  revalidatePath(`/t`);
 }
 
 export async function addParticipant(formData: FormData) {

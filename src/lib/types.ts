@@ -15,6 +15,7 @@ export type Tournament = {
   status: TournamentStatus;
   allow_public_registration: boolean;
   players_per_team: number;
+  team_formation_mode?: "preformed" | "random_draw" | null;
   is_public: boolean;
   start_date?: string | null;
   created_at: string;
