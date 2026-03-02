@@ -445,6 +445,32 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
   }
 }
 
+export async function getUserProfiles(userIds: string[]): Promise<Map<string, UserProfile>> {
+  const profileMap = new Map<string, UserProfile>();
+  if (userIds.length === 0) return profileMap;
+  
+  try {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("user_profiles")
+      .select("*")
+      .in("id", userIds);
+
+    if (error) {
+      console.error("[getUserProfiles] Error:", error);
+      return profileMap;
+    }
+
+    for (const profile of (data ?? [])) {
+      profileMap.set(profile.id, profile as UserProfile);
+    }
+    return profileMap;
+  } catch (err) {
+    console.error("[getUserProfiles] Exception:", err);
+    return profileMap;
+  }
+}
+
 export async function getUserStats(userId: string): Promise<UserStats | null> {
   try {
     const supabase = createAdminClient();

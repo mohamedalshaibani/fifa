@@ -16,7 +16,9 @@ import {
   getMatches,
   getTeams,
   getTeamMembersByTournament,
+  getUserProfiles,
 } from "@/lib/data";
+import type { TeamMemberInfo } from "@/components/TeamCard";
 import { computeStandings, computeTeamStandings } from "@/lib/tournament-utils";
 import { isUuid, encodeSlug } from "@/lib/slug";
 import { Match } from "@/lib/types";
@@ -88,11 +90,24 @@ export default async function TournamentHomePage(props: Props) {
 
   const nameMap = new Map(participants.map((p) => [p.id, p.name]));
   const teamNameMap = new Map(teams.map((t) => [t.id, t.name]));
-  const teamMembersMap = new Map<string, string[]>();
+  
+  // Fetch user profiles for team members to get avatars
+  const teamMemberUserIds = teamMembers
+    .map(tm => tm.user_id)
+    .filter((id): id is string => !!id);
+  const userProfilesMap = await getUserProfiles(teamMemberUserIds);
+  
+  // Build team members map with avatar data
+  const teamMembersMap = new Map<string, TeamMemberInfo[]>();
   for (const tm of teamMembers) {
     const members = teamMembersMap.get(tm.team_id) || [];
     const participantName = tm.participant_id ? (nameMap.get(tm.participant_id) || "—") : "—";
-    members.push(participantName);
+    const userProfile = tm.user_id ? userProfilesMap.get(tm.user_id) : null;
+    const profileName = userProfile ? `${userProfile.first_name} ${userProfile.last_name}`.trim() : null;
+    members.push({
+      name: profileName || participantName,
+      avatarUrl: userProfile?.avatar_url || null,
+    });
     teamMembersMap.set(tm.team_id, members);
   }
 
@@ -119,11 +134,11 @@ export default async function TournamentHomePage(props: Props) {
         const runnerUpTeam = standings[1]?.team;
         championName = championTeam?.name ?? null;
         championMembers = championTeam
-          ? teamMembersMap.get(championTeam.id) || []
+          ? (teamMembersMap.get(championTeam.id) || []).map(m => m.name)
           : [];
         runnerUpName = runnerUpTeam?.name ?? null;
         runnerUpMembers = runnerUpTeam
-          ? teamMembersMap.get(runnerUpTeam.id) || []
+          ? (teamMembersMap.get(runnerUpTeam.id) || []).map(m => m.name)
           : [];
       } else {
         const standings = computeStandings(participants, matches);
@@ -144,9 +159,9 @@ export default async function TournamentHomePage(props: Props) {
             ? finalMatch?.away_team_id
             : finalMatch?.home_team_id;
         championName = winnerId ? teamNameMap.get(winnerId) ?? null : null;
-        championMembers = winnerId ? teamMembersMap.get(winnerId) || [] : [];
+        championMembers = winnerId ? (teamMembersMap.get(winnerId) || []).map(m => m.name) : [];
         runnerUpName = loserId ? teamNameMap.get(loserId) ?? null : null;
-        runnerUpMembers = loserId ? teamMembersMap.get(loserId) || [] : [];
+        runnerUpMembers = loserId ? (teamMembersMap.get(loserId) || []).map(m => m.name) : [];
       } else {
         const winnerId = finalMatch?.winner_participant_id ?? null;
         const loserId =

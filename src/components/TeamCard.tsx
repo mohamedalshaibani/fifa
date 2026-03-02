@@ -1,15 +1,30 @@
 import { EditTeamNameButton } from './EditTeamNameButton';
 import Card from "@/components/Card";
 import { User } from 'lucide-react';
+import Image from 'next/image';
+
+// Member can be a simple string (name) or an object with avatar info
+export interface TeamMemberInfo {
+  name: string;
+  avatarUrl?: string | null;
+}
 
 interface TeamCardProps {
   teamId: string;
   tournamentId: string;
   teamName: string;
-  members: string[];
+  members: (string | TeamMemberInfo)[];
   onUpdateName?: (formData: FormData) => Promise<void>;
   showEditButton?: boolean;
   compact?: boolean;
+}
+
+// Helper to normalize member data
+function getMemberInfo(member: string | TeamMemberInfo): TeamMemberInfo {
+  if (typeof member === 'string') {
+    return { name: member, avatarUrl: null };
+  }
+  return member;
 }
 
 export function TeamCard({
@@ -23,7 +38,9 @@ export function TeamCard({
 }: TeamCardProps) {
   if (compact) {
     // Compact format: "برشلونة (محمد + سلطان)"
-    const memberNames = members.length > 0 ? members.join(' + ') : '—';
+    const memberNames = members.length > 0 
+      ? members.map(m => getMemberInfo(m).name).join(' + ') 
+      : '—';
     return (
       <span className="text-sm shadow-sm px-2 py-0.5 rounded bg-surface border border-border inline-flex items-center gap-1.5">
         <span className="font-bold text-foreground">{teamName}</span>
@@ -48,14 +65,27 @@ export function TeamCard({
       </div>
       <div className="space-y-2">
         {members.length > 0 ? (
-          members.map((name, idx) => (
-            <div key={idx} className="flex items-center gap-2 text-sm text-secondary p-1.5 rounded-full bg-surface-2/80 border border-border/40 shadow-sm">
-              <span className="h-7 w-7 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center text-xs font-bold text-primary shadow animate-float">
-                <User className="w-4 h-4" />
-              </span>
-              <span className="font-medium text-foreground">{name}</span>
-            </div>
-          ))
+          members.map((member, idx) => {
+            const { name, avatarUrl } = getMemberInfo(member);
+            return (
+              <div key={idx} className="flex items-center gap-2 text-sm text-secondary p-1.5 rounded-full bg-surface-2/80 border border-border/40 shadow-sm">
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={name}
+                    width={28}
+                    height={28}
+                    className="h-7 w-7 rounded-full object-cover border-2 border-primary/30 shadow"
+                  />
+                ) : (
+                  <span className="h-7 w-7 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center text-xs font-bold text-primary shadow">
+                    <User className="w-4 h-4" />
+                  </span>
+                )}
+                <span className="font-medium text-foreground">{name}</span>
+              </div>
+            );
+          })
         ) : (
           <p className="text-xs text-muted flex items-center gap-1">
              <AlertCircle className="w-3 h-3" />
