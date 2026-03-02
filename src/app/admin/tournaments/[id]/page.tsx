@@ -13,6 +13,8 @@ import {
   runTeamDrawAction,
   setTournamentType,
   setTournamentFormat,
+  updateTeamName,
+  updateMatchScore,
   resetToRegistrationOpen,
   resetToRegistrationClosed,
   resetToTypeSelection,
@@ -26,6 +28,8 @@ import SportButton from "@/components/ui/SportButton";
 import SportBadge from "@/components/ui/SportBadge";
 import { DeleteButton } from "@/components/DeleteButton";
 import ResetToStage from "@/components/ResetToStage";
+import { EditTeamNameButton } from "@/components/EditTeamNameButton";
+import MatchScoreEditor from "@/components/MatchScoreEditor";
 import { 
   ArrowLeft, 
   Users, 
@@ -482,7 +486,14 @@ export default async function TournamentDashboard(props: Props) {
                           <span className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-sm font-bold text-accent">
                             {index + 1}
                           </span>
-                          <span className="font-black text-foreground">{team.name}</span>
+                          <span className="font-black text-foreground">{team.name || "بدون اسم"}</span>
+                          <EditTeamNameButton
+                            teamId={team.id}
+                            tournamentId={tournamentId}
+                            initialName={team.name || ""}
+                            onUpdate={updateTeamName}
+                            iconOnly
+                          />
                         </div>
                         <div className="space-y-1">
                           {members.map((member, idx) => (
@@ -509,35 +520,24 @@ export default async function TournamentDashboard(props: Props) {
                 <Swords className="w-5 h-5 text-accent" />
                 المباريات ({matches.length})
               </h2>
-              <div className="grid gap-2">
-                {matches.slice(0, 10).map((match) => (
-                  <div 
-                    key={match.id} 
-                    className="flex items-center justify-between p-3 rounded-lg bg-surface hover:bg-surface-alt transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="font-bold text-foreground">
-                        {match.home_name || "TBD"}
-                      </span>
-                      {match.status === "completed" ? (
-                        <span className="font-bold text-primary">
-                          {match.home_score ?? 0} - {match.away_score ?? 0}
-                        </span>
-                      ) : (
-                        <span className="text-muted">vs</span>
-                      )}
-                      <span className="font-bold text-foreground">
-                        {match.away_name || "TBD"}
-                      </span>
-                    </div>
-                    <SportBadge variant={match.status === "completed" ? "success" : "info"}>
-                      {match.status === "completed" ? "انتهت" : "قادمة"}
-                    </SportBadge>
-                  </div>
+              <div className="grid gap-3">
+                {matches.slice(0, 20).map((match) => (
+                  <MatchScoreEditor
+                    key={match.id}
+                    matchId={match.id}
+                    tournamentId={tournamentId}
+                    round={match.round ?? 1}
+                    homeName={match.home_name}
+                    awayName={match.away_name}
+                    homeScore={match.home_score}
+                    awayScore={match.away_score}
+                    status={match.status}
+                    onUpdateScore={updateMatchScore}
+                  />
                 ))}
-                {matches.length > 10 && (
+                {matches.length > 20 && (
                   <p className="text-center text-muted py-2">
-                    + {matches.length - 10} مباراة أخرى
+                    + {matches.length - 20} مباراة أخرى
                   </p>
                 )}
               </div>
