@@ -298,52 +298,7 @@ export default async function TournamentHomePage(props: Props) {
         </div>
 
         <div className="space-y-8">
-          <section id="overview">
-            <Card>
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h2 className="text-lg font-bold text-foreground">نظرة عامة</h2>
-                <span className="button-secondary px-4 py-2 text-xs font-semibold">
-                  منتهية
-                </span>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                  <p className="text-xs text-muted font-semibold mb-1">البطل</p>
-                  <p className="text-lg font-black text-foreground">{championName ?? getEmptyStateText('champion')}</p>
-                  {isTeamBased && championMembers.length > 0 && (
-                    <p className="text-xs text-secondary mt-1">{championMembers.join(" • ")}</p>
-                  )}
-                </div>
-                <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                  <p className="text-xs text-muted font-semibold mb-1">الوصيف</p>
-                  <p className="text-lg font-black text-foreground">{runnerUpName ?? getEmptyStateText('champion')}</p>
-                  {isTeamBased && runnerUpMembers.length > 0 && (
-                    <p className="text-xs text-secondary mt-1">{runnerUpMembers.join(" • ")}</p>
-                  )}
-                </div>
-              </div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-2xl border border-border bg-surface px-4 py-3">
-                  <p className="text-xs text-muted font-semibold">المباريات</p>
-                  <p className="mt-1 text-xl font-black text-foreground">{formatNumber(matches.length)}</p>
-                </div>
-                <div className="rounded-2xl border border-border bg-surface px-4 py-3">
-                  <p className="text-xs text-muted font-semibold">الأهداف</p>
-                  <p className="mt-1 text-xl font-black text-foreground">{formatNumber(goalsTotal)}</p>
-                </div>
-                <div className="rounded-2xl border border-border bg-surface px-4 py-3">
-                  <p className="text-xs text-muted font-semibold">{isTeamBased ? "الفرق" : "المشاركون"}</p>
-                  <p className="mt-1 text-xl font-black text-foreground">{formatNumber(entityCount)}</p>
-                </div>
-                <div className="rounded-2xl border border-border bg-surface px-4 py-3">
-                  <p className="text-xs text-muted font-semibold">التاريخ</p>
-                  <p className="mt-1 text-sm font-bold text-foreground">{createdDate}</p>
-                </div>
-              </div>
-            </Card>
-          </section>
-
-          <section id="participants">
+          <section id="participants" className="scroll-mt-8">
             <Card>
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <h2 className="text-lg font-bold text-foreground">
