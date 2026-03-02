@@ -12,6 +12,7 @@ import {
   generateMatchesAction,
   runTeamDrawAction,
   setTournamentType,
+  setTournamentFormat,
   resetToRegistrationOpen,
   resetToRegistrationClosed,
   resetToTypeSelection,
@@ -183,6 +184,63 @@ export default async function TournamentDashboard(props: Props) {
               </div>
             </SportCard>
           </div>
+
+          {/* Tournament Format Selection - Individual vs Team (can change after registration) */}
+          {matches.length === 0 && (
+            <SportCard padding="lg" variant="elevated">
+              <h2 className="text-xl font-black text-foreground mb-4">👥 صيغة البطولة (فردي / فرق)</h2>
+              <p className="text-sm text-muted mb-4">
+                الصيغة الحالية: {" "}
+                <strong>
+                  {isTeamTournament 
+                    ? (isRandomDraw ? "فرق (قرعة عشوائية) 2v2" : "فرق (جاهزة) 2v2") 
+                    : "فردي 1v1"
+                  }
+                </strong>
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <form action={setTournamentFormat}>
+                  <input type="hidden" name="tournamentId" value={tournamentId} />
+                  <input type="hidden" name="format" value="individual" />
+                  <SportButton 
+                    type="submit" 
+                    variant={!isTeamTournament ? "primary" : "outline"} 
+                    size="sm"
+                  >
+                    🧍 فردي (1v1)
+                  </SportButton>
+                </form>
+                <form action={setTournamentFormat}>
+                  <input type="hidden" name="tournamentId" value={tournamentId} />
+                  <input type="hidden" name="format" value="team_random" />
+                  <SportButton 
+                    type="submit" 
+                    variant={isTeamTournament && isRandomDraw ? "primary" : "outline"} 
+                    size="sm"
+                  >
+                    🎲 فرق بالقرعة (2v2)
+                  </SportButton>
+                </form>
+                <form action={setTournamentFormat}>
+                  <input type="hidden" name="tournamentId" value={tournamentId} />
+                  <input type="hidden" name="format" value="team_preformed" />
+                  <SportButton 
+                    type="submit" 
+                    variant={isTeamTournament && !isRandomDraw ? "primary" : "outline"} 
+                    size="sm"
+                  >
+                    👥 فرق جاهزة (2v2)
+                  </SportButton>
+                </form>
+              </div>
+              {isTeamTournament && isRandomDraw && hasTeams && (
+                <p className="text-sm text-success mt-3">✅ تم سحب {teams.length} فرق</p>
+              )}
+              {isTeamTournament && isRandomDraw && !hasTeams && participants.length >= 4 && (
+                <p className="text-sm text-warning mt-3">⚠️ لم يتم سحب الفرق بعد - اضغط على "سحب الفرق" في الأسفل</p>
+              )}
+            </SportCard>
+          )}
 
           {/* Tournament Type Selection - only show when type not set and no matches */}
           {!tournament.type && matches.length === 0 && (

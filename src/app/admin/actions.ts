@@ -710,6 +710,75 @@ export async function setTournamentType(formData: FormData) {
   if (error) throw error;
   revalidatePath("/admin");
   revalidatePath("/admin/t");
+  revalidatePath("/admin/tournaments");
+  revalidatePath(`/admin/tournaments/${tournamentId}`);
+}
+
+/**
+ * Set tournament format: individual (1v1) or team-based (2v2) with formation mode
+ * Can be called AFTER registration to change the format
+ */
+export async function setTournamentFormat(formData: FormData) {
+  await assertAdmin();
+  const tournamentId = String(formData.get("tournamentId"));
+  const format = String(formData.get("format")); // "individual", "team_preformed", "team_random"
+  
+  console.log("[setTournamentFormat] Setting format:", { tournamentId, format });
+  
+  let playersPerTeam: number;
+  let teamFormationMode: string | null;
+  
+  switch (format) {
+    case "individual":
+      playersPerTeam = 1;
+      teamFormationMode = null;
+      break;
+    case "team_preformed":
+      playersPerTeam = 2;
+      teamFormationMode = "preformed";
+      break;
+    case "team_random":
+      playersPerTeam = 2;
+      teamFormationMode = "random_draw";
+      break;
+    default:
+      throw new Error("صيغة غير صالحة");
+  }
+  
+  const supabase = createAdminClient();
+  
+  // Delete existing teams if switching to individual
+  if (playersPerTeam === 1) {
+    const { data: existingTeams } = await supabase
+      .from("teams")
+      .select("id")
+      .eq("tournament_id", tournamentId);
+    
+    if (existingTeams && existingTeams.length > 0) {
+      await supabase.from("team_members").delete().in("team_id", existingTeams.map(t => t.id));
+      await supabase.from("teams").delete().eq("tournament_id", tournamentId);
+    }
+  }
+  
+  const { error } = await supabase
+    .from("tournaments")
+    .update({ 
+      players_per_team: playersPerTeam,
+      team_formation_mode: teamFormationMode 
+    })
+    .eq("id", tournamentId);
+  
+  if (error) {
+    console.error("[setTournamentFormat] Update error:", error);
+    throw error;
+  }
+  
+  console.log("[setTournamentFormat] SUCCESS:", { playersPerTeam, teamFormationMode });
+  
+  revalidatePath("/admin");
+  revalidatePath("/admin/t");
+  revalidatePath("/admin/tournaments");
+  revalidatePath(`/admin/tournaments/${tournamentId}`);
 }
 
 export async function setPlayersPerTeam(formData: FormData) {
@@ -728,6 +797,8 @@ export async function setPlayersPerTeam(formData: FormData) {
   if (error) throw error;
   revalidatePath("/admin");
   revalidatePath("/admin/t");
+  revalidatePath("/admin/tournaments");
+  revalidatePath(`/admin/tournaments/${tournamentId}`);
 }
 
 export async function createTeams(formData: FormData) {
