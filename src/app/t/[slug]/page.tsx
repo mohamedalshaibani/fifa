@@ -185,7 +185,6 @@ export default async function TournamentHomePage(props: Props) {
     return (
       <div className="min-h-screen bg-background">
         <Container>
-          <div className="h-1 w-full bg-primary shadow-[0_0_18px_rgba(0,230,118,0.35)] rounded-full mb-6" />
         <div className="mb-8">
           <Link
             href="/tournaments"
@@ -406,7 +405,7 @@ export default async function TournamentHomePage(props: Props) {
                                 <div className="flex-1 text-right">
                                   <p className="font-semibold text-foreground">{homeName}</p>
                                   {isTeamBased && homeMembers.length > 0 && (
-                                    <p className="text-xs text-muted mt-1">{homeMembers.join(" • ")}</p>
+                                    <p className="text-xs text-muted mt-1">{homeMembers.map(m => m.name).join(" • ")}</p>
                                   )}
                                 </div>
                                 <div className="min-w-[120px] text-center">
@@ -424,7 +423,7 @@ export default async function TournamentHomePage(props: Props) {
                                 <div className="flex-1 text-left">
                                   <p className="font-semibold text-foreground">{awayName}</p>
                                   {isTeamBased && awayMembers.length > 0 && (
-                                    <p className="text-xs text-muted mt-1">{awayMembers.join(" • ")}</p>
+                                    <p className="text-xs text-muted mt-1">{awayMembers.map(m => m.name).join(" • ")}</p>
                                   )}
                                 </div>
                               </div>
@@ -494,7 +493,7 @@ export default async function TournamentHomePage(props: Props) {
                                   <td className="px-4 py-3 text-right">
                                     <p className="font-semibold text-foreground">{standing.team.name}</p>
                                     {members.length > 0 && (
-                                      <p className="text-xs text-muted mt-0.5">{members.join(" • ")}</p>
+                                      <p className="text-xs text-muted mt-0.5">{members.map(m => m.name).join(" • ")}</p>
                                     )}
                                   </td>
                                   <td className="px-4 py-3 text-center text-secondary">{standing.played}</td>
@@ -614,7 +613,7 @@ export default async function TournamentHomePage(props: Props) {
                                         {homeName}
                                       </span>
                                       {isTeamBased && homeMembers.length > 0 && (
-                                        <p className="text-xs text-muted mt-0.5">{homeMembers.join(" • ")}</p>
+                                        <p className="text-xs text-muted mt-0.5">{homeMembers.map(m => m.name).join(" • ")}</p>
                                       )}
                                     </div>
                                     <span className="text-sm font-bold text-primary">
@@ -633,7 +632,7 @@ export default async function TournamentHomePage(props: Props) {
                                         {awayName}
                                       </span>
                                       {isTeamBased && awayMembers.length > 0 && (
-                                        <p className="text-xs text-muted mt-0.5">{awayMembers.join(" • ")}</p>
+                                        <p className="text-xs text-muted mt-0.5">{awayMembers.map(m => m.name).join(" • ")}</p>
                                       )}
                                     </div>
                                     <span className="text-sm font-bold text-primary">
@@ -972,7 +971,7 @@ export default async function TournamentHomePage(props: Props) {
                             <div className="flex-1 text-right">
                               <p className="font-semibold text-foreground">{homeName}</p>
                               {isTeamBased && homeMembers.length > 0 && (
-                                <p className="text-xs text-muted mt-1">{homeMembers.join(" • ")}</p>
+                                <p className="text-xs text-muted mt-1">{homeMembers.map(m => m.name).join(" • ")}</p>
                               )}
                             </div>
                             <div className="min-w-[100px] text-center">
@@ -990,7 +989,7 @@ export default async function TournamentHomePage(props: Props) {
                             <div className="flex-1 text-left">
                               <p className="font-semibold text-foreground">{awayName}</p>
                               {isTeamBased && awayMembers.length > 0 && (
-                                <p className="text-xs text-muted mt-1">{awayMembers.join(" • ")}</p>
+                                <p className="text-xs text-muted mt-1">{awayMembers.map(m => m.name).join(" • ")}</p>
                               )}
                             </div>
                           </div>
@@ -1050,7 +1049,7 @@ export default async function TournamentHomePage(props: Props) {
                                 </td>
                                 <td className="px-3 py-3 text-right">
                                   <p className="font-semibold text-foreground">{standing.team.name}</p>
-                                  {members.length > 0 && <p className="text-xs text-muted">{members.join(" • ")}</p>}
+                                  {members.length > 0 && <p className="text-xs text-muted">{members.map(m => m.name).join(" • ")}</p>}
                                 </td>
                                 <td className="px-3 py-3 text-center text-secondary">{standing.played}</td>
                                 <td className="px-3 py-3 text-center text-success font-semibold">{standing.wins}</td>
@@ -1137,14 +1136,14 @@ export default async function TournamentHomePage(props: Props) {
                                 <div className="flex items-center justify-between">
                                   <div>
                                     <span className={isHomeWinner ? "font-bold text-foreground" : "text-secondary"}>{homeName}</span>
-                                    {isTeamBased && homeMembers.length > 0 && <p className="text-xs text-muted">{homeMembers.join(" • ")}</p>}
+                                    {isTeamBased && homeMembers.length > 0 && <p className="text-xs text-muted">{homeMembers.map(m => m.name).join(" • ")}</p>}
                                   </div>
                                   <span className="text-sm font-bold text-primary">{match.home_score ?? "—"}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <div>
                                     <span className={isAwayWinner ? "font-bold text-foreground" : "text-secondary"}>{awayName}</span>
-                                    {isTeamBased && awayMembers.length > 0 && <p className="text-xs text-muted">{awayMembers.join(" • ")}</p>}
+                                    {isTeamBased && awayMembers.length > 0 && <p className="text-xs text-muted">{awayMembers.map(m => m.name).join(" • ")}</p>}
                                   </div>
                                   <span className="text-sm font-bold text-primary">{match.away_score ?? "—"}</span>
                                 </div>
