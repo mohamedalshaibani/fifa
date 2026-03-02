@@ -173,13 +173,27 @@ export async function generateMatchesAction(formData: FormData) {
   const supabase = createAdminClient();
   
   // Get tournament info including team settings
-  const { data: tournament } = await supabase
+  const { data: tournament, error: fetchError } = await supabase
     .from("tournaments")
     .select("type, players_per_team, team_formation_mode")
     .eq("id", tournamentId)
     .single();
+  
+  if (fetchError) {
+    console.error("[generateMatchesAction] Failed to fetch tournament:", fetchError);
+    throw new Error("فشل في جلب بيانات البطولة");
+  }
     
   if (!tournament) throw new Error("البطولة غير موجودة");
+  
+  // ===== DEBUG LOGGING =====
+  console.log("[generateMatchesAction] Tournament data:", {
+    tournamentId,
+    type: tournament.type,
+    players_per_team: tournament.players_per_team,
+    players_per_team_type: typeof tournament.players_per_team,
+    team_formation_mode: tournament.team_formation_mode,
+  });
   
   // Validate tournament type is set
   if (!tournament.type || !["league", "knockout"].includes(tournament.type)) {
@@ -193,17 +207,35 @@ export async function generateMatchesAction(formData: FormData) {
     .eq("tournament_id", tournamentId);
   if (deleteError) throw deleteError;
   
-  const isTeamTournament = tournament.players_per_team === 2;
+  // CRITICAL: Use Number() to handle potential string/number type mismatch from DB
+  const playersPerTeam = Number(tournament.players_per_team) || 1;
+  const isTeamTournament = playersPerTeam > 1;
   const isRandomDraw = tournament.team_formation_mode === "random_draw";
   const isKnockout = tournament.type === "knockout";
   
+  console.log("[generateMatchesAction] Mode detection:", {
+    playersPerTeam,
+    isTeamTournament,
+    isRandomDraw,
+    isKnockout,
+    branch: isTeamTournament ? "TEAM_MODE" : "INDIVIDUAL_MODE"
+  });
+  
   // ========== TEAM TOURNAMENT (2v2) ==========
   if (isTeamTournament) {
+    console.log("[generateMatchesAction] Entering TEAM MODE branch");
+    
     // Get teams
-    const { data: teams } = await supabase
+    const { data: teams, error: teamsError } = await supabase
       .from("teams")
       .select("*")
       .eq("tournament_id", tournamentId);
+    
+    console.log("[generateMatchesAction] Teams query result:", {
+      teamsCount: teams?.length ?? 0,
+      teamsError: teamsError?.message,
+      teamIds: teams?.map(t => t.id)
+    });
     
     // VALIDATION: For random_draw mode, teams MUST be created first via runTeamDrawAction
     if (isRandomDraw && (!teams || teams.length === 0)) {
@@ -217,8 +249,17 @@ export async function generateMatchesAction(formData: FormData) {
     // Validate all teams have proper members
     const { data: teamMembers } = await supabase
       .from("team_members")
-      .select("team_id")
+      .select("team_id, participant_id")
       .in("team_id", teams.map(t => t.id));
+    
+    console.log("[generateMatchesAction] Team members:", {
+      totalMembers: teamMembers?.length ?? 0,
+      membersByTeam: teams.map(t => ({
+        teamId: t.id,
+        teamName: t.name,
+        memberCount: teamMembers?.filter(m => m.team_id === t.id).length ?? 0
+      }))
+    });
     
     const teamsWithMembers = new Set((teamMembers || []).map(m => m.team_id));
     const incompleteTeams = teams.filter(t => !teamsWithMembers.has(t.id));
@@ -235,7 +276,12 @@ export async function generateMatchesAction(formData: FormData) {
       teamMatches = generateLeagueScheduleTeams(teams);
     }
     
-    // Insert team matches
+    console.log("[generateMatchesAction] Generated team matches:", {
+      matchCount: teamMatches.length,
+      sampleMatch: teamMatches[0]
+    });
+    
+    // Insert team matches - EXPLICITLY set participant IDs to NULL
     const matchInserts = teamMatches.map((match) => ({
       tournament_id: tournamentId,
       home_team_id: match.homeTeamId,
@@ -246,11 +292,22 @@ export async function generateMatchesAction(formData: FormData) {
       status: "scheduled",
     }));
     
+    console.log("[generateMatchesAction] Inserting team matches:", {
+      count: matchInserts.length,
+      firstInsert: matchInserts[0]
+    });
+    
     const { error } = await supabase.from("matches").insert(matchInserts);
-    if (error) throw error;
+    if (error) {
+      console.error("[generateMatchesAction] Insert error:", error);
+      throw error;
+    }
+    
+    console.log("[generateMatchesAction] SUCCESS: Team matches inserted");
   } 
   // ========== INDIVIDUAL TOURNAMENT (1v1) ==========
   else {
+    console.log("[generateMatchesAction] Entering INDIVIDUAL MODE branch");
     // Get participants
     const { data: participants } = await supabase
       .from("participants")
@@ -299,20 +356,38 @@ export async function runTeamDrawAction(formData: FormData) {
   const tournamentId = String(formData.get("tournamentId"));
   const supabase = createAdminClient();
   
+  console.log("[runTeamDrawAction] Starting team draw for tournament:", tournamentId);
+  
   // Get tournament info
-  const { data: tournament } = await supabase
+  const { data: tournament, error: fetchError } = await supabase
     .from("tournaments")
     .select("players_per_team, team_formation_mode")
     .eq("id", tournamentId)
     .single();
     
+  if (fetchError) {
+    console.error("[runTeamDrawAction] Failed to fetch tournament:", fetchError);
+    throw new Error("فشل في جلب بيانات البطولة");
+  }
+    
   if (!tournament) throw new Error("البطولة غير موجودة");
   
-  if (tournament.players_per_team !== 2) {
+  console.log("[runTeamDrawAction] Tournament settings:", {
+    players_per_team: tournament.players_per_team,
+    players_per_team_type: typeof tournament.players_per_team,
+    team_formation_mode: tournament.team_formation_mode,
+  });
+  
+  // Use Number() to handle potential type mismatch
+  const playersPerTeam = Number(tournament.players_per_team) || 1;
+  
+  if (playersPerTeam !== 2) {
+    console.error("[runTeamDrawAction] Not a 2v2 tournament:", playersPerTeam);
     throw new Error("تشكيل الفرق متاح فقط لبطولات 2v2");
   }
   
   if (tournament.team_formation_mode !== "random_draw") {
+    console.error("[runTeamDrawAction] Not random_draw mode:", tournament.team_formation_mode);
     throw new Error("هذه البطولة ليست بنظام القرعة العشوائية");
   }
   
@@ -321,6 +396,8 @@ export async function runTeamDrawAction(formData: FormData) {
     .from("participants")
     .select("id, name")
     .eq("tournament_id", tournamentId);
+  
+  console.log("[runTeamDrawAction] Participants found:", participants?.length ?? 0);
     
   if (!participants || participants.length < 4) {
     throw new Error("يجب أن يكون هناك 4 مشاركين على الأقل للعب 2v2");
@@ -337,18 +414,28 @@ export async function runTeamDrawAction(formData: FormData) {
     .select("id")
     .eq("tournament_id", tournamentId);
   
+  console.log("[runTeamDrawAction] Existing teams to delete:", existingTeams?.length ?? 0);
+  
   if (existingTeams && existingTeams.length > 0) {
     // Delete team members first (foreign key constraint)
-    await supabase
+    const { error: deleteMembersError } = await supabase
       .from("team_members")
       .delete()
       .in("team_id", existingTeams.map(t => t.id));
     
+    if (deleteMembersError) {
+      console.error("[runTeamDrawAction] Failed to delete team members:", deleteMembersError);
+    }
+    
     // Delete teams
-    await supabase
+    const { error: deleteTeamsError } = await supabase
       .from("teams")
       .delete()
       .eq("tournament_id", tournamentId);
+    
+    if (deleteTeamsError) {
+      console.error("[runTeamDrawAction] Failed to delete teams:", deleteTeamsError);
+    }
   }
   
   // Shuffle participants randomly using Fisher-Yates
@@ -359,6 +446,7 @@ export async function runTeamDrawAction(formData: FormData) {
   }
   
   const numTeams = shuffled.length / 2;
+  console.log("[runTeamDrawAction] Creating", numTeams, "teams");
   
   // Create team names (فريق A, فريق B, etc.)
   const teamLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -375,10 +463,15 @@ export async function runTeamDrawAction(formData: FormData) {
     .insert(teamsToInsert)
     .select();
   
-  if (insertTeamsError) throw insertTeamsError;
+  if (insertTeamsError) {
+    console.error("[runTeamDrawAction] Failed to insert teams:", insertTeamsError);
+    throw insertTeamsError;
+  }
   if (!insertedTeams || insertedTeams.length === 0) {
     throw new Error("فشل في إنشاء الفرق");
   }
+  
+  console.log("[runTeamDrawAction] Teams created:", insertedTeams.map(t => ({ id: t.id, name: t.name })));
   
   // Assign 2 participants per team
   const teamMembersToInsert = [];
@@ -394,11 +487,37 @@ export async function runTeamDrawAction(formData: FormData) {
     }
   }
   
+  console.log("[runTeamDrawAction] Team members to insert:", teamMembersToInsert.length);
+  
   const { error: insertMembersError } = await supabase
     .from("team_members")
     .insert(teamMembersToInsert);
   
-  if (insertMembersError) throw insertMembersError;
+  if (insertMembersError) {
+    console.error("[runTeamDrawAction] Failed to insert team members:", insertMembersError);
+    throw insertMembersError;
+  }
+  
+  // Verify the teams and members were created
+  const { data: verifyTeams } = await supabase
+    .from("teams")
+    .select("id, name")
+    .eq("tournament_id", tournamentId);
+  
+  const { data: verifyMembers } = await supabase
+    .from("team_members")
+    .select("team_id, participant_id")
+    .in("team_id", (verifyTeams || []).map(t => t.id));
+  
+  console.log("[runTeamDrawAction] SUCCESS - Final verification:", {
+    teamsCreated: verifyTeams?.length ?? 0,
+    membersCreated: verifyMembers?.length ?? 0,
+    teams: verifyTeams?.map(t => t.name),
+    membersByTeam: verifyTeams?.map(t => ({
+      team: t.name,
+      memberCount: verifyMembers?.filter(m => m.team_id === t.id).length ?? 0
+    }))
+  });
   
   revalidatePath("/admin");
   revalidatePath("/admin/tournaments");
