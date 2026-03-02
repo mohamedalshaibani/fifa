@@ -438,18 +438,18 @@ export default async function TournamentHomePage(props: Props) {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-border text-muted bg-surface-2">
-                          <th className="px-4 py-3 text-right text-xs font-semibold">#</th>
-                          <th className="px-4 py-3 text-right text-xs font-semibold">
+                        <tr className="border-b border-border text-foreground bg-surface-2">
+                          <th className="px-4 py-3 text-right text-xs font-bold">#</th>
+                          <th className="px-4 py-3 text-right text-xs font-bold">
                             {isTeamBased ? "الفريق" : "اللاعب"}
                           </th>
-                          <th className="px-4 py-3 text-center text-xs font-semibold">لعب</th>
-                          <th className="px-4 py-3 text-center text-xs font-semibold">فوز</th>
-                          <th className="px-4 py-3 text-center text-xs font-semibold">تعادل</th>
-                          <th className="px-4 py-3 text-center text-xs font-semibold">خسارة</th>
-                          <th className="px-4 py-3 text-center text-xs font-semibold">الأهداف</th>
-                          <th className="px-4 py-3 text-center text-xs font-semibold">الفرق</th>
-                          <th className="px-4 py-3 text-center text-xs font-semibold">النقاط</th>
+                          <th className="px-4 py-3 text-center text-xs font-bold">لعب</th>
+                          <th className="px-4 py-3 text-center text-xs font-bold text-success">فوز</th>
+                          <th className="px-4 py-3 text-center text-xs font-bold">تعادل</th>
+                          <th className="px-4 py-3 text-center text-xs font-bold text-danger">خسارة</th>
+                          <th className="px-4 py-3 text-center text-xs font-bold">الأهداف</th>
+                          <th className="px-4 py-3 text-center text-xs font-bold">الفرق</th>
+                          <th className="px-4 py-3 text-center text-xs font-bold">النقاط</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -483,9 +483,9 @@ export default async function TournamentHomePage(props: Props) {
                                     )}
                                   </td>
                                   <td className="px-4 py-3 text-center text-secondary">{standing.played}</td>
-                                  <td className="px-4 py-3 text-center text-primary font-semibold">{standing.wins}</td>
+                                  <td className="px-4 py-3 text-center text-success font-semibold">{standing.wins}</td>
                                   <td className="px-4 py-3 text-center text-secondary">{standing.draws}</td>
-                                  <td className="px-4 py-3 text-center text-danger">{standing.losses}</td>
+                                  <td className="px-4 py-3 text-center text-danger font-semibold">{standing.losses}</td>
                                   <td className="px-4 py-3 text-center text-secondary">
                                     {standing.goalsFor} - {standing.goalsAgainst}
                                   </td>
@@ -522,9 +522,9 @@ export default async function TournamentHomePage(props: Props) {
                                     {standing.participant.name}
                                   </td>
                                   <td className="px-4 py-3 text-center text-secondary">{standing.played}</td>
-                                  <td className="px-4 py-3 text-center text-primary font-semibold">{standing.wins}</td>
+                                  <td className="px-4 py-3 text-center text-success font-semibold">{standing.wins}</td>
                                   <td className="px-4 py-3 text-center text-secondary">{standing.draws}</td>
-                                  <td className="px-4 py-3 text-center text-danger">{standing.losses}</td>
+                                  <td className="px-4 py-3 text-center text-danger font-semibold">{standing.losses}</td>
                                   <td className="px-4 py-3 text-center text-secondary">
                                     {standing.goalsFor} - {standing.goalsAgainst}
                                   </td>
@@ -1012,15 +1012,15 @@ export default async function TournamentHomePage(props: Props) {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-border text-muted bg-surface-2">
-                        <th className="px-3 py-3 text-right text-xs font-semibold">#</th>
-                        <th className="px-3 py-3 text-right text-xs font-semibold">{isTeamBased ? "الفريق" : "اللاعب"}</th>
-                        <th className="px-3 py-3 text-center text-xs font-semibold">لعب</th>
-                        <th className="px-3 py-3 text-center text-xs font-semibold">فوز</th>
-                        <th className="px-3 py-3 text-center text-xs font-semibold">تعادل</th>
-                        <th className="px-3 py-3 text-center text-xs font-semibold">خسارة</th>
-                        <th className="px-3 py-3 text-center text-xs font-semibold">+/-</th>
-                        <th className="px-3 py-3 text-center text-xs font-semibold">النقاط</th>
+                      <tr className="border-b border-border text-foreground bg-surface-2">
+                        <th className="px-3 py-3 text-right text-xs font-bold">#</th>
+                        <th className="px-3 py-3 text-right text-xs font-bold">{isTeamBased ? "الفريق" : "اللاعب"}</th>
+                        <th className="px-3 py-3 text-center text-xs font-bold">لعب</th>
+                        <th className="px-3 py-3 text-center text-xs font-bold text-success">فوز</th>
+                        <th className="px-3 py-3 text-center text-xs font-bold">تعادل</th>
+                        <th className="px-3 py-3 text-center text-xs font-bold text-danger">خسارة</th>
+                        <th className="px-3 py-3 text-center text-xs font-bold">+/-</th>
+                        <th className="px-3 py-3 text-center text-xs font-bold">النقاط</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1038,9 +1038,9 @@ export default async function TournamentHomePage(props: Props) {
                                   {members.length > 0 && <p className="text-xs text-muted">{members.join(" • ")}</p>}
                                 </td>
                                 <td className="px-3 py-3 text-center text-secondary">{standing.played}</td>
-                                <td className="px-3 py-3 text-center text-primary font-semibold">{standing.wins}</td>
+                                <td className="px-3 py-3 text-center text-success font-semibold">{standing.wins}</td>
                                 <td className="px-3 py-3 text-center text-secondary">{standing.draws}</td>
-                                <td className="px-3 py-3 text-center text-danger">{standing.losses}</td>
+                                <td className="px-3 py-3 text-center text-danger font-semibold">{standing.losses}</td>
                                 <td className="px-3 py-3 text-center text-secondary">
                                   {standing.goalDiff >= 0 ? "+" : ""}{standing.goalDiff}
                                 </td>
@@ -1057,9 +1057,9 @@ export default async function TournamentHomePage(props: Props) {
                                 </td>
                                 <td className="px-3 py-3 text-right font-semibold text-foreground">{standing.participant.name}</td>
                                 <td className="px-3 py-3 text-center text-secondary">{standing.played}</td>
-                                <td className="px-3 py-3 text-center text-primary font-semibold">{standing.wins}</td>
+                                <td className="px-3 py-3 text-center text-success font-semibold">{standing.wins}</td>
                                 <td className="px-3 py-3 text-center text-secondary">{standing.draws}</td>
-                                <td className="px-3 py-3 text-center text-danger">{standing.losses}</td>
+                                <td className="px-3 py-3 text-center text-danger font-semibold">{standing.losses}</td>
                                 <td className="px-3 py-3 text-center text-secondary">
                                   {standing.goalDiff >= 0 ? "+" : ""}{standing.goalDiff}
                                 </td>
