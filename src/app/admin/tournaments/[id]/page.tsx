@@ -521,20 +521,32 @@ export default async function TournamentDashboard(props: Props) {
                 المباريات ({matches.length})
               </h2>
               <div className="grid gap-3">
-                {matches.slice(0, 20).map((match) => (
-                  <MatchScoreEditor
-                    key={match.id}
-                    matchId={match.id}
-                    tournamentId={tournamentId}
-                    round={match.round ?? 1}
-                    homeName={match.home_name}
-                    awayName={match.away_name}
-                    homeScore={match.home_score}
-                    awayScore={match.away_score}
-                    status={match.status}
-                    onUpdateScore={updateMatchScore}
-                  />
-                ))}
+                {matches.slice(0, 20).map((match) => {
+                  // Get team members for display (only for team tournaments)
+                  const homeTeamMembers = isTeamTournament && match.home_team_id
+                    ? (teamMembersMap.get(match.home_team_id) || []).map(m => m.participantName)
+                    : [];
+                  const awayTeamMembers = isTeamTournament && match.away_team_id
+                    ? (teamMembersMap.get(match.away_team_id) || []).map(m => m.participantName)
+                    : [];
+                  
+                  return (
+                    <MatchScoreEditor
+                      key={match.id}
+                      matchId={match.id}
+                      tournamentId={tournamentId}
+                      round={match.round ?? 1}
+                      homeName={match.home_name}
+                      awayName={match.away_name}
+                      homeScore={match.home_score}
+                      awayScore={match.away_score}
+                      status={match.status}
+                      onUpdateScore={updateMatchScore}
+                      homeMembers={homeTeamMembers}
+                      awayMembers={awayTeamMembers}
+                    />
+                  );
+                })}
                 {matches.length > 20 && (
                   <p className="text-center text-muted py-2">
                     + {matches.length - 20} مباراة أخرى

@@ -4,6 +4,7 @@ import { Users, BarChart3, GitBranch, CalendarDays } from "lucide-react";
 import Card from "@/components/Card";
 import Container from "@/components/Container";
 import StatusBadge from "@/components/StatusBadge";
+import PageHeader from "@/components/PageHeader";
 import { getTournamentById, getTournamentBySlug, getParticipants } from "@/lib/data";
 import { isUuid, encodeSlug } from "@/lib/slug";
 
@@ -34,23 +35,13 @@ export default async function ParticipantsPage(props: Props) {
   return (
     <div className="min-h-screen bg-background">
       <Container>
-        <header className="mb-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <Link
-              href={`/t/${encodeSlug(tournament.slug)}`}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:opacity-90 mb-3"
-            >
-              ← {tournament.name}
-            </Link>
-            <h1 className="text-3xl font-black text-foreground inline-flex items-center gap-2">
-              <Users className="h-6 w-6 text-primary" />
-              المشاركون
-            </h1>
-          </div>
-          <StatusBadge status={tournament.status} />
-        </div>
-      </header>
+        <PageHeader
+          title="المشاركون"
+          icon={<Users className="h-6 w-6 text-primary" />}
+          backHref={`/t/${encodeSlug(tournament.slug)}`}
+          backText={tournament.name}
+          badge={<StatusBadge status={tournament.status} />}
+        />
 
       <div className="space-y-6">
         <Card>

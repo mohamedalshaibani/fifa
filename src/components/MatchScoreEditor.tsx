@@ -13,6 +13,10 @@ interface MatchScoreEditorProps {
   awayScore: number | null;
   status: string;
   onUpdateScore: (formData: FormData) => Promise<void>;
+  /** Team members for home team (for 2v2 display) */
+  homeMembers?: string[];
+  /** Team members for away team (for 2v2 display) */
+  awayMembers?: string[];
 }
 
 export default function MatchScoreEditor({
@@ -25,12 +29,16 @@ export default function MatchScoreEditor({
   awayScore,
   status,
   onUpdateScore,
+  homeMembers = [],
+  awayMembers = [],
 }: MatchScoreEditorProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [home, setHome] = useState<string>(homeScore?.toString() ?? '');
   const [away, setAway] = useState<string>(awayScore?.toString() ?? '');
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const isTeamMatch = homeMembers.length > 0 || awayMembers.length > 0;
 
   const handleSave = () => {
     setError(null);
@@ -77,38 +85,55 @@ export default function MatchScoreEditor({
 
   if (!isEditing) {
     return (
-      <div className="flex items-center justify-between p-3 rounded-lg bg-surface hover:bg-surface-alt transition-colors group">
-        <div className="flex items-center gap-4 flex-1">
-          <span className="font-bold text-foreground min-w-[80px] text-left">
-            {homeName || "TBD"}
-          </span>
-          <div className="flex items-center gap-2">
+      <div className="p-4 rounded-lg bg-surface hover:bg-surface-alt transition-colors group">
+        <div className="flex items-center justify-between">
+          {/* Home Team */}
+          <div className="flex-1 text-right">
+            <div className="font-bold text-foreground">{homeName || "TBD"}</div>
+            {isTeamMatch && homeMembers.length > 0 && (
+              <div className="text-xs text-muted mt-1">
+                {homeMembers.join(" • ")}
+              </div>
+            )}
+          </div>
+
+          {/* Score / VS */}
+          <div className="mx-4 flex flex-col items-center">
             {status === "completed" ? (
-              <span className="font-bold text-primary px-3 py-1 bg-primary/10 rounded">
+              <span className="font-black text-xl text-primary px-4 py-1 bg-primary/10 rounded-lg">
                 {homeScore ?? 0} - {awayScore ?? 0}
               </span>
             ) : (
-              <span className="text-muted px-3 py-1">vs</span>
+              <span className="text-muted font-bold px-4">vs</span>
             )}
           </div>
-          <span className="font-bold text-foreground min-w-[80px] text-right">
-            {awayName || "TBD"}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className={`text-xs px-2 py-1 rounded ${
-            status === "completed" ? "bg-success/20 text-success" : "bg-info/20 text-info"
-          }`}>
-            {status === "completed" ? "انتهت" : "قادمة"}
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsEditing(true)}
-            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-            title="تعديل النتيجة"
-          >
-            <Edit2 className="w-4 h-4" />
-          </button>
+
+          {/* Away Team */}
+          <div className="flex-1 text-left">
+            <div className="font-bold text-foreground">{awayName || "TBD"}</div>
+            {isTeamMatch && awayMembers.length > 0 && (
+              <div className="text-xs text-muted mt-1">
+                {awayMembers.join(" • ")}
+              </div>
+            )}
+          </div>
+
+          {/* Status & Edit */}
+          <div className="flex items-center gap-2 mr-4">
+            <span className={`text-xs px-2 py-1 rounded ${
+              status === "completed" ? "bg-success/20 text-success" : "bg-info/20 text-info"
+            }`}>
+              {status === "completed" ? "انتهت" : "قادمة"}
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+              title="تعديل النتيجة"
+            >
+              <Edit2 className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -117,8 +142,14 @@ export default function MatchScoreEditor({
   return (
     <div className="p-4 rounded-lg bg-surface border-2 border-primary/50 space-y-3">
       <div className="flex items-center justify-center gap-3">
-        <div className="flex-1 text-left">
-          <span className="font-bold text-foreground text-sm">{homeName || "TBD"}</span>
+        {/* Home Team */}
+        <div className="flex-1 text-right">
+          <div className="font-bold text-foreground text-sm">{homeName || "TBD"}</div>
+          {isTeamMatch && homeMembers.length > 0 && (
+            <div className="text-xs text-muted mt-0.5">
+              {homeMembers.join(" • ")}
+            </div>
+          )}
         </div>
         <input
           type="number"
@@ -139,8 +170,14 @@ export default function MatchScoreEditor({
           placeholder="0"
           disabled={isPending}
         />
-        <div className="flex-1 text-right">
-          <span className="font-bold text-foreground text-sm">{awayName || "TBD"}</span>
+        {/* Away Team */}
+        <div className="flex-1 text-left">
+          <div className="font-bold text-foreground text-sm">{awayName || "TBD"}</div>
+          {isTeamMatch && awayMembers.length > 0 && (
+            <div className="text-xs text-muted mt-0.5">
+              {awayMembers.join(" • ")}
+            </div>
+          )}
         </div>
       </div>
       

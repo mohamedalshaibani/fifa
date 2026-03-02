@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, Users } from "lucide-react";
+import { CalendarDays, Users, GitBranch } from "lucide-react";
 import Container from "@/components/Container";
 import StatusBadge from "@/components/StatusBadge";
+import PageHeader from "@/components/PageHeader";
 import { getTournamentById, getTournamentBySlug, getMatches, getParticipants, getTeams, getTeamMembersByTournament } from "@/lib/data";
 import { Match } from "@/lib/types";
 import { isUuid, encodeSlug } from "@/lib/slug";
@@ -66,30 +67,15 @@ export default async function BracketPage(props: Props) {
   return (
     <div className="min-h-screen bg-background">
       <Container>
-        {/* Broadcast TV Header */}
-        <header className="mb-8">
-        <div className="scoreboard mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="live-indicator">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                BRACKET
-              </div>
-              <h1 className="text-2xl font-black text-foreground">
-                {tournament.name} - شجرة المنافسة
-              </h1>
-            </div>
-            <StatusBadge status={tournament.status} />
-          </div>
-        </div>
-        
-        <Link
-          href={`/t/${encodeSlug(tournament.slug)}`}
-          className="text-primary hover:text-primary-dark transition-colors font-bold text-sm"
-        >
-          ← العودة للبطولة
-        </Link>
-      </header>
+        <PageHeader
+          title={`${tournament.name} - شجرة المنافسة`}
+          icon={<GitBranch className="h-6 w-6 text-primary" />}
+          backHref={`/t/${encodeSlug(tournament.slug)}`}
+          backText="العودة للبطولة"
+          badge={<StatusBadge status={tournament.status} />}
+          liveIndicator="BRACKET"
+          scoreboard
+        />
 
       {/* Broadcast TV Bracket */}
       <div className="space-y-8">
