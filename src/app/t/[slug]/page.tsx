@@ -695,15 +695,13 @@ export default async function TournamentHomePage(props: Props) {
 }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background scroll-smooth">
       <Container>
-      <div className="h-1 w-full bg-primary shadow-[0_0_18px_rgba(0,230,118,0.35)] rounded-full mb-6" />
       <div className="mb-8">
         <Link
           href="/tournaments"
           className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-primary mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
+        > <ArrowLeft className="w-4 h-4" />
           العودة للبطولات
         </Link>
 
@@ -873,24 +871,24 @@ export default async function TournamentHomePage(props: Props) {
         الأقسام
       </h2>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <NavTile 
-          href={`/t/${encodeSlug(tournament.slug)}/participants`}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-10">
+        <SectionAnchor 
+          href="#participants"
           title="المشاركون"
           description={`عرض قائمة ${isTeamBased ? "الفرق" : "اللاعبين"}`}
           icon={<Users className="w-6 h-6" />}
         />
         
-        <NavTile 
-          href={`/t/${encodeSlug(tournament.slug)}/schedule`}
+        <SectionAnchor 
+          href="#matches"
           title="جدول المباريات"
           description="تصفح المباريات القادمة والنتائج"
           icon={<CalendarDays className="w-6 h-6" />}
         />
 
         {tournament.type === "league" && (
-          <NavTile 
-            href={`/t/${encodeSlug(tournament.slug)}/standings`}
+          <SectionAnchor 
+            href="#standings"
             title="جدول الترتيب"
             description="متابعة النقاط والمراكز"
             icon={<BarChart3 className="w-6 h-6" />}
@@ -898,14 +896,300 @@ export default async function TournamentHomePage(props: Props) {
         )}
 
         {tournament.type === "knockout" && (
-          <NavTile 
-            href={`/t/${encodeSlug(tournament.slug)}/bracket`}
+          <SectionAnchor 
+            href="#bracket"
             title="شجرة البطولة"
             description="مسار التأهل للنهائي"
             icon={<GitBranch className="w-6 h-6" />}
           />
         )}
       </div>
+
+      {/* Participants Section */}
+      <section id="participants" className="mb-10 scroll-mt-8">
+        <Card>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <Users className="w-5 h-5 text-primary" />
+              {isTeamBased ? "الفرق" : "المشاركون"}
+            </h2>
+            <span className="button-secondary px-4 py-2 text-xs font-semibold">
+              {isTeamBased ? teams.length : participants.length} {isTeamBased ? "فريق" : "مشارك"}
+            </span>
+          </div>
+          {!isTeamBased ? (
+            participants.length === 0 ? (
+              <p className="text-sm text-muted">لا يوجد مشاركون بعد.</p>
+            ) : (
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {participants.map((participant, index) => (
+                  <li
+                    key={participant.id}
+                    className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 px-4 py-3 text-sm"
+                  >
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface border border-border text-xs font-bold text-primary">
+                      {index + 1}
+                    </span>
+                    <span className="font-semibold text-foreground">{participant.name}</span>
+                  </li>
+                ))}
+              </ul>
+            )
+          ) : teams.length === 0 ? (
+            <p className="text-sm text-muted">لا توجد فرق بعد.</p>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {teams.map((team) => (
+                <TeamCard
+                  key={team.id}
+                  teamId={team.id}
+                  tournamentId={tournament.id}
+                  teamName={team.name || "فريق"}
+                  members={teamMembersMap.get(team.id) || []}
+                />
+              ))}
+            </div>
+          )}
+        </Card>
+      </section>
+
+      {/* Matches Section */}
+      <section id="matches" className="mb-10 scroll-mt-8">
+        <Card>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+              <CalendarDays className="w-5 h-5 text-primary" />
+              جدول المباريات
+            </h2>
+            <span className="text-xs text-muted">{matches.length} مباراة</span>
+          </div>
+          {matches.length === 0 ? (
+            <p className="text-sm text-muted">لم يتم إنشاء مباريات بعد.</p>
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(groupByRound(matches))
+                .sort(([a], [b]) => Number(a) - Number(b))
+                .map(([round, roundMatches]) => (
+                  <div key={round}>
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3 className="text-sm font-bold uppercase tracking-widest text-muted">
+                        الجولة {round}
+                      </h3>
+                      <span className="text-xs text-muted">{roundMatches.length} مباراة</span>
+                    </div>
+                    <div className="grid gap-3">
+                      {roundMatches.map((match) => {
+                        const homeName = isTeamBased
+                          ? teamNameMap.get(match.home_team_id ?? "") ?? "-"
+                          : nameMap.get(match.home_participant_id ?? "") ?? "-";
+                        const awayName = isTeamBased
+                          ? teamNameMap.get(match.away_team_id ?? "") ?? "-"
+                          : nameMap.get(match.away_participant_id ?? "") ?? "-";
+                        const homeMembers =
+                          isTeamBased && match.home_team_id
+                            ? teamMembersMap.get(match.home_team_id) || []
+                            : [];
+                        const awayMembers =
+                          isTeamBased && match.away_team_id
+                            ? teamMembersMap.get(match.away_team_id) || []
+                            : [];
+
+                        return (
+                          <div
+                            key={match.id}
+                            className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface-2 px-4 py-4 text-sm"
+                          >
+                            <div className="flex-1 text-right">
+                              <p className="font-semibold text-foreground">{homeName}</p>
+                              {isTeamBased && homeMembers.length > 0 && (
+                                <p className="text-xs text-muted mt-1">{homeMembers.join(" • ")}</p>
+                              )}
+                            </div>
+                            <div className="min-w-[100px] text-center">
+                              {match.home_score !== null && match.away_score !== null ? (
+                                <div className="text-xl font-black text-primary">
+                                  {match.home_score} : {match.away_score}
+                                </div>
+                              ) : (
+                                <div className="text-sm text-muted">vs</div>
+                              )}
+                              <span className="text-xs text-muted mt-1 block">
+                                {match.status === "completed" ? "✓ انتهت" : "⏱ قادمة"}
+                              </span>
+                            </div>
+                            <div className="flex-1 text-left">
+                              <p className="font-semibold text-foreground">{awayName}</p>
+                              {isTeamBased && awayMembers.length > 0 && (
+                                <p className="text-xs text-muted mt-1">{awayMembers.join(" • ")}</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+        </Card>
+      </section>
+
+      {/* Standings Section - League only */}
+      {tournament.type === "league" && (
+        <section id="standings" className="mb-10 scroll-mt-8">
+          <Card>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-primary" />
+                جدول الترتيب
+              </h2>
+            </div>
+            {(() => {
+              const participantStandings = !isTeamBased ? computeStandings(participants, matches) : [];
+              const teamStandings = isTeamBased ? computeTeamStandings(teams, matches) : [];
+              const hasStandings = isTeamBased ? teamStandings.length > 0 : participantStandings.length > 0;
+              
+              if (!hasStandings) {
+                return <p className="text-sm text-muted">لا توجد بيانات ترتيب بعد.</p>;
+              }
+              
+              return (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border text-muted bg-surface-2">
+                        <th className="px-3 py-3 text-right text-xs font-semibold">#</th>
+                        <th className="px-3 py-3 text-right text-xs font-semibold">{isTeamBased ? "الفريق" : "اللاعب"}</th>
+                        <th className="px-3 py-3 text-center text-xs font-semibold">لعب</th>
+                        <th className="px-3 py-3 text-center text-xs font-semibold">فوز</th>
+                        <th className="px-3 py-3 text-center text-xs font-semibold">تعادل</th>
+                        <th className="px-3 py-3 text-center text-xs font-semibold">خسارة</th>
+                        <th className="px-3 py-3 text-center text-xs font-semibold">+/-</th>
+                        <th className="px-3 py-3 text-center text-xs font-semibold">النقاط</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {isTeamBased
+                        ? teamStandings.map((standing, index) => {
+                            const highlight = index === 0 ? "bg-primary/5" : index < 3 ? "bg-surface-2" : "";
+                            const members = teamMembersMap.get(standing.team.id) || [];
+                            return (
+                              <tr key={standing.team.id} className={`border-b border-border ${highlight}`}>
+                                <td className="px-3 py-3 text-right font-bold text-foreground">
+                                  {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
+                                </td>
+                                <td className="px-3 py-3 text-right">
+                                  <p className="font-semibold text-foreground">{standing.team.name}</p>
+                                  {members.length > 0 && <p className="text-xs text-muted">{members.join(" • ")}</p>}
+                                </td>
+                                <td className="px-3 py-3 text-center text-secondary">{standing.played}</td>
+                                <td className="px-3 py-3 text-center text-primary font-semibold">{standing.wins}</td>
+                                <td className="px-3 py-3 text-center text-secondary">{standing.draws}</td>
+                                <td className="px-3 py-3 text-center text-danger">{standing.losses}</td>
+                                <td className="px-3 py-3 text-center text-secondary">
+                                  {standing.goalDiff >= 0 ? "+" : ""}{standing.goalDiff}
+                                </td>
+                                <td className="px-3 py-3 text-center font-black text-primary">{standing.points}</td>
+                              </tr>
+                            );
+                          })
+                        : participantStandings.map((standing, index) => {
+                            const highlight = index === 0 ? "bg-primary/5" : index < 3 ? "bg-surface-2" : "";
+                            return (
+                              <tr key={standing.participant.id} className={`border-b border-border ${highlight}`}>
+                                <td className="px-3 py-3 text-right font-bold text-foreground">
+                                  {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
+                                </td>
+                                <td className="px-3 py-3 text-right font-semibold text-foreground">{standing.participant.name}</td>
+                                <td className="px-3 py-3 text-center text-secondary">{standing.played}</td>
+                                <td className="px-3 py-3 text-center text-primary font-semibold">{standing.wins}</td>
+                                <td className="px-3 py-3 text-center text-secondary">{standing.draws}</td>
+                                <td className="px-3 py-3 text-center text-danger">{standing.losses}</td>
+                                <td className="px-3 py-3 text-center text-secondary">
+                                  {standing.goalDiff >= 0 ? "+" : ""}{standing.goalDiff}
+                                </td>
+                                <td className="px-3 py-3 text-center font-black text-primary">{standing.points}</td>
+                              </tr>
+                            );
+                          })}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
+          </Card>
+        </section>
+      )}
+
+      {/* Bracket Section - Knockout only */}
+      {tournament.type === "knockout" && (
+        <section id="bracket" className="mb-10 scroll-mt-8">
+          <Card>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <GitBranch className="w-5 h-5 text-primary" />
+                شجرة البطولة
+              </h2>
+            </div>
+            {matches.length === 0 ? (
+              <p className="text-sm text-muted">لم تتم القرعة بعد.</p>
+            ) : (
+              <div className="space-y-6">
+                {Object.entries(groupByRound(matches))
+                  .sort(([a], [b]) => Number(a) - Number(b))
+                  .map(([round, roundMatches]) => (
+                    <div key={round}>
+                      <div className="mb-4">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-muted">
+                          {roundMatches.length === 1 ? "🏆 النهائي" : `الجولة ${round}`}
+                        </h3>
+                      </div>
+                      <div className="grid gap-3 md:grid-cols-2">
+                        {roundMatches.map((match) => {
+                          const homeName = isTeamBased
+                            ? teamNameMap.get(match.home_team_id ?? "") ?? "-"
+                            : nameMap.get(match.home_participant_id ?? "") ?? "-";
+                          const awayName = isTeamBased
+                            ? teamNameMap.get(match.away_team_id ?? "") ?? "-"
+                            : nameMap.get(match.away_participant_id ?? "") ?? "-";
+                          const homeMembers = isTeamBased && match.home_team_id ? teamMembersMap.get(match.home_team_id) || [] : [];
+                          const awayMembers = isTeamBased && match.away_team_id ? teamMembersMap.get(match.away_team_id) || [] : [];
+                          const isHomeWinner = isTeamBased
+                            ? match.winner_team_id === match.home_team_id
+                            : match.winner_participant_id === match.home_participant_id;
+                          const isAwayWinner = isTeamBased
+                            ? match.winner_team_id === match.away_team_id
+                            : match.winner_participant_id === match.away_participant_id;
+
+                          return (
+                            <div key={match.id} className="rounded-2xl border border-border bg-surface-2 p-4">
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <span className={isHomeWinner ? "font-bold text-foreground" : "text-secondary"}>{homeName}</span>
+                                    {isTeamBased && homeMembers.length > 0 && <p className="text-xs text-muted">{homeMembers.join(" • ")}</p>}
+                                  </div>
+                                  <span className="text-sm font-bold text-primary">{match.home_score ?? "—"}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <span className={isAwayWinner ? "font-bold text-foreground" : "text-secondary"}>{awayName}</span>
+                                    {isTeamBased && awayMembers.length > 0 && <p className="text-xs text-muted">{awayMembers.join(" • ")}</p>}
+                                  </div>
+                                  <span className="text-sm font-bold text-primary">{match.away_score ?? "—"}</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </Card>
+        </section>
+      )}
       </Container>
     </div>
   );
@@ -967,5 +1251,33 @@ function NavTile({
         </div>
       </Card>
     </Link>
+  );
+}
+
+function SectionAnchor({
+  href,
+  title,
+  description,
+  icon,
+}: {
+  href: string;
+  title: string;
+  description: string;
+  icon: ReactNode;
+}) {
+  return (
+    <a href={href} className="block group">
+      <Card hoverable className="h-full border-transparent hover:border-primary/30 bg-surface hover:bg-surface-2/80 transition-all">
+        <div className="flex items-start gap-4">
+          <div className="w-14 h-14 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-md border border-primary/60 group-hover:bg-primary-dark group-hover:border-primary/80 transition-colors">
+            {icon}
+          </div>
+          <div>
+            <h3 className="font-black text-lg text-foreground group-hover:text-foreground transition-colors">{title}</h3>
+            <p className="text-sm text-secondary mt-2">{description}</p>
+          </div>
+        </div>
+      </Card>
+    </a>
   );
 }
