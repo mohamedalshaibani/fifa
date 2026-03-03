@@ -4,15 +4,19 @@ import SportPageLayout from "@/components/SportPageLayout";
 import SportButton from "@/components/ui/SportButton";
 import SportCard from "@/components/ui/SportCard";
 import SportBadge from "@/components/ui/SportBadge";
-import { getAllTournaments, getParticipants, getMatches } from "@/lib/data";
+import { getAllTournaments, getParticipants, getMatches, computeUserStatsFromMatches, getUserTournamentActivities } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
-import { Users, Trophy, Flame, Target, Award, Zap, CheckCircle, Calendar, BarChart3 } from "lucide-react";
+import { Users, Trophy, Flame, Target, Award, Zap, CheckCircle, Calendar, BarChart3, Swords, TrendingUp, Minus, X as XIcon, CircleDot } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const tournaments = await getAllTournaments();
   const currentUser = await getCurrentUser();
+  
+  // Fetch user stats and activities if logged in
+  const userStats = currentUser ? await computeUserStatsFromMatches(currentUser.id) : null;
+  const userActivities = currentUser ? await getUserTournamentActivities(currentUser.id) : [];
   
   // Get participant and match counts for all tournaments
   const tournamentData = await Promise.all(
@@ -62,34 +66,197 @@ export default async function Home() {
   });
 
   const hasTournaments = activeTournaments.length > 0 || finishedTournaments.length > 0;
+  const hasPlayedMatches = userStats && userStats.matchesPlayed > 0;
 
   return (
     <SportPageLayout>
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-16 md:pt-20 lg:pt-24 pb-12">
         <Container className="relative z-10">
-          {/* Hero Header */}
-          <div className="text-center space-y-6 mb-16">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-primary leading-tight tracking-tight heading-tight">
-              <div>اختبر مهاراتك</div>
-              <div className="mt-4 text-secondary">
-                في أقوى البطولات
-              </div>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto font-medium">
-              انضم للبطولات الحية، واجه أفضل اللاعبين، وحقق البطولات
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Link href="/tournaments">
-                <SportButton variant="primary" size="lg" className="group">
-                  <Target className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                  تصفح البطولات
-                </SportButton>
-              </Link>
+          {/* Personalized Greeting for Logged-in Users */}
+          {currentUser ? (
+            <div className="text-center space-y-4 mb-10">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground leading-tight tracking-tight">
+                أهلاً {currentUser.displayName} 👋
+              </h1>
+              <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto font-medium">
+                جاهز للبطولات؟ خلّ نرجّع الحماس! 🔥
+              </p>
             </div>
-          </div>
+          ) : (
+            /* Default Hero for Non-Logged-in Users */
+            <div className="text-center space-y-6 mb-16">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-primary leading-tight tracking-tight heading-tight">
+                <div>اختبر مهاراتك</div>
+                <div className="mt-4 text-secondary">
+                  في أقوى البطولات
+                </div>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto font-medium">
+                انضم للبطولات الحية، واجه أفضل اللاعبين، وحقق البطولات
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <Link href="/tournaments">
+                  <SportButton variant="primary" size="lg" className="group">
+                    <Target className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    تصفح البطولات
+                  </SportButton>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* User Stats Section (Only for logged-in users) */}
+          {currentUser && (
+            <div className="mb-12">
+              {hasPlayedMatches ? (
+                /* Stats Cards */
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
+                  {/* Matches Played */}
+                  <SportCard padding="sm" variant="default" className="text-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-1">
+                        <Swords className="w-5 h-5 text-primary" />
+                      </div>
+                      <span className="text-2xl font-black text-foreground">{userStats.matchesPlayed}</span>
+                      <span className="text-xs text-muted font-medium">مباريات</span>
+                    </div>
+                  </SportCard>
+
+                  {/* Wins */}
+                  <SportCard padding="sm" variant="default" className="text-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-green-500/15 flex items-center justify-center mb-1">
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      </div>
+                      <span className="text-2xl font-black text-green-500">{userStats.wins}</span>
+                      <span className="text-xs text-muted font-medium">فوز</span>
+                    </div>
+                  </SportCard>
+
+                  {/* Draws */}
+                  <SportCard padding="sm" variant="default" className="text-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-yellow-500/15 flex items-center justify-center mb-1">
+                        <Minus className="w-5 h-5 text-yellow-500" />
+                      </div>
+                      <span className="text-2xl font-black text-yellow-600">{userStats.draws}</span>
+                      <span className="text-xs text-muted font-medium">تعادل</span>
+                    </div>
+                  </SportCard>
+
+                  {/* Losses */}
+                  <SportCard padding="sm" variant="default" className="text-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-red-500/15 flex items-center justify-center mb-1">
+                        <XIcon className="w-5 h-5 text-red-500" />
+                      </div>
+                      <span className="text-2xl font-black text-red-500">{userStats.losses}</span>
+                      <span className="text-xs text-muted font-medium">خسارة</span>
+                    </div>
+                  </SportCard>
+
+                  {/* Win Rate */}
+                  <SportCard padding="sm" variant="default" className="text-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-1">
+                        <TrendingUp className="w-5 h-5 text-primary" />
+                      </div>
+                      <span className="text-2xl font-black text-primary">{userStats.winRate}%</span>
+                      <span className="text-xs text-muted font-medium">نسبة الفوز</span>
+                    </div>
+                  </SportCard>
+
+                  {/* Goals */}
+                  <SportCard padding="sm" variant="default" className="text-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-10 h-10 rounded-xl bg-secondary/15 flex items-center justify-center mb-1">
+                        <CircleDot className="w-5 h-5 text-secondary" />
+                      </div>
+                      <span className="text-2xl font-black text-secondary">{userStats.goalsScored}</span>
+                      <span className="text-xs text-muted font-medium">أهداف</span>
+                    </div>
+                  </SportCard>
+                </div>
+              ) : (
+                /* No Matches Yet Message */
+                <SportCard padding="base" variant="default" className="text-center mb-8">
+                  <div className="py-4 space-y-3">
+                    <div className="text-4xl">⚽</div>
+                    <p className="text-foreground font-bold">لم تلعب أي مباريات بعد</p>
+                    <p className="text-sm text-muted">شارك في البطولات لتظهر إحصائياتك!</p>
+                  </div>
+                </SportCard>
+              )}
+
+              {/* My Activity Section */}
+              {userActivities.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                      <BarChart3 className="w-4 h-4 text-primary" />
+                    </div>
+                    <h2 className="text-lg font-bold text-foreground">نشاطي في البطولات</h2>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {userActivities.slice(0, 5).map((activity) => (
+                      <Link key={activity.tournamentId} href={`/t/${activity.tournamentSlug}`}>
+                        <SportCard padding="sm" hoverable variant="default" className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                          {/* Tournament Name & Status */}
+                          <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <Trophy className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-bold text-foreground truncate">{activity.tournamentName}</h3>
+                              {activity.teamName && (
+                                <p className="text-xs text-muted truncate">فريقي: {activity.teamName}</p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Status Badge */}
+                          <div className="flex items-center gap-3 flex-shrink-0">
+                            <SportBadge 
+                              variant={activity.status === "finished" ? "success" : activity.status === "running" ? "primary" : "warning"}
+                            >
+                              {activity.status === "finished" ? "منتهية" : 
+                               activity.status === "running" ? "جارية" : 
+                               "التسجيل"}
+                            </SportBadge>
+
+                            {/* W/D/L Summary */}
+                            {(activity.wins + activity.draws + activity.losses) > 0 && (
+                              <div className="flex items-center gap-2 text-xs font-bold">
+                                <span className="text-green-500">{activity.wins}ف</span>
+                                <span className="text-muted">-</span>
+                                <span className="text-yellow-600">{activity.draws}ت</span>
+                                <span className="text-muted">-</span>
+                                <span className="text-red-500">{activity.losses}خ</span>
+                              </div>
+                            )}
+                          </div>
+                        </SportCard>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* CTA for Logged-in Users */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/tournaments">
+                  <SportButton variant="primary" size="lg" className="group">
+                    <Flame className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    🔥 انضم لبطولة
+                  </SportButton>
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* No Tournaments at all */}
           {!hasTournaments && (
