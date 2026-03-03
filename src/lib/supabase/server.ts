@@ -24,9 +24,14 @@ export async function createClient() {
         return cookieStore.getAll();
       },
       setAll(cookiesToSet: CookieToSet[]) {
-        cookiesToSet.forEach(({ name, value, options }) =>
-          cookieStore.set(name, value, options)
-        );
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          );
+        } catch {
+          // setAll can fail in Server Components where cookies are read-only
+          // This is expected behavior and the refresh will be handled on subsequent requests
+        }
       },
     },
   });
