@@ -6,7 +6,7 @@ import SportCard from "@/components/ui/SportCard";
 import SportBadge from "@/components/ui/SportBadge";
 import { getAllTournaments, getParticipants, getMatches } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
-import { Users, Trophy, Flame, Target, Award, Zap, CheckCircle } from "lucide-react";
+import { Users, Trophy, Flame, Target, Award, Zap, CheckCircle, Calendar, BarChart3 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +31,16 @@ export default async function Home() {
     })
   );
 
-  // Filter active/upcoming tournaments (not finished)
+  // Separate active vs finished tournaments
   const activeTournaments = tournamentData.filter(
     (t) => t.tournament.status !== "finished"
   );
+  
+  const finishedTournaments = tournamentData.filter(
+    (t) => t.tournament.status === "finished"
+  );
 
-  // Sort by priority: running > registration_open > registration_closed > pending
+  // Sort active by priority: running > registration_open > registration_closed > pending
   const statusPriority: Record<string, number> = {
     running: 1,
     registration_open: 2,
@@ -49,6 +53,15 @@ export default async function Home() {
     const bPriority = statusPriority[b.tournament.status] ?? 99;
     return aPriority - bPriority;
   });
+
+  // Sort finished by most recent first
+  finishedTournaments.sort((a, b) => {
+    const dateA = new Date(a.tournament.created_at).getTime();
+    const dateB = new Date(b.tournament.created_at).getTime();
+    return dateB - dateA;
+  });
+
+  const hasTournaments = activeTournaments.length > 0 || finishedTournaments.length > 0;
 
   return (
     <SportPageLayout>
@@ -78,9 +91,8 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Tournaments Grid */}
-          {activeTournaments.length === 0 ? (
-            /* Empty State */
+          {/* No Tournaments at all */}
+          {!hasTournaments && (
             <div className="max-w-2xl mx-auto pb-12">
               <SportCard padding="lg" variant="elevated" className="text-center">
                 <div className="space-y-4">
@@ -94,126 +106,250 @@ export default async function Home() {
                 </div>
               </SportCard>
             </div>
-          ) : (
-            /* Tournament Cards Grid */
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 pb-16">
-              {activeTournaments.map(({ tournament, participantCount, matches, isUserRegistered }) => {
-                const completedMatches = matches.filter((m) => m.status === "completed").length;
-                const isRegistrationOpen = tournament.status === "registration_open";
-                const isRunning = tournament.status === "running";
+          )}
 
-                return (
-                  <Link
-                    key={tournament.id}
-                    href={`/t/${tournament.slug}`}
-                    className="group"
-                  >
-                    <SportCard
-                      padding="base"
-                      hoverable
-                      variant={isRunning ? "highlighted" : "default"}
-                      className={`h-full flex flex-col relative ${isRegistrationOpen ? "animate-attention-shake" : ""}`}
-                    >
-                      <div className="space-y-4 flex-1 flex flex-col">
-                        {/* Top badges bar */}
-                        <div className="flex items-center justify-between gap-2">
-                          <SportBadge 
-                            variant={isRunning ? "primary" : isRegistrationOpen ? "warning" : "info"}
-                            icon={isRunning ? <Zap className="w-3 h-3" /> : <Trophy className="w-3 h-3" />}
+          {/* Active/Current Tournaments Section */}
+          {hasTournaments && (
+            <div className="space-y-12 pb-16">
+              {/* Active Tournaments */}
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                    <Flame className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">البطولات الحالية</h2>
+                    <p className="text-sm text-muted">بطولات جارية أو مفتوحة للتسجيل</p>
+                  </div>
+                </div>
+
+                {activeTournaments.length === 0 ? (
+                  <SportCard padding="base" variant="default" className="text-center">
+                    <div className="py-6 space-y-2">
+                      <div className="text-4xl">🎯</div>
+                      <p className="text-muted font-medium">لا توجد بطولات حالية</p>
+                      <p className="text-sm text-muted">ترقب البطولات القادمة!</p>
+                    </div>
+                  </SportCard>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {activeTournaments.map(({ tournament, participantCount, matches, isUserRegistered }) => {
+                      const isRegistrationOpen = tournament.status === "registration_open";
+                      const isRunning = tournament.status === "running";
+
+                      return (
+                        <Link
+                          key={tournament.id}
+                          href={`/t/${tournament.slug}`}
+                          className="group"
+                        >
+                          <SportCard
+                            padding="base"
+                            hoverable
+                            variant={isRunning ? "highlighted" : "default"}
+                            className={`h-full flex flex-col relative ${isRegistrationOpen ? "animate-attention-shake" : ""}`}
                           >
-                            {tournament.status === "running" ? "🔴 جارية الآن" : 
-                             tournament.status === "registration_open" ? "🟡 التسجيل مفتوح" : 
-                             tournament.status === "registration_closed" ? "🟠 مغلقة" : "🟤 قادمة"}
-                          </SportBadge>
-                        </div>
+                            <div className="space-y-4 flex-1 flex flex-col">
+                              {/* Top badges bar */}
+                              <div className="flex items-center justify-between gap-2">
+                                <SportBadge 
+                                  variant={isRunning ? "primary" : isRegistrationOpen ? "warning" : "info"}
+                                  icon={isRunning ? <Zap className="w-3 h-3" /> : <Trophy className="w-3 h-3" />}
+                                >
+                                  {tournament.status === "running" ? "🔴 جارية الآن" : 
+                                   tournament.status === "registration_open" ? "🟡 التسجيل مفتوح" : 
+                                   tournament.status === "registration_closed" ? "🟠 مغلقة" : "🟤 قادمة"}
+                                </SportBadge>
+                              </div>
 
-                        {/* Tournament Name */}
-                        <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors">
-                          {tournament.name}
-                        </h3>
+                              {/* Tournament Name */}
+                              <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors">
+                                {tournament.name}
+                              </h3>
 
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-2 gap-3">
-                          {/* Participants */}
-                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
-                            <Users className="w-4 h-4 text-primary flex-shrink-0" />
-                            <div className="flex flex-col min-w-0">
-                              <span className="text-xs text-muted">مشاركون</span>
-                              <span className="text-lg font-bold text-primary">{participantCount}</span>
+                              {/* Stats Grid */}
+                              <div className="grid grid-cols-2 gap-3">
+                                {/* Participants */}
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
+                                  <Users className="w-4 h-4 text-primary flex-shrink-0" />
+                                  <div className="flex flex-col min-w-0">
+                                    <span className="text-xs text-muted">مشاركون</span>
+                                    <span className="text-lg font-bold text-primary">{participantCount}</span>
+                                  </div>
+                                </div>
+
+                                {/* Format */}
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/10 border border-secondary/20">
+                                  <Trophy className="w-4 h-4 text-secondary flex-shrink-0" />
+                                  <div className="flex flex-col min-w-0">
+                                    <span className="text-xs text-muted">النوع</span>
+                                    <span className="text-lg font-bold text-secondary">
+                                      {tournament.players_per_team === 1 ? "1v1" : "2v2"}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Tournament Type Badge */}
+                              <div className="flex items-center gap-2">
+                                <SportBadge variant="info" icon={tournament.type === "league" ? "🏆" : "⚡"}>
+                                  {tournament.type === "league" ? "دوري" : "خروج مباشر"}
+                                </SportBadge>
+                              </div>
+
+                              {/* CTA Button */}
+                              <div className="pt-2 mt-auto">
+                                {isUserRegistered ? (
+                                  <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-green-500/20 border border-green-500/40 text-green-500 font-bold text-sm">
+                                    <CheckCircle className="w-4 h-4" />
+                                    أنت مسجل في البطولة ✅
+                                  </div>
+                                ) : isRegistrationOpen ? (
+                                  <SportButton variant="primary" size="sm" className="w-full font-bold">
+                                    <Zap className="w-4 h-4" />
+                                    سجل الآن
+                                  </SportButton>
+                                ) : isRunning ? (
+                                  <SportButton
+                                    variant="secondary"
+                                    size="sm"
+                                    className="w-full font-bold"
+                                  >
+                                    <Flame className="w-4 h-4" />
+                                    شاهد الآن
+                                  </SportButton>
+                                ) : (
+                                  <SportButton
+                                    variant="ghost"
+                                    size="sm"
+                                    className="w-full font-bold"
+                                  >
+                                    <Award className="w-4 h-4" />
+                                    عرض التفاصيل
+                                  </SportButton>
+                                )}
+                              </div>
                             </div>
-                          </div>
 
-                          {/* Format */}
-                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/10 border border-secondary/20">
-                            <Trophy className="w-4 h-4 text-secondary flex-shrink-0" />
-                            <div className="flex flex-col min-w-0">
-                              <span className="text-xs text-muted">النوع</span>
-                              <span className="text-lg font-bold text-secondary">
-                                {tournament.players_per_team === 1 ? "1v1" : "2v2"}
-                              </span>
+                            {/* Closing Soon Badge */}
+                            {isRegistrationOpen && participantCount >= 12 && (
+                              <div className="absolute top-2 right-2 z-20">
+                                <div className="px-3 py-1 rounded-full bg-gradient-to-r from-secondary to-danger text-white text-xs font-extrabold shadow-lg animate-pulse">
+                                  🔥 قرب الإغلاق
+                                </div>
+                              </div>
+                            )}
+                          </SportCard>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Finished Tournaments */}
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center">
+                    <Trophy className="w-5 h-5 text-gold" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground">البطولات المنتهية</h2>
+                    <p className="text-sm text-muted">استعرض نتائج البطولات السابقة</p>
+                  </div>
+                </div>
+
+                {finishedTournaments.length === 0 ? (
+                  <SportCard padding="base" variant="default" className="text-center">
+                    <div className="py-6 space-y-2">
+                      <div className="text-4xl">📋</div>
+                      <p className="text-muted font-medium">لا توجد بطولات منتهية بعد</p>
+                    </div>
+                  </SportCard>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {finishedTournaments.map(({ tournament, participantCount, matches }) => {
+                      const completedMatches = matches.filter((m) => m.status === "completed").length;
+                      const totalGoals = matches.reduce((sum, m) => {
+                        return sum + (m.home_score ?? 0) + (m.away_score ?? 0);
+                      }, 0);
+
+                      return (
+                        <Link
+                          key={tournament.id}
+                          href={`/t/${tournament.slug}`}
+                          className="group"
+                        >
+                          <SportCard
+                            padding="base"
+                            hoverable
+                            variant="default"
+                            className="h-full flex flex-col"
+                          >
+                            <div className="space-y-4 flex-1 flex flex-col">
+                              {/* Finished Badge */}
+                              <div className="flex items-center justify-between gap-2">
+                                <SportBadge variant="success" icon={<CheckCircle className="w-3 h-3" />}>
+                                  ✅ منتهية
+                                </SportBadge>
+                                <SportBadge variant="info" icon={tournament.type === "league" ? "🏆" : "⚡"}>
+                                  {tournament.type === "league" ? "دوري" : "خروج مباشر"}
+                                </SportBadge>
+                              </div>
+
+                              {/* Tournament Name */}
+                              <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors">
+                                {tournament.name}
+                              </h3>
+
+                              {/* Stats Grid */}
+                              <div className="grid grid-cols-3 gap-2">
+                                {/* Participants */}
+                                <div className="flex flex-col items-center px-2 py-2 rounded-lg bg-surface-2 border border-border">
+                                  <Users className="w-4 h-4 text-muted mb-1" />
+                                  <span className="text-sm font-bold text-foreground">{participantCount}</span>
+                                  <span className="text-xs text-muted">لاعب</span>
+                                </div>
+
+                                {/* Matches */}
+                                <div className="flex flex-col items-center px-2 py-2 rounded-lg bg-surface-2 border border-border">
+                                  <Calendar className="w-4 h-4 text-muted mb-1" />
+                                  <span className="text-sm font-bold text-foreground">{completedMatches}</span>
+                                  <span className="text-xs text-muted">مباراة</span>
+                                </div>
+
+                                {/* Goals */}
+                                <div className="flex flex-col items-center px-2 py-2 rounded-lg bg-surface-2 border border-border">
+                                  <Target className="w-4 h-4 text-muted mb-1" />
+                                  <span className="text-sm font-bold text-foreground">{totalGoals}</span>
+                                  <span className="text-xs text-muted">هدف</span>
+                                </div>
+                              </div>
+
+                              {/* CTA Button */}
+                              <div className="pt-2 mt-auto">
+                                <SportButton
+                                  variant="ghost"
+                                  size="sm"
+                                  className="w-full font-bold"
+                                >
+                                  <BarChart3 className="w-4 h-4" />
+                                  عرض النتائج
+                                </SportButton>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-
-                        {/* Tournament Type Badge */}
-                        <div className="flex items-center gap-2">
-                          <SportBadge variant="info" icon={tournament.type === "league" ? "🏆" : "⚡"}>
-                            {tournament.type === "league" ? "دوري" : "خروج مباشر"}
-                          </SportBadge>
-                        </div>
-
-                        {/* CTA Button */}
-                        <div className="pt-2 mt-auto">
-                          {isUserRegistered ? (
-                            // User is already registered
-                            <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-green-500/20 border border-green-500/40 text-green-500 font-bold text-sm">
-                              <CheckCircle className="w-4 h-4" />
-                              أنت مسجل في البطولة ✅
-                            </div>
-                          ) : isRegistrationOpen ? (
-                            <SportButton variant="primary" size="sm" className="w-full font-bold">
-                              <Zap className="w-4 h-4" />
-                              سجل الآن
-                            </SportButton>
-                          ) : isRunning ? (
-                            <SportButton
-                              variant="secondary"
-                              size="sm"
-                              className="w-full font-bold"
-                            >
-                              <Flame className="w-4 h-4" />
-                              شاهد الآن
-                            </SportButton>
-                          ) : (
-                            <SportButton
-                              variant="ghost"
-                              size="sm"
-                              className="w-full font-bold"
-                            >
-                              <Award className="w-4 h-4" />
-                              عرض التفاصيل
-                            </SportButton>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Closing Soon Badge */}
-                      {isRegistrationOpen && participantCount >= 12 && (
-                        <div className="absolute top-2 right-2 z-20">
-                          <div className="px-3 py-1 rounded-full bg-gradient-to-r from-secondary to-danger text-white text-xs font-extrabold shadow-lg animate-pulse">
-                            🔥 قرب الإغلاق
-                          </div>
-                        </div>
-                      )}
-                    </SportCard>
-                  </Link>
-                );
-              })}
+                          </SportCard>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
           {/* View All Link */}
-          {activeTournaments.length > 0 && (
+          {hasTournaments && (
             <div className="text-center pb-12">
               <Link href="/tournaments">
                 <SportButton variant="secondary" size="lg" className="font-bold">
