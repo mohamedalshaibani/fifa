@@ -41,6 +41,15 @@ export default function AccountPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  
+  // User stats
+  const [stats, setStats] = useState<{
+    matchesPlayed: number;
+    wins: number;
+    draws: number;
+    losses: number;
+  }>({ matchesPlayed: 0, wins: 0, draws: 0, losses: 0 });
+  const [statsLoading, setStatsLoading] = useState(true);
 
   const supabase = createClient();
 
@@ -87,10 +96,24 @@ export default function AccountPage() {
           console.log("No avatars found in DB");
           setAvatars([]);
         }
+        
+        // Fetch user stats
+        try {
+          const statsResponse = await fetch("/api/user/stats");
+          if (statsResponse.ok) {
+            const statsData = await statsResponse.json();
+            setStats(statsData);
+          }
+        } catch (statsError) {
+          console.error("Error loading stats:", statsError);
+        } finally {
+          setStatsLoading(false);
+        }
       } catch (error) {
         console.error("Error loading data:", error);
         // On error, set empty avatars array
         setAvatars([]);
+        setStatsLoading(false);
       } finally {
         setLoading(false);
       }
@@ -212,6 +235,16 @@ export default function AccountPage() {
       <Container>
         <div className="max-w-4xl mx-auto space-y-6">
           
+          {/* Back Link - Top right in RTL */}
+          <div className="flex justify-start">
+            <Link href="/">
+              <SportButton variant="ghost" size="sm">
+                <ArrowRight className="w-4 h-4" />
+                العودة
+              </SportButton>
+            </Link>
+          </div>
+          
           {/* Header Card */}
           <SportCard padding="lg" variant="elevated">
             <div className="flex items-center gap-6">
@@ -243,14 +276,6 @@ export default function AccountPage() {
                 </h1>
                 <p className="text-muted text-sm md:text-base">{user?.email}</p>
               </div>
-              
-              {/* Back Link */}
-              <Link href="/">
-                <SportButton variant="ghost" size="sm">
-                  <ArrowRight className="w-4 h-4" />
-                  العودة
-                </SportButton>
-              </Link>
             </div>
           </SportCard>
 
@@ -416,25 +441,35 @@ export default function AccountPage() {
             {activeTab === "stats" && (
               <div className="space-y-6">
                 <h2 className="text-xl font-black text-foreground">إحصائياتي</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {[
-                    { label: "المباريات", value: "0", icon: "⚽", variant: "highlighted" as const },
-                    { label: "الانتصارات", value: "0", icon: "🏆", variant: "success" as const },
-                    { label: "التعادلات", value: "0", icon: "🤝", variant: "warning" as const },
-                    { label: "الخسائر", value: "0", icon: "😢", variant: "danger" as const },
-                  ].map((stat, i) => (
-                    <SportCard key={i} padding="base" variant={stat.variant}>
-                      <div className="text-center">
-                        <div className="text-3xl mb-2">{stat.icon}</div>
-                        <div className="text-2xl font-black text-foreground">{stat.value}</div>
-                        <div className="text-sm text-muted font-semibold">{stat.label}</div>
-                      </div>
-                    </SportCard>
-                  ))}
-                </div>
-                <p className="text-muted text-center text-sm">
-                  الإحصائيات قادمة قريباً...
-                </p>
+                {statsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="text-muted">جاري تحميل الإحصائيات...</div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[
+                        { label: "المباريات", value: stats.matchesPlayed.toString(), icon: "⚽", variant: "highlighted" as const },
+                        { label: "الانتصارات", value: stats.wins.toString(), icon: "🏆", variant: "success" as const },
+                        { label: "التعادلات", value: stats.draws.toString(), icon: "🤝", variant: "warning" as const },
+                        { label: "الخسائر", value: stats.losses.toString(), icon: "😢", variant: "danger" as const },
+                      ].map((stat, i) => (
+                        <SportCard key={i} padding="base" variant={stat.variant}>
+                          <div className="text-center">
+                            <div className="text-3xl mb-2">{stat.icon}</div>
+                            <div className="text-2xl font-black text-foreground">{stat.value}</div>
+                            <div className="text-sm text-muted font-semibold">{stat.label}</div>
+                          </div>
+                        </SportCard>
+                      ))}
+                    </div>
+                    {stats.matchesPlayed === 0 && (
+                      <p className="text-muted text-center text-sm">
+                        لم تلعب أي مباريات بعد. شارك في البطولات لتظهر إحصائياتك!
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
             )}
 
