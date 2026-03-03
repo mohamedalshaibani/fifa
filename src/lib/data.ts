@@ -617,132 +617,145 @@ export interface TournamentActivity {
 export async function computeUserStatsFromMatches(userId: string): Promise<ComputedUserStats> {
   try {
     const supabase = createAdminClient();
+    const processedMatchIds = new Set<string>();
     
-    // Get all participant IDs for this user across all tournaments
-    const { data: participations, error: partError } = await supabase
-      .from("participants")
-      .select("id, tournament_id, team_id")
-      .eq("user_id", userId);
-    
-    console.log("[computeUserStatsFromMatches] userId:", userId);
-    console.log("[computeUserStatsFromMatches] participations found:", participations?.length ?? 0);
-    
-    if (partError) {
-      console.error("[computeUserStatsFromMatches] Participation query error:", partError);
-      return { matchesPlayed: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, winRate: 0 };
-    }
-    
-    if (!participations || participations.length === 0) {
-      console.log("[computeUserStatsFromMatches] No participations found for user");
-      return { matchesPlayed: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, winRate: 0 };
-    }
-    
-    const participantIds = participations.map(p => p.id);
-    const teamIds = participations.map(p => p.team_id).filter(Boolean) as string[];
-    const tournamentIds = participations.map(p => p.tournament_id);
-    
-    console.log("[computeUserStatsFromMatches] participantIds:", participantIds);
-    console.log("[computeUserStatsFromMatches] teamIds:", teamIds);
-    console.log("[computeUserStatsFromMatches] tournamentIds:", tournamentIds);
-    
-    // Get all completed matches from tournaments where user participated
-    const { data: matchData, error: matchError } = await supabase
-      .from("matches")
-      .select(`
-        id,
-        tournament_id,
-        home_participant_id,
-        away_participant_id,
-        home_team_id,
-        away_team_id,
-        home_user_id,
-        away_user_id,
-        home_score,
-        away_score,
-        winner_participant_id,
-        winner_team_id,
-        winner_user_id,
-        status
-      `)
-      .in("tournament_id", tournamentIds)
-      .eq("status", "completed");
-    
-    console.log("[computeUserStatsFromMatches] Total completed matches in user's tournaments:", matchData?.length ?? 0);
-    
-    if (matchError) {
-      console.error("[computeUserStatsFromMatches] Match query error:", matchError);
-      return { matchesPlayed: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, winRate: 0 };
-    }
-    
-    // Filter matches where user participated (via participant_id, team_id, or direct user_id)
-    const userMatches = (matchData ?? []).filter(m => {
-      // Check if user is home or away via participant ID
-      const isHomeParticipant = m.home_participant_id && participantIds.includes(m.home_participant_id);
-      const isAwayParticipant = m.away_participant_id && participantIds.includes(m.away_participant_id);
-      
-      // Check if user is home or away via team ID (for team tournaments)
-      const isHomeTeam = m.home_team_id && teamIds.includes(m.home_team_id);
-      const isAwayTeam = m.away_team_id && teamIds.includes(m.away_team_id);
-      
-      // Check direct user ID match (for newer schema)
-      const isHomeUser = m.home_user_id === userId;
-      const isAwayUser = m.away_user_id === userId;
-      
-      const isUserMatch = isHomeParticipant || isAwayParticipant || isHomeTeam || isAwayTeam || isHomeUser || isAwayUser;
-      
-      if (!isUserMatch) {
-        console.log("[computeUserStatsFromMatches] Match filtered out:", {
-          matchId: m.id,
-          home_participant_id: m.home_participant_id,
-          away_participant_id: m.away_participant_id,
-          home_team_id: m.home_team_id,
-          away_team_id: m.away_team_id,
-          home_user_id: m.home_user_id,
-          away_user_id: m.away_user_id,
-          reason: "No matching participant/team/user ID"
-        });
-      }
-      
-      return isUserMatch;
-    });
-    
-    console.log("[computeUserStatsFromMatches] Matches where user participated:", userMatches.length);
-    
+    let matchesPlayed = 0;
     let wins = 0;
     let draws = 0;
     let losses = 0;
     let goalsScored = 0;
     let goalsConceded = 0;
+
+    console.log("[computeUserStatsFromMatches] Fetching stats for user:", userId);
+
+    // 1. Get ALL participant records for this user (across all tournaments)
+    const { data: participantData, error: pError } = await supabase
+      .from("participants")
+      .select("id, tournament_id, name")
+      .eq("user_id", userId);
     
-    for (const match of userMatches) {
-      // Determine if user was home or away
-      const isHome = 
-        (match.home_participant_id && participantIds.includes(match.home_participant_id)) ||
-        (match.home_team_id && teamIds.includes(match.home_team_id)) ||
-        (match.home_user_id === userId);
+    console.log("[computeUserStatsFromMatches] Participants found:", participantData?.length || 0, pError ? `Error: ${pError.message}` : "");
+    
+    const participantIds = (participantData || []).map(p => p.id);
+
+    // 2. Get team IDs where user is a member (via user_id directly)
+    const { data: teamMemberDataDirect, error: tmError1 } = await supabase
+      .from("team_members")
+      .select("team_id, participant_id")
+      .eq("user_id", userId);
+    
+    console.log("[computeUserStatsFromMatches] Team memberships (direct user_id):", teamMemberDataDirect?.length || 0, tmError1 ? `Error: ${tmError1.message}` : "");
+
+    // 3. Get team IDs where user is a member (via participant_id)
+    let teamMemberDataViaParticipant: { team_id: string; participant_id: string }[] = [];
+    if (participantIds.length > 0) {
+      const { data: tmData, error: tmError2 } = await supabase
+        .from("team_members")
+        .select("team_id, participant_id")
+        .in("participant_id", participantIds);
       
-      const myScore = isHome ? (match.home_score ?? 0) : (match.away_score ?? 0);
-      const oppScore = isHome ? (match.away_score ?? 0) : (match.home_score ?? 0);
-      
-      goalsScored += myScore;
-      goalsConceded += oppScore;
-      
-      // Determine result
-      const isWinner = 
-        (match.winner_participant_id && participantIds.includes(match.winner_participant_id)) ||
-        (match.winner_team_id && teamIds.includes(match.winner_team_id)) ||
-        (match.winner_user_id === userId);
-      
-      if (myScore === oppScore) {
-        draws++;
-      } else if (isWinner || myScore > oppScore) {
-        wins++;
-      } else {
-        losses++;
+      console.log("[computeUserStatsFromMatches] Team memberships (via participant):", tmData?.length || 0, tmError2 ? `Error: ${tmError2.message}` : "");
+      teamMemberDataViaParticipant = tmData || [];
+    }
+
+    // Combine and dedupe team IDs
+    const allTeamMemberships = [...(teamMemberDataDirect || []), ...teamMemberDataViaParticipant];
+    const teamIdsSet = new Set<string>();
+    allTeamMemberships.forEach(tm => {
+      if (tm.team_id) teamIdsSet.add(tm.team_id);
+    });
+    const teamIds = Array.from(teamIdsSet);
+    
+    console.log("[computeUserStatsFromMatches] Total unique team IDs:", teamIds.length);
+
+    // 4. Process INDIVIDUAL matches (1v1 - where user is directly a participant)
+    if (participantIds.length > 0) {
+      const { data: individualMatches, error: imError } = await supabase
+        .from("matches")
+        .select("*")
+        .eq("status", "completed")
+        .or(`home_participant_id.in.(${participantIds.join(",")}),away_participant_id.in.(${participantIds.join(",")})`);
+
+      console.log("[computeUserStatsFromMatches] Individual matches found:", individualMatches?.length || 0, imError ? `Error: ${imError.message}` : "");
+
+      if (individualMatches) {
+        for (const match of individualMatches) {
+          // Skip if this is a team match (has team IDs set)
+          if (match.home_team_id || match.away_team_id) continue;
+          if (processedMatchIds.has(match.id)) continue;
+          
+          const isHome = participantIds.includes(match.home_participant_id);
+          const isAway = participantIds.includes(match.away_participant_id);
+          
+          if (!isHome && !isAway) continue;
+          
+          processedMatchIds.add(match.id);
+          matchesPlayed++;
+          
+          const homeScore = match.home_score ?? 0;
+          const awayScore = match.away_score ?? 0;
+          
+          const myScore = isHome ? homeScore : awayScore;
+          const oppScore = isHome ? awayScore : homeScore;
+          goalsScored += myScore;
+          goalsConceded += oppScore;
+          
+          if (homeScore === awayScore) {
+            draws++;
+          } else if (isHome) {
+            if (homeScore > awayScore) wins++;
+            else losses++;
+          } else {
+            if (awayScore > homeScore) wins++;
+            else losses++;
+          }
+        }
       }
     }
-    
-    const matchesPlayed = userMatches.length;
+
+    // 5. Process TEAM matches (2v2 - where user's team participated)
+    if (teamIds.length > 0) {
+      const { data: teamMatches, error: tmError } = await supabase
+        .from("matches")
+        .select("*")
+        .eq("status", "completed")
+        .or(`home_team_id.in.(${teamIds.join(",")}),away_team_id.in.(${teamIds.join(",")})`);
+
+      console.log("[computeUserStatsFromMatches] Team matches found:", teamMatches?.length || 0, tmError ? `Error: ${tmError.message}` : "");
+
+      if (teamMatches) {
+        for (const match of teamMatches) {
+          if (processedMatchIds.has(match.id)) continue;
+          
+          const isHomeTeam = teamIds.includes(match.home_team_id);
+          const isAwayTeam = teamIds.includes(match.away_team_id);
+          
+          if (!isHomeTeam && !isAwayTeam) continue;
+          
+          processedMatchIds.add(match.id);
+          matchesPlayed++;
+          
+          const homeScore = match.home_score ?? 0;
+          const awayScore = match.away_score ?? 0;
+          
+          const myScore = isHomeTeam ? homeScore : awayScore;
+          const oppScore = isHomeTeam ? awayScore : homeScore;
+          goalsScored += myScore;
+          goalsConceded += oppScore;
+          
+          if (homeScore === awayScore) {
+            draws++;
+          } else if (isHomeTeam) {
+            if (homeScore > awayScore) wins++;
+            else losses++;
+          } else {
+            if (awayScore > homeScore) wins++;
+            else losses++;
+          }
+        }
+      }
+    }
+
     const winRate = matchesPlayed > 0 ? Math.round((wins / matchesPlayed) * 100) : 0;
     
     console.log("[computeUserStatsFromMatches] Final stats:", { matchesPlayed, wins, draws, losses, goalsScored, goalsConceded, winRate });
