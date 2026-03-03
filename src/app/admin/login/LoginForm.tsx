@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import SportInput from "@/components/ui/SportInput";
 import SportButton from "@/components/ui/SportButton";
@@ -9,6 +9,7 @@ import { Mail, Lock } from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +40,17 @@ export default function LoginForm() {
 
     const isAdmin = Boolean(adminRow?.user_id);
 
-    router.replace(isAdmin ? "/admin/tournaments" : "/account");
+    // Get returnTo from URL params (check both 'returnTo' and 'redirect'), fallback to home page
+    const returnTo = searchParams.get("returnTo") || searchParams.get("redirect");
+    
+    if (isAdmin) {
+      router.replace("/admin/tournaments");
+    } else if (returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")) {
+      // Validate returnTo is a safe internal path
+      router.replace(returnTo);
+    } else {
+      router.replace("/");
+    }
   };
 
   return (

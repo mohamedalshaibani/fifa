@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Container from "@/components/Container";
 import SportPageLayout from "@/components/SportPageLayout";
 import LoginForm from "@/app/admin/login/LoginForm";
@@ -27,7 +28,9 @@ export default function LoginPage() {
 
             {/* Login Card */}
             <SportCard padding="lg" variant="elevated">
-              <LoginForm />
+              <Suspense fallback={<div className="py-8 text-center text-muted">جاري التحميل...</div>}>
+                <LoginForm />
+              </Suspense>
               <div className="mt-6 text-center text-sm text-muted border-t border-border pt-6">
                 ليس لديك حساب؟{" "}
                 <Link

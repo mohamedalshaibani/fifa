@@ -31,6 +31,11 @@ export default function GlobalHeader({
   const router = useRouter();
   const pathname = usePathname();
 
+  // Build login URL with redirect to current page (unless already on auth pages)
+  const loginUrl = pathname && !pathname.startsWith("/auth") && !pathname.startsWith("/admin")
+    ? `/auth/login?redirect=${encodeURIComponent(pathname)}`
+    : "/auth/login";
+
   useEffect(() => {
     const supabase = createClient();
 
@@ -125,7 +130,7 @@ export default function GlobalHeader({
             {!user && (
               <>
                 <HeaderButton
-                  href="/auth/login"
+                  href={loginUrl}
                   variant="outline"
                   icon={LogIn}
                 >
@@ -196,7 +201,7 @@ export default function GlobalHeader({
             {!user && (
               <div className="flex flex-col gap-2">
                 <HeaderButton
-                  href="/auth/login"
+                  href={loginUrl}
                   onClick={() => setShowMobileMenu(false)}
                   variant="outline"
                   icon={LogIn}
