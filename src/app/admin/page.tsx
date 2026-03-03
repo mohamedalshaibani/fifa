@@ -25,7 +25,7 @@ export default async function AdminPage() {
     {
       icon: Users,
       label: "المستخدمون",
-      description: "إدارة الحسابات (قريباً)",
+      description: "إدارة الحسابات والصلاحيات",
       href: "/admin/users",
     },
     {
