@@ -4,59 +4,65 @@
    GLOBAL RESET - Safari + Chrome Normalized
    ============================================ */
 
-/* Complete button/input reset */
-button,
-input[type="button"],
-input[type="submit"],
-input[type="reset"],
-[role="button"] {
-  all: unset;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: 1;
-  text-align: center;
-  text-decoration: none;
-  vertical-align: middle;
-  box-sizing: border-box;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* 
+ * Button/input reset - NO display override!
+ * Let Tailwind handle display via utility classes.
+ * Using @layer base ensures Tailwind utilities take precedence.
+ */
+@layer base {
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  [role="button"] {
+    all: unset;
+    /* display intentionally NOT set - let Tailwind control it */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-/* Remove Safari inner shadow and spin buttons */
-button::-webkit-inner-spin-button,
-button::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button,
-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+  /* Remove Safari inner shadow and spin buttons */
+  button::-webkit-inner-spin-button,
+  button::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button,
+  input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
-/* Standardized focus state */
-button:focus,
-[role="button"]:focus {
-  outline: none;
-}
+  /* Standardized focus state */
+  button:focus,
+  [role="button"]:focus {
+    outline: none;
+  }
 
-button:focus-visible,
-[role="button"]:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 
-/* Disabled state */
-button:disabled,
-[role="button"][aria-disabled="true"] {
-  cursor: not-allowed;
-  opacity: 0.5;
+  /* Disabled state */
+  button:disabled,
+  [role="button"][aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
 :root {
