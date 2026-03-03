@@ -7,7 +7,7 @@ import SportCard from "@/components/ui/SportCard";
 import SportBadge from "@/components/ui/SportBadge";
 import { Users, Shield, ShieldOff, UserX, UserCheck, Trash2, Search as SearchIcon } from "lucide-react";
 import { getAllUsers, UserWithDetails } from "./actions";
-import { UsersTable } from "./UsersTable";
+import UsersTable from "./UsersTable";
 
 export const dynamic = "force-dynamic";
 

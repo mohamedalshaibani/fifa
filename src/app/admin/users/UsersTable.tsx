@@ -391,3 +391,5 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
     </div>
   );
 }
+
+export default UsersTable;
