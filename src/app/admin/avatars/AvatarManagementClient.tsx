@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import SportCard from "@/components/ui/SportCard";
+import SportButton from "@/components/ui/SportButton";
 import SafeImage from "@/components/SafeImage";
 import UploadAvatarForm from "./UploadAvatarForm";
 import AvatarCardActions from "./AvatarCardActions";
@@ -18,15 +19,16 @@ export default function AvatarManagementClient({ avatars, grouped }: AvatarManag
 
   return (
     <>
-      {/* Upload Button - Consistent with system primary buttons */}
+      {/* Upload Button - Using SportButton for consistent system styling */}
       <div className="flex justify-center">
-        <button
+        <SportButton
+          variant="primary"
+          size="base"
+          icon={Plus}
           onClick={() => setShowUploadModal(true)}
-          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 active:bg-primary/80 transition-colors shadow-md hover:shadow-lg"
         >
-          <Plus className="w-5 h-5" />
           إضافة صورة رمزية جديدة
-        </button>
+        </SportButton>
       </div>
 
       {/* Avatars Grid */}
