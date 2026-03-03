@@ -240,14 +240,27 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
                 type="button"
                 onClick={closeEdit}
                 disabled={isLoading}
-                className="flex-1 px-4 py-3 rounded-xl border border-border text-muted font-medium hover:bg-surface transition-colors disabled:opacity-50"
+                className="flex-1 rounded-xl font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
+                style={{
+                  height: 48,
+                  background: "#FFFFFF",
+                  color: "#374151",
+                  border: "1px solid #E5E7EB",
+                }}
               >
                 إلغاء
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 px-4 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 rounded-xl font-bold disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+                style={{
+                  height: 48,
+                  background: "linear-gradient(135deg, #005CFF 0%, #3385FF 100%)",
+                  color: "#FFFFFF",
+                  borderBottom: "2px solid #00E676",
+                  boxShadow: "0 4px 14px rgba(0, 92, 255, 0.35)",
+                }}
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -293,14 +306,26 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
                 setError(null);
               }}
               disabled={isLoading}
-              className="flex-1 px-4 py-3 rounded-xl border border-border text-muted font-medium hover:bg-surface transition-colors disabled:opacity-50"
+              className="flex-1 rounded-xl font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
+              style={{
+                height: 48,
+                background: "#FFFFFF",
+                color: "#374151",
+                border: "1px solid #E5E7EB",
+              }}
             >
               إلغاء
             </button>
             <button
               onClick={handleDelete}
               disabled={isLoading}
-              className="flex-1 px-4 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 rounded-xl font-bold disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+              style={{
+                height: 48,
+                background: "#DC2626",
+                color: "#FFFFFF",
+                boxShadow: "0 4px 14px rgba(220, 38, 38, 0.35)",
+              }}
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

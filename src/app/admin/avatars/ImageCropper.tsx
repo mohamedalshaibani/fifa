@@ -177,7 +177,14 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
           <button
             onClick={handleSave}
             disabled={isProcessing || !croppedAreaPixels}
-            className="flex-1 px-4 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 rounded-xl font-bold disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+            style={{
+              height: 48,
+              background: "linear-gradient(135deg, #005CFF 0%, #3385FF 100%)",
+              color: "#FFFFFF",
+              borderBottom: "2px solid #00E676",
+              boxShadow: "0 4px 14px rgba(0, 92, 255, 0.35)",
+            }}
           >
             {isProcessing ? (
               <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -191,7 +198,13 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
           <button
             onClick={onCancel}
             disabled={isProcessing}
-            className="flex-1 px-4 py-3 rounded-xl border border-border text-muted font-medium hover:bg-surface transition-colors disabled:opacity-50"
+            className="flex-1 rounded-xl font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
+            style={{
+              height: 48,
+              background: "#FFFFFF",
+              color: "#374151",
+              border: "1px solid #E5E7EB",
+            }}
           >
             إلغاء
           </button>
