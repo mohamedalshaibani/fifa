@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowLeft, Trophy, Users, CalendarDays, BarChart3, GitBranch, Target, LogIn, UserPlus } from "lucide-react";
+import BackLink from "@/components/BackLink";
+import { Trophy, Users, CalendarDays, BarChart3, GitBranch, Target, LogIn, UserPlus } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/Card";
 import Container from "@/components/Container";
@@ -186,13 +187,7 @@ export default async function TournamentHomePage(props: Props) {
       <div className="min-h-screen bg-background">
         <Container>
         <div className="mb-8">
-          <Link
-            href="/tournaments"
-            className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-primary mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            العودة للبطولات
-          </Link>
+          <BackLink href="/tournaments" text="العودة للبطولات" />
 
           <Card className="p-8 md:p-10 bg-surface border-border relative overflow-hidden">
             {/* Background decoration */}
@@ -667,12 +662,7 @@ export default async function TournamentHomePage(props: Props) {
     <div className="min-h-screen bg-background scroll-smooth">
       <Container>
       <div className="mb-8">
-        <Link
-          href="/tournaments"
-          className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-primary mb-6 transition-colors"
-        > <ArrowLeft className="w-4 h-4" />
-          العودة للبطولات
-        </Link>
+        <BackLink href="/tournaments" text="العودة للبطولات" />
 
         {/* Setup Banner for incomplete tournaments */}
         {setupStatus.isIncomplete && (

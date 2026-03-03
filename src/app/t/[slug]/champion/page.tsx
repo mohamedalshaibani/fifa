@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
-import { Trophy, Medal, ArrowLeft } from "lucide-react";
+import { Trophy, Medal } from "lucide-react";
 import Container from "@/components/Container";
+import BackLink from "@/components/BackLink";
 import StatusBadge from "@/components/StatusBadge";
 import { getTournamentBySlug, getTournamentById, getMatches, getParticipants, getTeams, getTeamMembersByTournament } from "@/lib/data";
 import { isUuid, encodeSlug } from "@/lib/slug";
@@ -164,14 +164,8 @@ export default async function ChampionPage(props: Props) {
       </div>
 
       {/* Navigation Back */}
-      <div className="text-center">
-        <Link
-          href={`/t/${encodeSlug(tournament.slug)}`}
-          className="inline-flex items-center gap-2 text-primary hover:text-primary-hover font-bold transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-          العودة إلى البطولة
-        </Link>
+      <div className="text-center mt-8">
+        <BackLink href={`/t/${encodeSlug(tournament.slug)}`} text="العودة إلى البطولة" />
       </div>
       </Container>
     </div>

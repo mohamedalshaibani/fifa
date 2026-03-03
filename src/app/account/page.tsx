@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
-import Link from "next/link";
 import Container from "@/components/Container";
+import BackLink from "@/components/BackLink";
 import SportCard from "@/components/ui/SportCard";
 import SportButton from "@/components/ui/SportButton";
 import AvatarSelector from "@/components/AvatarSelector";
-import { User, Palette, BarChart3, Lock, ArrowRight, Check } from "lucide-react";
+import { User, Palette, BarChart3, Lock, Check } from "lucide-react";
 import { Avatar as AvatarType } from "@/lib/types";
 
 type Tab = "profile" | "avatar" | "stats" | "password";
@@ -260,15 +260,8 @@ export default function AccountPage() {
       <Container>
         <div className="max-w-4xl mx-auto space-y-6">
           
-          {/* Back Link - Top right in RTL */}
-          <div className="flex justify-start">
-            <Link href="/">
-              <SportButton variant="ghost" size="sm">
-                <ArrowRight className="w-4 h-4" />
-                العودة
-              </SportButton>
-            </Link>
-          </div>
+          {/* Back Link - Unified styling */}
+          <BackLink href="/" text="العودة" />
           
           {/* Header Card */}
           <SportCard padding="lg" variant="elevated">

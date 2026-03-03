@@ -23,6 +23,15 @@ interface PageHeaderProps {
   scoreboard?: boolean;
 }
 
+/**
+ * Unified page header with consistent back link styling.
+ * 
+ * Back Link Standards:
+ * - Font: text-sm font-semibold
+ * - Color: text-primary hover:text-primary-hover
+ * - Icon: ArrowRight w-4 h-4
+ * - Spacing: mb-4 (space between back link and title)
+ */
 export default function PageHeader({
   title,
   icon,
@@ -34,9 +43,23 @@ export default function PageHeader({
   liveIndicator,
   scoreboard = false,
 }: PageHeaderProps) {
+  // Unified back link component used in both variants
+  const BackLinkElement = backHref ? (
+    <Link
+      href={backHref}
+      className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-hover transition-colors"
+    >
+      <ArrowRight className="w-4 h-4" />
+      <span>{backText}</span>
+    </Link>
+  ) : null;
+
   if (scoreboard) {
     return (
       <header className="mb-8 space-y-4">
+        {/* Back Link - Consistent styling */}
+        {BackLinkElement}
+
         {/* Scoreboard Style Header */}
         <div className="scoreboard">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -56,17 +79,6 @@ export default function PageHeader({
           </div>
         </div>
 
-        {/* Back Link - Separate row */}
-        {backHref && (
-          <Link
-            href={backHref}
-            className="inline-flex items-center gap-2 text-primary hover:text-primary-hover transition-colors font-bold text-sm"
-          >
-            <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-            <span>{backText}</span>
-          </Link>
-        )}
-
         {/* Subtitle */}
         {subtitle && (
           <p className="text-muted text-sm">{subtitle}</p>
@@ -82,16 +94,8 @@ export default function PageHeader({
 
   return (
     <header className="mb-8 space-y-4">
-      {/* Back Link - Top Row (RTL: right-aligned) */}
-      {backHref && (
-        <Link
-          href={backHref}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:opacity-90 transition-opacity"
-        >
-          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
-          <span>{backText}</span>
-        </Link>
-      )}
+      {/* Back Link - Consistent styling */}
+      {BackLinkElement}
 
       {/* Title Row */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

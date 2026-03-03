@@ -30,8 +30,8 @@ import { DeleteButton } from "@/components/DeleteButton";
 import ResetToStage from "@/components/ResetToStage";
 import { EditTeamNameButton } from "@/components/EditTeamNameButton";
 import MatchScoreEditor from "@/components/MatchScoreEditor";
+import BackLink from "@/components/BackLink";
 import { 
-  ArrowLeft, 
   Users, 
   Calendar, 
   Trophy,
@@ -111,11 +111,8 @@ export default async function TournamentDashboard(props: Props) {
     <AdminLayout>
       <Container>
         <div className="py-8 md:py-12 space-y-8">
-          {/* Back Button */}
-          <Link href="/admin/tournaments" className="inline-flex items-center gap-2 text-muted hover:text-primary transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            <span className="font-bold">العودة للبطولات</span>
-          </Link>
+          {/* Back Button - Unified styling */}
+          <BackLink href="/admin/tournaments" text="العودة للبطولات" />
 
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
