@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Container from "@/components/Container";
 import AdminLayout from "@/components/AdminLayout";
 import SportCard from "@/components/ui/SportCard";
+import SafeImage from "@/components/SafeImage";
 import { Image as ImageIcon, Settings } from "lucide-react";
 import { requireAdmin } from "@/lib/auth";
 import { getAvatars } from "@/lib/data";
@@ -95,14 +96,11 @@ export default async function AvatarsPage() {
                           className="group flex flex-col items-center p-3 rounded-xl bg-surface-2 hover:bg-surface border border-border/60 hover:border-primary/40 transition-all duration-200"
                         >
                           <div className="relative w-20 h-20 mb-2 rounded-xl overflow-hidden bg-white border border-border">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <SafeImage
                               src={avatar.image_url}
                               alt={avatar.display_name}
+                              fallbackSeed={avatar.id}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${avatar.id}`;
-                              }}
                             />
                           </div>
                           <div className="w-full text-center">
