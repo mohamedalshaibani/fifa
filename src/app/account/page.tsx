@@ -42,13 +42,38 @@ export default function AccountPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   
-  // User stats
+  // User stats (enhanced)
   const [stats, setStats] = useState<{
     matchesPlayed: number;
     wins: number;
     draws: number;
     losses: number;
-  }>({ matchesPlayed: 0, wins: 0, draws: 0, losses: 0 });
+    goalsScored: number;
+    goalsConceded: number;
+    winRate: number;
+    tournamentsParticipated: number;
+    tournaments: Array<{
+      tournamentId: string;
+      tournamentName: string;
+      tournamentStatus: string;
+      matchesPlayed: number;
+      wins: number;
+      draws: number;
+      losses: number;
+      goalsScored: number;
+      goalsConceded: number;
+    }>;
+  }>({ 
+    matchesPlayed: 0, 
+    wins: 0, 
+    draws: 0, 
+    losses: 0,
+    goalsScored: 0,
+    goalsConceded: 0,
+    winRate: 0,
+    tournamentsParticipated: 0,
+    tournaments: [],
+  });
   const [statsLoading, setStatsLoading] = useState(true);
 
   const supabase = createClient();
@@ -447,6 +472,7 @@ export default function AccountPage() {
                   </div>
                 ) : (
                   <>
+                    {/* Main Stats Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {[
                         { label: "المباريات", value: stats.matchesPlayed.toString(), icon: "⚽", variant: "highlighted" as const },
@@ -463,6 +489,75 @@ export default function AccountPage() {
                         </SportCard>
                       ))}
                     </div>
+
+                    {/* Additional Stats */}
+                    {stats.matchesPlayed > 0 && (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <SportCard padding="sm" variant="default">
+                          <div className="text-center">
+                            <div className="text-lg font-black text-primary">{stats.winRate}%</div>
+                            <div className="text-xs text-muted">نسبة الفوز</div>
+                          </div>
+                        </SportCard>
+                        <SportCard padding="sm" variant="default">
+                          <div className="text-center">
+                            <div className="text-lg font-black text-success">{stats.goalsScored}</div>
+                            <div className="text-xs text-muted">أهداف مسجلة</div>
+                          </div>
+                        </SportCard>
+                        <SportCard padding="sm" variant="default">
+                          <div className="text-center">
+                            <div className="text-lg font-black text-danger">{stats.goalsConceded}</div>
+                            <div className="text-xs text-muted">أهداف مستقبلة</div>
+                          </div>
+                        </SportCard>
+                        <SportCard padding="sm" variant="default">
+                          <div className="text-center">
+                            <div className="text-lg font-black text-foreground">{stats.tournamentsParticipated}</div>
+                            <div className="text-xs text-muted">البطولات</div>
+                          </div>
+                        </SportCard>
+                      </div>
+                    )}
+
+                    {/* Tournament History */}
+                    {stats.tournaments && stats.tournaments.length > 0 && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-bold text-foreground">سجل البطولات</h3>
+                        <div className="space-y-3">
+                          {stats.tournaments.map((t) => (
+                            <SportCard key={t.tournamentId} padding="base" variant="default">
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1 text-right">
+                                  <h4 className="font-bold text-foreground">{t.tournamentName}</h4>
+                                  <div className="flex items-center gap-3 text-sm text-muted mt-1">
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                      t.tournamentStatus === "finished" ? "bg-success/10 text-success" :
+                                      t.tournamentStatus === "in_progress" ? "bg-primary/10 text-primary" :
+                                      "bg-muted/10 text-muted"
+                                    }`}>
+                                      {t.tournamentStatus === "finished" ? "منتهية" :
+                                       t.tournamentStatus === "in_progress" ? "جارية" : "قادمة"}
+                                    </span>
+                                    <span>{t.matchesPlayed} مباريات</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm">
+                                  <span className="text-success font-bold">{t.wins}ف</span>
+                                  <span className="text-muted">/</span>
+                                  <span className="text-warning font-bold">{t.draws}ت</span>
+                                  <span className="text-muted">/</span>
+                                  <span className="text-danger font-bold">{t.losses}خ</span>
+                                  <span className="text-muted mr-2">|</span>
+                                  <span className="text-foreground font-semibold">{t.goalsScored}-{t.goalsConceded}</span>
+                                </div>
+                              </div>
+                            </SportCard>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {stats.matchesPlayed === 0 && (
                       <p className="text-muted text-center text-sm">
                         لم تلعب أي مباريات بعد. شارك في البطولات لتظهر إحصائياتك!
