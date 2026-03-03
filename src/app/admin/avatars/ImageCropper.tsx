@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
-import { X, ZoomIn, Check } from "lucide-react";
+import { X, Check } from "lucide-react";
 
 interface Point {
   x: number;
@@ -140,45 +140,60 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
 
         {/* Zoom Control */}
         <div className="px-5 py-4 border-t border-border bg-surface-2">
-          <div className="flex items-center gap-3">
-            <ZoomIn className="w-4 h-4 text-muted flex-shrink-0" />
+          <div className="flex items-center gap-3" dir="ltr">
+            <button
+              type="button"
+              onClick={() => setZoom(Math.max(1, zoom - 0.1))}
+              className="p-2 rounded-lg hover:bg-surface border border-border transition-colors"
+              disabled={zoom <= 1}
+            >
+              <span className="text-lg font-bold text-foreground">−</span>
+            </button>
             <input
               type="range"
               min={1}
               max={3}
-              step={0.1}
+              step={0.01}
               value={zoom}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1 h-2 bg-border rounded-lg appearance-none cursor-pointer accent-primary"
+              className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0"
             />
-            <span className="text-xs font-medium text-muted w-10 text-left">
+            <button
+              type="button"
+              onClick={() => setZoom(Math.min(3, zoom + 0.1))}
+              className="p-2 rounded-lg hover:bg-surface border border-border transition-colors"
+              disabled={zoom >= 3}
+            >
+              <span className="text-lg font-bold text-foreground">+</span>
+            </button>
+            <span className="text-xs font-bold text-foreground w-12 text-center bg-surface px-2 py-1 rounded">
               {Math.round(zoom * 100)}%
             </span>
           </div>
         </div>
 
-        {/* Actions */}
+        {/* Actions - RTL aware: Save on left (appears right), Cancel on right (appears left) */}
         <div className="flex gap-3 px-5 py-4 border-t border-border">
-          <button
-            onClick={onCancel}
-            disabled={isProcessing}
-            className="flex-1 px-4 py-2.5 rounded-lg border border-border text-muted font-medium hover:bg-surface transition-colors disabled:opacity-50"
-          >
-            إلغاء
-          </button>
           <button
             onClick={handleSave}
             disabled={isProcessing || !croppedAreaPixels}
-            className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isProcessing ? (
-              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <>
-                <Check className="w-4 h-4" />
-                تطبيق
+                <Check className="w-5 h-5" />
+                حفظ
               </>
             )}
+          </button>
+          <button
+            onClick={onCancel}
+            disabled={isProcessing}
+            className="flex-1 px-4 py-3 rounded-xl border border-border text-muted font-medium hover:bg-surface transition-colors disabled:opacity-50"
+          >
+            إلغاء
           </button>
         </div>
       </div>
