@@ -67,6 +67,7 @@ export default async function Home() {
 
   const hasTournaments = activeTournaments.length > 0 || finishedTournaments.length > 0;
   const hasPlayedMatches = userStats && userStats.matchesPlayed > 0;
+  const hasParticipations = userActivities.length > 0;
 
   return (
     <SportPageLayout>
@@ -180,8 +181,17 @@ export default async function Home() {
                     </div>
                   </SportCard>
                 </div>
+              ) : hasParticipations ? (
+                /* User is registered but no matches played yet */
+                <SportCard padding="base" variant="default" className="text-center mb-8">
+                  <div className="py-4 space-y-3">
+                    <div className="text-4xl">⏳</div>
+                    <p className="text-foreground font-bold">بانتظار المباريات</p>
+                    <p className="text-sm text-muted">أنت مسجل في البطولات! إحصائياتك ستظهر بعد أول مباراة.</p>
+                  </div>
+                </SportCard>
               ) : (
-                /* No Matches Yet Message */
+                /* No Matches and No Participations */
                 <SportCard padding="base" variant="default" className="text-center mb-8">
                   <div className="py-4 space-y-3">
                     <div className="text-4xl">⚽</div>
