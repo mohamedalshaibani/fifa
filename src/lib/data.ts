@@ -755,7 +755,12 @@ export async function getUserTournamentActivities(userId: string): Promise<Tourn
     const activities: TournamentActivity[] = [];
     
     for (const participation of participations) {
-      const tournament = participation.tournaments as { id: string; name: string; slug: string; status: string } | null;
+      // Supabase returns the joined relation - handle both array and object formats
+      const tournamentsData = participation.tournaments;
+      const tournament = Array.isArray(tournamentsData) 
+        ? tournamentsData[0] 
+        : tournamentsData;
+      
       if (!tournament) continue;
       
       // Get team name if team-based
