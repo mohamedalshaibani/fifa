@@ -111,17 +111,17 @@ export default function GlobalHeader({
         
         {/* LEFT ZONE: Actions (Desktop) / Hamburger (Mobile) */}
         <div className="flex items-center gap-3">
-          {/* Mobile Menu Toggle - md:hidden = ONLY visible on mobile */}
+          {/* Mobile Menu Toggle - lg:hidden = visible on mobile/tablet, hidden on desktop */}
           <button 
             onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-muted hover:text-foreground hover:bg-surface-alt transition-colors md:hidden"
+            className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-muted hover:text-foreground hover:bg-surface-alt transition-colors lg:hidden"
             aria-label="Toggle menu"
           >
             {showMobileMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-          {/* Desktop Navigation - hidden md:flex = ONLY visible on desktop */}
-          <nav className="hidden md:flex items-center gap-3">
+          {/* Desktop Navigation - hidden lg:flex = visible only on desktop */}
+          <nav className="hidden lg:flex items-center gap-3">
             {!user && (
               <>
                 <HeaderButton
@@ -188,7 +188,7 @@ export default function GlobalHeader({
 
       {/* Mobile Menu Overlay */}
       {showMobileMenu && (
-        <div className="md:hidden absolute top-16 left-0 w-full bg-surface border-b border-border p-4 shadow-xl animate-in slide-in-from-top-2">
+        <div className="lg:hidden absolute top-16 left-0 w-full bg-surface border-b border-border p-4 shadow-xl animate-in slide-in-from-top-2">
           <nav className="flex flex-col gap-2">
             {!user && (
               <div className="flex flex-col gap-2">
