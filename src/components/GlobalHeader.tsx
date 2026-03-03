@@ -142,13 +142,7 @@ export default function GlobalHeader({
             )}
             {user && (
               <>
-                <HeaderButton
-                  href="/account"
-                  variant="ghost"
-                  icon={User}
-                >
-                  حسابي
-                </HeaderButton>
+                {/* Logout first (leftmost in LTR container) */}
                 <HeaderButton
                   variant="danger"
                   icon={LogOut}
@@ -156,16 +150,25 @@ export default function GlobalHeader({
                 >
                   تسجيل خروج
                 </HeaderButton>
+                {/* Admin Panel second */}
+                {isAdmin && (
+                  <HeaderButton
+                    href="/admin"
+                    variant="primary"
+                    icon={Settings}
+                  >
+                    لوحة الأدمن
+                  </HeaderButton>
+                )}
+                {/* Account third (rightmost, closest to logo) */}
+                <HeaderButton
+                  href="/account"
+                  variant="ghost"
+                  icon={User}
+                >
+                  حسابي
+                </HeaderButton>
               </>
-            )}
-            {isAdmin && (
-              <HeaderButton
-                href="/admin"
-                variant="primary"
-                icon={Settings}
-              >
-                لوحة الأدمن
-              </HeaderButton>
             )}
           </nav>
         </div>
@@ -215,6 +218,7 @@ export default function GlobalHeader({
 
             {user && (
               <div className="flex flex-col gap-2">
+                {/* Account first (top of mobile menu) */}
                 <HeaderButton
                   href="/account"
                   onClick={() => setShowMobileMenu(false)}
@@ -224,6 +228,19 @@ export default function GlobalHeader({
                 >
                   حسابي
                 </HeaderButton>
+                {/* Admin Panel second */}
+                {isAdmin && (
+                  <HeaderButton
+                    href="/admin"
+                    onClick={() => setShowMobileMenu(false)}
+                    variant="primary"
+                    icon={Settings}
+                    fullWidth
+                  >
+                    لوحة الأدمن
+                  </HeaderButton>
+                )}
+                {/* Logout last (bottom - destructive action) */}
                 <HeaderButton
                   variant="danger"
                   icon={LogOut}
@@ -233,18 +250,6 @@ export default function GlobalHeader({
                   تسجيل خروج
                 </HeaderButton>
               </div>
-            )}
-
-            {isAdmin && (
-              <HeaderButton
-                href="/admin"
-                onClick={() => setShowMobileMenu(false)}
-                variant="primary"
-                icon={Settings}
-                fullWidth
-              >
-                لوحة الأدمن
-              </HeaderButton>
             )}
           </nav>
         </div>
