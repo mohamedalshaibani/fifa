@@ -104,62 +104,99 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
         </div>
       )}
 
-      {/* Filters Row */}
-      <SportCard padding="base">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Search */}
+      {/* Unified Filter Bar */}
+      <div className="bg-white border border-border rounded-2xl p-4 shadow-sm">
+        <div className="flex flex-col lg:flex-row items-stretch gap-3">
+          {/* Search Input - Takes most space */}
           <div className="flex-1 relative">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted pointer-events-none" />
             <input
               type="text"
-              placeholder="بحث بالاسم أو البريد..."
+              placeholder="بحث بالاسم أو البريد الإلكتروني..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pr-10 pl-4 py-2.5 rounded-xl bg-background border border-border text-foreground placeholder-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              className="w-full h-12 pr-12 pl-10 rounded-xl bg-surface border border-border text-foreground placeholder-muted text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted hover:text-foreground transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
           </div>
 
-          {/* Role Filter */}
-          <div className="relative">
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value as FilterRole)}
-              className="appearance-none px-4 py-2.5 pr-10 rounded-xl bg-background border border-border text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer min-w-[140px]"
-            >
-              <option value="all">جميع الأدوار</option>
-              <option value="admin">المشرفين</option>
-              <option value="user">المستخدمين</option>
-            </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
-          </div>
+          {/* Filter Dropdowns Container */}
+          <div className="flex items-center gap-3">
+            {/* Role Filter */}
+            <div className="relative">
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value as FilterRole)}
+                className={`appearance-none h-12 px-4 pr-4 pl-10 rounded-xl border text-sm font-semibold cursor-pointer transition-all min-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                  roleFilter !== "all" 
+                    ? "bg-primary/10 border-primary/30 text-primary" 
+                    : "bg-surface border-border text-foreground hover:border-primary/40"
+                }`}
+              >
+                <option value="all">جميع الأدوار</option>
+                <option value="admin">المشرفين</option>
+                <option value="user">المستخدمين</option>
+              </select>
+              <ChevronDown className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors ${
+                roleFilter !== "all" ? "text-primary" : "text-muted"
+              }`} />
+            </div>
 
-          {/* Status Filter */}
-          <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as FilterStatus)}
-              className="appearance-none px-4 py-2.5 pr-10 rounded-xl bg-background border border-border text-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer min-w-[140px]"
-            >
-              <option value="all">جميع الحالات</option>
-              <option value="active">نشط</option>
-              <option value="suspended">معلق</option>
-            </select>
-            <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+            {/* Status Filter */}
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as FilterStatus)}
+                className={`appearance-none h-12 px-4 pr-4 pl-10 rounded-xl border text-sm font-semibold cursor-pointer transition-all min-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                  statusFilter !== "all" 
+                    ? "bg-primary/10 border-primary/30 text-primary" 
+                    : "bg-surface border-border text-foreground hover:border-primary/40"
+                }`}
+              >
+                <option value="all">جميع الحالات</option>
+                <option value="active">نشط</option>
+                <option value="suspended">معلق</option>
+              </select>
+              <ChevronDown className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors ${
+                statusFilter !== "all" ? "text-primary" : "text-muted"
+              }`} />
+            </div>
+
+            {/* Reset Filters Button - Only show when filters are active */}
+            {(searchQuery || roleFilter !== "all" || statusFilter !== "all") && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setRoleFilter("all");
+                  setStatusFilter("all");
+                }}
+                className="h-12 px-4 rounded-xl bg-danger/10 text-danger text-sm font-semibold hover:bg-danger/20 transition-colors flex items-center gap-2 whitespace-nowrap"
+              >
+                <X className="w-4 h-4" />
+                مسح الفلاتر
+              </button>
+            )}
           </div>
         </div>
-      </SportCard>
+      </div>
 
-      {/* Results Count */}
-      <div className="text-sm text-muted">
-        عرض {filteredUsers.length} من {users.length} مستخدم
+      {/* Results Count - Integrated better */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted font-medium">
+          عرض <span className="text-foreground font-bold">{filteredUsers.length}</span> من <span className="text-foreground font-bold">{users.length}</span> مستخدم
+        </div>
+        {filteredUsers.length !== users.length && (
+          <div className="text-xs text-primary font-semibold">
+            تم تصفية النتائج
+          </div>
+        )}
       </div>
 
       {/* Users Table */}
