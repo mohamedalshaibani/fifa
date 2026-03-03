@@ -92,19 +92,35 @@ export default async function TournamentHomePage(props: Props) {
   const nameMap = new Map(participants.map((p) => [p.id, p.name]));
   const teamNameMap = new Map(teams.map((t) => [t.id, t.name]));
   
+  // Create a map from participant_id to user_id (for fallback when team_members.user_id is null)
+  const participantUserIdMap = new Map(participants.map((p) => [p.id, p.user_id]));
+  
   // Fetch user profiles for team members to get avatars
+  // Collect ALL possible user IDs: from team_members.user_id OR from participants via participant_id
   const teamMemberUserIds = teamMembers
-    .map(tm => tm.user_id)
+    .map(tm => {
+      // Try direct user_id first, then fallback to participant's user_id
+      if (tm.user_id) return tm.user_id;
+      if (tm.participant_id) return participantUserIdMap.get(tm.participant_id);
+      return null;
+    })
     .filter((id): id is string => !!id);
-  const userProfilesMap = await getUserProfiles(teamMemberUserIds);
+  
+  // Dedupe user IDs
+  const uniqueUserIds = [...new Set(teamMemberUserIds)];
+  const userProfilesMap = await getUserProfiles(uniqueUserIds);
   
   // Build team members map with avatar data
   const teamMembersMap = new Map<string, TeamMemberInfo[]>();
   for (const tm of teamMembers) {
     const members = teamMembersMap.get(tm.team_id) || [];
     const participantName = tm.participant_id ? (nameMap.get(tm.participant_id) || "—") : "—";
-    const userProfile = tm.user_id ? userProfilesMap.get(tm.user_id) : null;
+    
+    // Get user_id from team_member directly, or fallback to participant's user_id
+    const effectiveUserId = tm.user_id || (tm.participant_id ? participantUserIdMap.get(tm.participant_id) : null);
+    const userProfile = effectiveUserId ? userProfilesMap.get(effectiveUserId) : null;
     const profileName = userProfile ? `${userProfile.first_name} ${userProfile.last_name}`.trim() : null;
+    
     members.push({
       name: profileName || participantName,
       avatarUrl: userProfile?.avatar_url || null,
