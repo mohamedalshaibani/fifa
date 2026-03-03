@@ -2,11 +2,11 @@ import { redirect } from "next/navigation";
 import Container from "@/components/Container";
 import AdminLayout from "@/components/AdminLayout";
 import SportCard from "@/components/ui/SportCard";
-import SafeImage from "@/components/SafeImage";
 import { Image as ImageIcon, Settings } from "lucide-react";
 import { requireAdmin } from "@/lib/auth";
 import { getAvatars } from "@/lib/data";
 import type { Avatar } from "@/lib/types";
+import AvatarManagementClient from "./AvatarManagementClient";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +41,7 @@ export default async function AvatarsPage() {
               مكتبة الصور الرمزية
             </h1>
             <p className="text-lg text-muted max-w-2xl mx-auto">
-              استعرض صور اللاعبين المستخدمة في التسجيل والملفات الشخصية.
+              أضف وعدّل واحذف صور اللاعبين المستخدمة في التسجيل والملفات الشخصية.
             </p>
           </div>
 
@@ -76,49 +76,8 @@ export default async function AvatarsPage() {
             ))}
           </div>
 
-          {/* Avatars Grid */}
-          {avatars.length === 0 ? (
-            <SportCard padding="lg" variant="elevated" className="text-center">
-              <p className="text-lg text-muted">لا توجد صور رمزية بعد.</p>
-            </SportCard>
-          ) : (
-            <div className="space-y-8">
-              {Object.entries(grouped).map(([category, list]) => (
-                <div key={category} className="space-y-3">
-                  <h2 className="text-sm font-extrabold text-muted uppercase tracking-[0.2em] text-right">
-                    {category === "legend" ? "فئة الأساطير" : "فئة اللاعبين"}
-                  </h2>
-                  <SportCard padding="lg" variant="default" className="bg-white/80">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                      {list.map((avatar) => (
-                        <div
-                          key={avatar.id}
-                          className="group flex flex-col items-center p-3 rounded-xl bg-surface-2 hover:bg-surface border border-border/60 hover:border-primary/40 transition-all duration-200"
-                        >
-                          <div className="relative w-20 h-20 mb-2 rounded-xl overflow-hidden bg-white border border-border">
-                            <SafeImage
-                              src={avatar.image_url}
-                              alt={avatar.display_name}
-                              fallbackSeed={avatar.id}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="w-full text-center">
-                            <p className="text-xs font-bold text-foreground truncate">
-                              {avatar.name}
-                            </p>
-                            <p className="text-[10px] text-muted truncate">
-                              {avatar.display_name}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </SportCard>
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Client-side Management UI */}
+          <AvatarManagementClient avatars={avatars} grouped={grouped} />
         </div>
       </Container>
     </AdminLayout>
