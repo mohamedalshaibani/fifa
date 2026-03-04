@@ -193,11 +193,11 @@ export default function GlobalHeader({
             {user && (
               <>
                 <HeaderButton
-                  variant="danger"
-                  icon={LogOut}
-                  onClick={handleLogout}
+                  href="/account"
+                  variant="ghost"
+                  icon={User}
                 >
-                  {t("header.logout")}
+                  {t("header.myAccount")}
                 </HeaderButton>
                 {isAdmin && (
                   <HeaderButton
@@ -209,11 +209,11 @@ export default function GlobalHeader({
                   </HeaderButton>
                 )}
                 <HeaderButton
-                  href="/account"
-                  variant="ghost"
-                  icon={User}
+                  variant="danger"
+                  icon={LogOut}
+                  onClick={handleLogout}
                 >
-                  {t("header.myAccount")}
+                  {t("header.logout")}
                 </HeaderButton>
               </>
             )}
