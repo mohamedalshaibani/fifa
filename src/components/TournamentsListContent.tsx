@@ -156,19 +156,19 @@ export function TournamentsListContent({ tournaments, isLoggedIn }: TournamentsL
                           </div>
                         ) : isRegistrationOpen ? (
                           /* Registration open: Register Now */
-                          <SportButton variant="primary" size="sm" className="w-full font-bold">
+                          <SportButton variant="primary" size="sm" fullWidth className="font-bold">
                             <Zap className="w-4 h-4" />
                             {t("home.registerNow")}
                           </SportButton>
                         ) : isRunning ? (
                           /* Running: Watch Now */
-                          <SportButton variant="secondary" size="sm" className="w-full font-bold">
+                          <SportButton variant="secondary" size="sm" fullWidth className="font-bold">
                             <Flame className="w-4 h-4" />
                             {t("home.watchNow")}
                           </SportButton>
                         ) : (
                           /* Default: View Details */
-                          <SportButton variant="ghost" size="sm" className="w-full font-bold">
+                          <SportButton variant="ghost" size="sm" fullWidth className="font-bold">
                             <Award className="w-4 h-4" />
                             {t("home.viewDetails")}
                           </SportButton>
