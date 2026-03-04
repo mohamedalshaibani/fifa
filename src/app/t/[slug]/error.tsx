@@ -29,22 +29,20 @@ export default function Error({
           نعتذر، حدث خطأ أثناء تحميل الصفحة.
         </p>
         
-        {/* Show error details in development */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="text-left p-4 bg-danger/10 rounded-lg border border-danger/30 overflow-auto">
-            <p className="text-xs font-mono text-danger mb-2">
-              <strong>Error:</strong> {error.name}
+        {/* Always show error details for debugging */}
+        <div className="text-left p-4 bg-danger/10 rounded-lg border border-danger/30 overflow-auto max-h-48">
+          <p className="text-xs font-mono text-danger mb-2 break-all">
+            <strong>Error:</strong> {error.name || "Unknown"}
+          </p>
+          <p className="text-xs font-mono text-danger mb-2 break-all">
+            <strong>Message:</strong> {error.message || "No message"}
+          </p>
+          {error.digest && (
+            <p className="text-xs font-mono text-danger break-all">
+              <strong>Digest:</strong> {error.digest}
             </p>
-            <p className="text-xs font-mono text-danger mb-2">
-              <strong>Message:</strong> {error.message}
-            </p>
-            {error.digest && (
-              <p className="text-xs font-mono text-danger">
-                <strong>Digest:</strong> {error.digest}
-              </p>
-            )}
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button onClick={reset}>
