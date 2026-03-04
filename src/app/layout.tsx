@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Cairo } from "next/font/google";
 import "./globals.css";
 import GlobalHeader from "@/components/GlobalHeader";
+import Providers from "./providers";
 
 const cairo = Cairo({
   variable: "--font-cairo",
@@ -14,8 +15,8 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "بطولات فيفا",
-  description: "منصة بطولات فيفا - تجربة تنافسية احترافية",
+  title: "بطولات فيفا | FIFA Tournaments",
+  description: "منصة بطولات فيفا - تجربة تنافسية احترافية | FIFA Tournaments Platform",
 };
 
 export default function RootLayout({
@@ -23,13 +24,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Default to Arabic RTL, client-side JS will update based on user preference
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body
         className={`${cairo.variable} font-cairo min-h-screen antialiased bg-gradient-to-b from-[#E8DDD2] via-[#FFFFFF] to-[#D4E5F7] text-foreground`}
       >
-        <GlobalHeader />
-        {children}
+        <Providers>
+          <GlobalHeader />
+          {children}
+        </Providers>
       </body>
     </html>
   );

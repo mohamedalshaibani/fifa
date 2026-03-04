@@ -5,6 +5,7 @@ import LoginForm from "@/app/admin/login/LoginForm";
 import Link from "next/link";
 import SportCard from "@/components/ui/SportCard";
 import { Lock } from "lucide-react";
+import { T } from "@/components/T";
 
 export default function LoginPage() {
   return (
@@ -19,25 +20,25 @@ export default function LoginPage() {
               </div>
               
               <h1 className="text-3xl md:text-4xl font-black text-primary">
-                تسجيل الدخول
+                <T k="auth.loginTitle" />
               </h1>
               <p className="text-lg text-muted">
-                ادخل إلى حسابك والبدء بالمنافسة
+                <T k="auth.loginTitle" />
               </p>
             </div>
 
             {/* Login Card */}
             <SportCard padding="lg" variant="elevated">
-              <Suspense fallback={<div className="py-8 text-center text-muted">جاري التحميل...</div>}>
+              <Suspense fallback={<div className="py-8 text-center text-muted"><T k="common.loading" /></div>}>
                 <LoginForm />
               </Suspense>
               <div className="mt-6 text-center text-sm text-muted border-t border-border pt-6">
-                ليس لديك حساب؟{" "}
+                <T k="auth.noAccount" />{" "}
                 <Link
                   href="/auth/register"
                   className="text-secondary font-bold hover:text-secondary-light transition-colors"
                 >
-                  تسجيل جديد
+                  <T k="auth.createAccount" />
                 </Link>
               </div>
             </SportCard>

@@ -3,6 +3,7 @@
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/lib/i18n";
 
 interface RegisterButtonProps {
   tournamentId: string;
@@ -18,6 +19,7 @@ export default function RegisterButton({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { t } = useLanguage();
 
   const handleSubmit = () => {
     setError(null);
@@ -41,7 +43,7 @@ export default function RegisterButton({
         }
       } catch (err) {
         console.error("Registration error:", err);
-        setError("حدث خطأ أثناء التسجيل");
+        setError(t("common.error"));
       }
     });
   };
@@ -54,7 +56,7 @@ export default function RegisterButton({
         onClick={handleSubmit}
         disabled={isPending}
       >
-        {isPending ? "جاري التسجيل..." : "سجّلني في البطولة 🎮"}
+        {isPending ? t("registration.registering") : t("registration.registerMe")} 🎮
       </Button>
       {error && (
         <p className="text-sm text-danger mt-2">{error}</p>

@@ -8,7 +8,8 @@ import {
   Trophy, LogOut, User, Settings, Menu, X, LogIn, UserPlus
 } from "lucide-react";
 import HeaderButton from "@/components/HeaderButton";
-import SportButton from "@/components/ui/SportButton";
+import LanguageToggle from "@/components/LanguageToggle";
+import { useLanguage } from "@/lib/i18n";
 
 type HeaderUser = {
   id: string;
@@ -30,6 +31,7 @@ export default function GlobalHeader({
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const { t, isRTL } = useLanguage();
 
   // Build login URL with redirect to current page (unless already on auth pages)
   const loginUrl = pathname && !pathname.startsWith("/auth") && !pathname.startsWith("/admin")
@@ -147,6 +149,9 @@ export default function GlobalHeader({
 
             {/* Desktop Navigation - hidden lg:flex = visible only on desktop */}
             <nav className="hidden lg:flex items-center gap-3">
+              {/* Language Toggle */}
+              <LanguageToggle />
+              
               {!user && (
               <>
                 <HeaderButton
@@ -154,14 +159,14 @@ export default function GlobalHeader({
                   variant="outline"
                   icon={LogIn}
                 >
-                  دخول
+                  {t("header.login")}
                 </HeaderButton>
                 <HeaderButton
                   href="/auth/register"
                   variant="secondary"
                   icon={UserPlus}
                 >
-                  تسجيل
+                  {t("header.register")}
                 </HeaderButton>
               </>
             )}
@@ -173,7 +178,7 @@ export default function GlobalHeader({
                   icon={LogOut}
                   onClick={handleLogout}
                 >
-                  تسجيل خروج
+                  {t("header.logout")}
                 </HeaderButton>
                 {/* Admin Panel second */}
                 {isAdmin && (
@@ -182,7 +187,7 @@ export default function GlobalHeader({
                     variant="primary"
                     icon={Settings}
                   >
-                    لوحة الأدمن
+                    {t("header.adminPanel")}
                   </HeaderButton>
                 )}
                 {/* Account third (rightmost, closest to logo) */}
@@ -191,7 +196,7 @@ export default function GlobalHeader({
                   variant="ghost"
                   icon={User}
                 >
-                  حسابي
+                  {t("header.myAccount")}
                 </HeaderButton>
               </>
             )}
@@ -199,14 +204,14 @@ export default function GlobalHeader({
         </div>
 
         {/* RIGHT ZONE: Logo/Brand - Always visible */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-3 transition-opacity hover:opacity-90">
+        <Link href="/" className={`flex items-center gap-2 sm:gap-3 transition-opacity hover:opacity-90 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
           {/* Text - Responsive: smaller on mobile, full on desktop */}
-          <div className="flex flex-col items-end">
+          <div className={`flex flex-col ${isRTL ? 'items-end' : 'items-start'}`}>
             <h1 className="text-sm sm:text-lg font-black leading-none heading-tight text-foreground">
-              بطولات <span className="text-primary">فيفا</span>
+              {t("header.platformName")}
             </h1>
             <span className="text-[8px] xs:text-[9px] sm:text-[11px] font-semibold text-muted mt-0.5 sm:mt-1">
-              منصة تحديات الأبطال
+              {t("header.platformSubtitle")}
             </span>
           </div>
           {/* Logo Icon */}
@@ -231,24 +236,29 @@ export default function GlobalHeader({
         <div className="fixed top-16 left-0 right-0 z-[70] lg:hidden overflow-y-auto max-h-[calc(100vh-4rem)]">
           <div className="bg-white border-b border-border shadow-2xl animate-in slide-in-from-top-2 duration-200">
             {/* Close button row */}
-            <div className="container-responsive pt-4 pb-2 flex justify-start">
+            <div className={`container-responsive pt-4 pb-2 flex ${isRTL ? 'justify-start' : 'justify-end'}`}>
               <button
                 onClick={() => setShowMobileMenu(false)}
                 className="flex items-center gap-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
-                aria-label="إغلاق القائمة"
+                aria-label={t("common.close")}
               >
                 <X className="h-5 w-5" />
-                <span>إغلاق</span>
+                <span>{t("common.close")}</span>
               </button>
             </div>
             
             <nav className="container-responsive pb-6 flex flex-col gap-3">
+              {/* Language Toggle in Mobile Menu */}
+              <div className="pb-3 mb-2 border-b border-border">
+                <LanguageToggle />
+              </div>
+              
               {/* User greeting if logged in */}
               {user && (
                 <div className="pb-4 mb-2 border-b border-border">
-                  <p className="text-sm text-muted">مرحباً،</p>
+                  <p className="text-sm text-muted">{t("header.welcome")}</p>
                   <p className="text-lg font-bold text-foreground">
-                    {user.firstName || user.email?.split("@")[0] || "مستخدم"}
+                    {user.firstName || user.email?.split("@")[0] || "User"}
                   </p>
                 </div>
               )}
@@ -262,7 +272,7 @@ export default function GlobalHeader({
                     icon={LogIn}
                     fullWidth
                   >
-                    تسجيل الدخول
+                    {t("header.login")}
                   </HeaderButton>
                   <HeaderButton
                     href="/auth/register"
@@ -271,7 +281,7 @@ export default function GlobalHeader({
                     icon={UserPlus}
                     fullWidth
                   >
-                    إنشاء حساب جديد
+                    {t("header.register")}
                   </HeaderButton>
                 </>
               )}
@@ -286,7 +296,7 @@ export default function GlobalHeader({
                     icon={User}
                     fullWidth
                   >
-                    حسابي
+                    {t("header.myAccount")}
                   </HeaderButton>
                   
                   {/* Admin Panel */}
@@ -298,7 +308,7 @@ export default function GlobalHeader({
                       icon={Settings}
                       fullWidth
                     >
-                      لوحة الإدارة
+                      {t("header.adminPanel")}
                     </HeaderButton>
                   )}
                   
@@ -312,7 +322,7 @@ export default function GlobalHeader({
                     onClick={handleLogout}
                     fullWidth
                   >
-                    تسجيل الخروج
+                    {t("header.logout")}
                   </HeaderButton>
                 </>
               )}
