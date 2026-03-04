@@ -37,11 +37,13 @@ export async function createTournament(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const playersPerTeam = parseInt(String(formData.get("players_per_team") ?? "1"));
   const startDateRaw = String(formData.get("start_date") ?? "").trim();
+  const tournamentType = String(formData.get("tournament_type") ?? "").trim();
   const teamFormationMode = playersPerTeam === 2 
     ? String(formData.get("team_formation_mode") ?? "")
     : null;
   
   if (!name || ![1, 2].includes(playersPerTeam) || !startDateRaw) return;
+  if (!tournamentType || !["league", "knockout"].includes(tournamentType)) return;
   if (playersPerTeam === 2 && !teamFormationMode) return;
   if (teamFormationMode && !["preformed", "random_draw"].includes(teamFormationMode)) return;
   
@@ -68,6 +70,7 @@ export async function createTournament(formData: FormData) {
   const { data, error } = await supabase.from("tournaments").insert({
     name,
     slug,
+    type: tournamentType,
     status: "registration_open",
     allow_public_registration: true,
     players_per_team: playersPerTeam,

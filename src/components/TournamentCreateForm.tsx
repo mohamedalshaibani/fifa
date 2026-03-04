@@ -9,7 +9,7 @@ import { User, Users, Trophy, Calendar, Shuffle } from "lucide-react";
 export default function TournamentCreateForm() {
   const [showFormationMode, setShowFormationMode] = useState(false);
 
-  const handleTypeChange = (playersPerTeam: string) => {
+  const handleFormatChange = (playersPerTeam: string) => {
     setShowFormationMode(playersPerTeam === "2");
   };
 
@@ -45,12 +45,52 @@ export default function TournamentCreateForm() {
         </div>
       </div>
       
-      {/* Tournament Type and Formation */}
+      {/* Tournament Type (League/Knockout) */}
+      <div className="space-y-1">
+        <label className="text-[9px] font-bold text-primary uppercase tracking-[0.22em]">
+          نوع البطولة
+        </label>
+        <div className="grid grid-cols-2 gap-1.5">
+          <label className="relative cursor-pointer">
+            <input
+              type="radio"
+              name="tournament_type"
+              value="league"
+              required
+              className="peer sr-only"
+            />
+            <div className="p-2 rounded-md border-2 border-border bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50">
+              <div className="text-center">
+                <div className="text-xs font-bold text-foreground">🏆 دوري</div>
+                <div className="text-[9px] text-muted mt-0.5">الكل يلعب مع الكل</div>
+              </div>
+            </div>
+          </label>
+          
+          <label className="relative cursor-pointer">
+            <input
+              type="radio"
+              name="tournament_type"
+              value="knockout"
+              required
+              className="peer sr-only"
+            />
+            <div className="p-2 rounded-md border-2 border-border bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50">
+              <div className="text-center">
+                <div className="text-xs font-bold text-foreground">⚡ خروج مباشر</div>
+                <div className="text-[9px] text-muted mt-0.5">إقصائي</div>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      {/* Tournament Format (1v1/2v2) and Formation */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {/* Tournament Type */}
+        {/* Tournament Format */}
         <div className="space-y-1">
           <label className="text-[9px] font-bold text-primary uppercase tracking-[0.22em]">
-            نوع البطولة
+            صيغة البطولة
           </label>
           <div className="grid grid-cols-2 gap-1.5">
             <label className="relative cursor-pointer">
@@ -60,12 +100,12 @@ export default function TournamentCreateForm() {
                 value="1"
                 required
                 className="peer sr-only"
-                onChange={() => handleTypeChange("1")}
+                onChange={() => handleFormatChange("1")}
               />
-              <div className="p-2 rounded-md border-2 border-border bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50">
+              <div className="p-2 rounded-md border-2 border-border bg-white transition-all peer-checked:border-secondary peer-checked:bg-secondary/5 hover:border-secondary/50">
                 <div className="text-center">
                   <div className="text-xs font-bold text-foreground">فردي</div>
-                  <div className="text-[9px] font-semibold text-primary mt-0.5">1v1</div>
+                  <div className="text-[9px] font-semibold text-secondary mt-0.5">1v1</div>
                 </div>
               </div>
             </label>
@@ -77,12 +117,12 @@ export default function TournamentCreateForm() {
                 value="2"
                 required
                 className="peer sr-only"
-                onChange={() => handleTypeChange("2")}
+                onChange={() => handleFormatChange("2")}
               />
-              <div className="p-2 rounded-md border-2 border-border bg-white transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50">
+              <div className="p-2 rounded-md border-2 border-border bg-white transition-all peer-checked:border-secondary peer-checked:bg-secondary/5 hover:border-secondary/50">
                 <div className="text-center">
                   <div className="text-xs font-bold text-foreground">فرق</div>
-                  <div className="text-[9px] font-semibold text-primary mt-0.5">2v2</div>
+                  <div className="text-[9px] font-semibold text-secondary mt-0.5">2v2</div>
                 </div>
               </div>
             </label>
