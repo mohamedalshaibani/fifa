@@ -21,7 +21,7 @@ import {
   getUserProfiles,
 } from "@/lib/data";
 import type { TeamMemberInfo } from "@/components/TeamCard";
-import { computeStandings, computeTeamStandings } from "@/lib/tournament-utils";
+import { computeStandings, computeTeamStandings, groupMatchesByRound } from "@/lib/tournament-utils";
 import { isUuid, encodeSlug } from "@/lib/slug";
 import { Match } from "@/lib/types";
 import { registerUserForTournament } from "@/app/public/actions";
@@ -29,18 +29,6 @@ import { checkTournamentSetupStatus, getEmptyStateText, formatValue, formatNumbe
 import { requireAdmin, getCurrentUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
-
-function groupByRound(matches: Match[]) {
-  return matches.reduce(
-    (acc, match) => {
-      const round = match.round.toString();
-      if (!acc[round]) acc[round] = [];
-      acc[round].push(match);
-      return acc;
-    },
-    {} as Record<string, Match[]>,
-  );
-}
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -382,7 +370,7 @@ export default async function TournamentHomePage(props: Props) {
                 <p className="text-sm text-muted">لم يتم إنشاء مباريات.</p>
               ) : (
                 <div className="space-y-8">
-                  {Object.entries(groupByRound(matches))
+                  {Object.entries(groupMatchesByRound(matches))
                     .sort(([a], [b]) => Number(a) - Number(b))
                     .map(([round, roundMatches]) => (
                       <div key={round}>
@@ -570,7 +558,7 @@ export default async function TournamentHomePage(props: Props) {
                 <p className="text-sm text-muted">لا توجد مباريات.</p>
               ) : (
                 <div className="space-y-8">
-                  {Object.entries(groupByRound(matches))
+                  {Object.entries(groupMatchesByRound(matches))
                     .sort(([a], [b]) => Number(a) - Number(b))
                     .map(([round, roundMatches]) => (
                       <div key={round}>
@@ -943,7 +931,7 @@ export default async function TournamentHomePage(props: Props) {
               <span className="text-xs text-muted">{matches.length} مباراة</span>
             </div>
             <div className="space-y-6">
-              {Object.entries(groupByRound(matches))
+              {Object.entries(groupMatchesByRound(matches))
                 .sort(([a], [b]) => Number(a) - Number(b))
                 .map(([round, roundMatches]) => (
                   <div key={round}>
@@ -1111,7 +1099,7 @@ export default async function TournamentHomePage(props: Props) {
               <p className="text-sm text-muted">لم تتم القرعة بعد.</p>
             ) : (
               <div className="space-y-6">
-                {Object.entries(groupByRound(matches))
+                {Object.entries(groupMatchesByRound(matches))
                   .sort(([a], [b]) => Number(a) - Number(b))
                   .map(([round, roundMatches]) => (
                     <div key={round}>

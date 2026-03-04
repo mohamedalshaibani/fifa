@@ -5,22 +5,10 @@ import Container from "@/components/Container";
 import StatusBadge from "@/components/StatusBadge";
 import PageHeader from "@/components/PageHeader";
 import { getTournamentById, getTournamentBySlug, getMatches, getParticipants, getTeams, getTeamMembersByTournament } from "@/lib/data";
-import { Match } from "@/lib/types";
+import { groupMatchesByRound } from "@/lib/tournament-utils";
 import { isUuid, encodeSlug } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
-
-function groupByRound(matches: Match[]) {
-  return matches.reduce(
-    (acc, match) => {
-      const round = match.round.toString();
-      if (!acc[round]) acc[round] = [];
-      acc[round].push(match);
-      return acc;
-    },
-    {} as Record<string, Match[]>,
-  );
-}
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -85,7 +73,7 @@ export default async function BracketPage(props: Props) {
           </div>
         ) : (
           <>
-            {Object.entries(groupByRound(matches))
+            {Object.entries(groupMatchesByRound(matches))
               .sort(([a], [b]) => Number(a) - Number(b))
               .map(([round, roundMatches]) => (
                 <div key={round}>

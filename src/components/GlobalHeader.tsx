@@ -107,8 +107,6 @@ export default function GlobalHeader({
     router.push("/");
   };
 
-  void pathname;
-
   // Close mobile menu when clicking outside or pressing escape
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {

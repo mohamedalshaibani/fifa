@@ -3,6 +3,19 @@ import { Match, Participant, Team } from "./types";
 // Minimal type for schedule generation - only needs id
 export type MinimalParticipant = { id: string };
 
+/**
+ * Groups matches by round number.
+ * Used by schedule, bracket, and tournament pages.
+ */
+export function groupMatchesByRound(matches: Match[]): Record<string, Match[]> {
+  return matches.reduce<Record<string, Match[]>>((acc, match) => {
+    const key = String(match.round);
+    acc[key] = acc[key] ?? [];
+    acc[key].push(match);
+    return acc;
+  }, {});
+}
+
 export type StandingRow = {
   participant: Participant;
   played: number;

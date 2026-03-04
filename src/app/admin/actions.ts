@@ -20,6 +20,21 @@ async function assertAdmin() {
   }
 }
 
+/**
+ * Revalidates common tournament-related paths.
+ * Call after any tournament data mutation.
+ */
+function revalidateTournamentPaths(tournamentId?: string) {
+  revalidatePath("/admin");
+  revalidatePath("/admin/tournaments");
+  revalidatePath("/tournaments");
+  revalidatePath("/t");
+  revalidatePath("/");
+  if (tournamentId) {
+    revalidatePath(`/admin/tournaments/${tournamentId}`);
+  }
+}
+
 function slugifyTournamentName(name: string) {
   const base = name
     .trim()
@@ -96,14 +111,6 @@ export async function createTournament(formData: FormData) {
   if (tournament?.id) {
     redirect(`/admin/tournaments/${tournament.id}`);
   }
-}
-
-export async function setActiveTournament(formData: FormData) {
-  await assertAdmin();
-  void formData;
-  // This action is now a no-op since we don't have is_active column yet
-  // Users will manage tournaments through the list page
-  revalidatePath("/admin/tournaments");
 }
 
 export async function deleteTournament(formData: FormData) {
