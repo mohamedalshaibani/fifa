@@ -906,6 +906,292 @@ export const translations = {
     en: "Add Participant",
   },
 
+  // ============ TOURNAMENT DETAIL ============
+  "tournamentDetail.backToTournaments": {
+    ar: "العودة للبطولات",
+    en: "Back to Tournaments",
+  },
+  "tournamentDetail.teams": {
+    ar: "فرق",
+    en: "Teams",
+  },
+  "tournamentDetail.individual": {
+    ar: "فردي",
+    en: "Individual",
+  },
+  "tournamentDetail.leagueCompleted": {
+    ar: "بطولة دوري مكتملة",
+    en: "Completed League Tournament",
+  },
+  "tournamentDetail.knockoutCompleted": {
+    ar: "بطولة خروج المغلوب مكتملة",
+    en: "Completed Knockout Tournament",
+  },
+  "tournamentDetail.tournamentFinished": {
+    ar: "بطولة منتهية",
+    en: "Tournament Finished",
+  },
+  "tournamentDetail.champion": {
+    ar: "بطل البطولة",
+    en: "Champion",
+  },
+  "tournamentDetail.runnerUp": {
+    ar: "الوصيف",
+    en: "Runner Up",
+  },
+  "tournamentDetail.matchesLabel": {
+    ar: "المباريات",
+    en: "Matches",
+  },
+  "tournamentDetail.goalsLabel": {
+    ar: "الأهداف",
+    en: "Goals",
+  },
+  "tournamentDetail.participantsLabel": {
+    ar: "المشاركون",
+    en: "Participants",
+  },
+  "tournamentDetail.teamsLabel": {
+    ar: "الفرق",
+    en: "Teams",
+  },
+  "tournamentDetail.formatLabel": {
+    ar: "النظام",
+    en: "Format",
+  },
+  "tournamentDetail.results": {
+    ar: "النتائج",
+    en: "Results",
+  },
+  "tournamentDetail.finalStandings": {
+    ar: "الترتيب النهائي",
+    en: "Final Standings",
+  },
+  "tournamentDetail.bracketSummary": {
+    ar: "ملخص الشجرة",
+    en: "Bracket Summary",
+  },
+  "tournamentDetail.noParticipants": {
+    ar: "لا يوجد مشاركون.",
+    en: "No participants.",
+  },
+  "tournamentDetail.noTeams": {
+    ar: "لا توجد فرق.",
+    en: "No teams.",
+  },
+  "tournamentDetail.noParticipantsYet": {
+    ar: "لا يوجد مشاركون بعد.",
+    en: "No participants yet.",
+  },
+  "tournamentDetail.noTeamsYet": {
+    ar: "لا توجد فرق بعد.",
+    en: "No teams yet.",
+  },
+  "tournamentDetail.resultsSchedule": {
+    ar: "النتائج / الجدول",
+    en: "Results / Schedule",
+  },
+  "tournamentDetail.noMatchesCreated": {
+    ar: "لم يتم إنشاء مباريات.",
+    en: "No matches created.",
+  },
+  "tournamentDetail.noDrawYet": {
+    ar: "لم تتم القرعة بعد.",
+    en: "Draw not done yet.",
+  },
+  "tournamentDetail.noStandingsData": {
+    ar: "لا توجد بيانات ترتيب.",
+    en: "No standings data.",
+  },
+  "tournamentDetail.noStandingsDataYet": {
+    ar: "لا توجد بيانات ترتيب بعد.",
+    en: "No standings data yet.",
+  },
+  "tournamentDetail.noMatchesYet": {
+    ar: "لا توجد مباريات.",
+    en: "No matches.",
+  },
+  "tournamentDetail.matchFinished": {
+    ar: "انتهت",
+    en: "Finished",
+  },
+  "tournamentDetail.matchPending": {
+    ar: "قيد الانتظار",
+    en: "Pending",
+  },
+  "tournamentDetail.matchUpcoming": {
+    ar: "قادمة",
+    en: "Upcoming",
+  },
+  "tournamentDetail.advanced": {
+    ar: "انتقل",
+    en: "Advanced",
+  },
+  "tournamentDetail.final": {
+    ar: "النهائي",
+    en: "Final",
+  },
+  "tournamentDetail.leagueTypeLabel": {
+    ar: "دوري",
+    en: "League",
+  },
+  "tournamentDetail.knockoutTypeLabel": {
+    ar: "خروج المغلوب",
+    en: "Knockout",
+  },
+  "tournamentDetail.notDefined": {
+    ar: "غير محدد",
+    en: "Not Defined",
+  },
+  "tournamentDetail.formatNotSet": {
+    ar: "لم يتم تحديد النظام بعد",
+    en: "Format not set yet",
+  },
+  "tournamentDetail.matchSchedule": {
+    ar: "جدول المباريات",
+    en: "Match Schedule",
+  },
+  "tournamentDetail.standings": {
+    ar: "جدول الترتيب",
+    en: "Standings",
+  },
+  "tournamentDetail.bracket": {
+    ar: "شجرة البطولة",
+    en: "Tournament Bracket",
+  },
+  "tournamentDetail.sections": {
+    ar: "الأقسام",
+    en: "Sections",
+  },
+  "tournamentDetail.viewPlayersList": {
+    ar: "عرض قائمة اللاعبين",
+    en: "View players list",
+  },
+  "tournamentDetail.viewTeamsList": {
+    ar: "عرض قائمة الفرق",
+    en: "View teams list",
+  },
+  "tournamentDetail.browseMatchesResults": {
+    ar: "تصفح المباريات القادمة والنتائج",
+    en: "Browse upcoming matches and results",
+  },
+  "tournamentDetail.trackPointsRankings": {
+    ar: "متابعة النقاط والمراكز",
+    en: "Track points and rankings",
+  },
+  "tournamentDetail.pathToFinal": {
+    ar: "مسار التأهل للنهائي",
+    en: "Path to the final",
+  },
+  "tournamentDetail.team": {
+    ar: "الفريق",
+    en: "Team",
+  },
+  "tournamentDetail.player": {
+    ar: "اللاعب",
+    en: "Player",
+  },
+  "tournamentDetail.played": {
+    ar: "لعب",
+    en: "P",
+  },
+  "tournamentDetail.won": {
+    ar: "فوز",
+    en: "W",
+  },
+  "tournamentDetail.draw": {
+    ar: "تعادل",
+    en: "D",
+  },
+  "tournamentDetail.lost": {
+    ar: "خسارة",
+    en: "L",
+  },
+  "tournamentDetail.goalsFor": {
+    ar: "الأهداف",
+    en: "Goals",
+  },
+  "tournamentDetail.goalDiff": {
+    ar: "الفرق",
+    en: "GD",
+  },
+  "tournamentDetail.points": {
+    ar: "النقاط",
+    en: "Pts",
+  },
+  "tournamentDetail.completedStat": {
+    ar: "المكتملة",
+    en: "Completed",
+  },
+  "tournamentDetail.matchesNotStarted": {
+    ar: "لم تبدأ المباريات",
+    en: "Matches not started",
+  },
+  "tournamentDetail.averageStat": {
+    ar: "المتوسط",
+    en: "Average",
+  },
+  "tournamentDetail.goalsPerMatch": {
+    ar: "هدف/مباراة",
+    en: "goals/match",
+  },
+  "tournamentDetail.registerTitle": {
+    ar: "سجل في البطولة",
+    en: "Register for Tournament",
+  },
+  "tournamentDetail.clickToRegister": {
+    ar: "انقر على الزر للتسجيل في البطولة",
+    en: "Click to register for the tournament",
+  },
+  "tournamentDetail.loginToRegister": {
+    ar: "يجب تسجيل الدخول للتسجيل في البطولة",
+    en: "You must login to register",
+  },
+  "tournamentDetail.registeredSuccess": {
+    ar: "تم تسجيلك في البطولة بنجاح!",
+    en: "You have been registered successfully!",
+  },
+  "tournamentDetail.alreadyRegistered": {
+    ar: "أنت مسجل في هذه البطولة مسبقاً",
+    en: "You are already registered",
+  },
+  "tournamentDetail.youAreRegistered": {
+    ar: "أنت مسجل",
+    en: "You are registered",
+  },
+  "tournamentDetail.errorAuth": {
+    ar: "يجب تسجيل الدخول للتسجيل في البطولة",
+    en: "You must login to register",
+  },
+  "tournamentDetail.errorClosed": {
+    ar: "التسجيل مغلق حالياً",
+    en: "Registration is closed",
+  },
+  "tournamentDetail.errorNotFound": {
+    ar: "تعذر العثور على البطولة",
+    en: "Tournament not found",
+  },
+  "tournamentDetail.errorServer": {
+    ar: "حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى.",
+    en: "An error occurred. Please try again.",
+  },
+  "tournamentDetail.login": {
+    ar: "دخول",
+    en: "Login",
+  },
+  "tournamentDetail.signUp": {
+    ar: "تسجيل",
+    en: "Sign Up",
+  },
+  "tournamentDetail.teamCount": {
+    ar: "فريق",
+    en: "team",
+  },
+  "tournamentDetail.participantCount": {
+    ar: "مشارك",
+    en: "participant",
+  },
+
   // ============ LANGUAGE ============
   "language.toggle": {
     ar: "English",
