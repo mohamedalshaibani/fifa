@@ -207,7 +207,7 @@ export default function GlobalHeader({
             <h1 className="text-sm sm:text-lg font-black leading-none heading-tight text-foreground">
               بطولات <span className="text-primary">فيفا</span>
             </h1>
-            <span className="text-[9px] sm:text-[11px] font-semibold text-muted mt-0.5 sm:mt-1 hidden xs:block">
+            <span className="text-[8px] xs:text-[9px] sm:text-[11px] font-semibold text-muted mt-0.5 sm:mt-1">
               منصة تحديات الأبطال
             </span>
           </div>
@@ -230,9 +230,21 @@ export default function GlobalHeader({
         />
         
         {/* Menu Drawer */}
-        <div className="fixed top-16 left-0 right-0 bottom-0 z-[70] lg:hidden overflow-y-auto">
+        <div className="fixed top-16 left-0 right-0 z-[70] lg:hidden overflow-y-auto max-h-[calc(100vh-4rem)]">
           <div className="bg-white border-b border-border shadow-2xl animate-in slide-in-from-top-2 duration-200">
-            <nav className="container-responsive py-6 flex flex-col gap-3">
+            {/* Close button row */}
+            <div className="container-responsive pt-4 pb-2 flex justify-start">
+              <button
+                onClick={() => setShowMobileMenu(false)}
+                className="flex items-center gap-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
+                aria-label="إغلاق القائمة"
+              >
+                <X className="h-5 w-5" />
+                <span>إغلاق</span>
+              </button>
+            </div>
+            
+            <nav className="container-responsive pb-6 flex flex-col gap-3">
               {/* User greeting if logged in */}
               {user && (
                 <div className="pb-4 mb-2 border-b border-border">
