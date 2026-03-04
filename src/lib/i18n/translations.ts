@@ -967,6 +967,14 @@ export const translations = {
     ar: "المشاركون",
     en: "Participants",
   },
+  "tournamentDetail.participantsTeamsLabel": {
+    ar: "المشاركون / الفرق",
+    en: "Participants / Teams",
+  },
+  "tournamentDetail.viewParticipantsTeams": {
+    ar: "عرض المشاركين / الفرق",
+    en: "View participants / teams",
+  },
   "tournamentDetail.teamsLabel": {
     ar: "الفرق",
     en: "Teams",
