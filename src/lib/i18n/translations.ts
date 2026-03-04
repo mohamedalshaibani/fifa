@@ -109,6 +109,206 @@ export const translations = {
     ar: "عرض البطولة",
     en: "View Tournament",
   },
+  "home.welcomeUser": {
+    ar: "أهلاً",
+    en: "Welcome",
+  },
+  "home.readyForTournaments": {
+    ar: "جاهز للبطولات؟ خلّ نرجّع الحماس!",
+    en: "Ready for tournaments? Let's bring back the excitement!",
+  },
+  "home.heroTitle1": {
+    ar: "اختبر مهاراتك",
+    en: "Test Your Skills",
+  },
+  "home.heroTitle2": {
+    ar: "في أقوى البطولات",
+    en: "In The Best Tournaments",
+  },
+  "home.heroSubtitle": {
+    ar: "انضم للبطولات الحية، واجه أفضل اللاعبين، وحقق البطولات",
+    en: "Join live tournaments, face top players, and achieve victory",
+  },
+  "home.browseTournaments": {
+    ar: "تصفح البطولات",
+    en: "Browse Tournaments",
+  },
+  "home.myStats": {
+    ar: "إحصائياتي",
+    en: "My Stats",
+  },
+  "home.statsSubtitle": {
+    ar: "ملخص أدائك في جميع البطولات",
+    en: "Summary of your performance in all tournaments",
+  },
+  "home.matches": {
+    ar: "مباريات",
+    en: "Matches",
+  },
+  "home.wins": {
+    ar: "فوز",
+    en: "Wins",
+  },
+  "home.draws": {
+    ar: "تعادل",
+    en: "Draws",
+  },
+  "home.losses": {
+    ar: "خسارة",
+    en: "Losses",
+  },
+  "home.winRate": {
+    ar: "نسبة الفوز",
+    en: "Win Rate",
+  },
+  "home.goals": {
+    ar: "أهداف",
+    en: "Goals",
+  },
+  "home.tournamentActivity": {
+    ar: "نشاطي في البطولات",
+    en: "My Tournament Activity",
+  },
+  "home.activitySubtitle": {
+    ar: "ملخص إنجازاتك في البطولات المنتهية",
+    en: "Summary of your achievements in finished tournaments",
+  },
+  "home.tournamentsCount": {
+    ar: "بطولات",
+    en: "Tournaments",
+  },
+  "home.firstPlace": {
+    ar: "المركز الأول",
+    en: "1st Place",
+  },
+  "home.secondPlace": {
+    ar: "المركز الثاني",
+    en: "2nd Place",
+  },
+  "home.thirdPlace": {
+    ar: "المركز الثالث",
+    en: "3rd Place",
+  },
+  "home.reachedFinals": {
+    ar: "وصول للنهائي",
+    en: "Reached Finals",
+  },
+  "home.crownedPlatform": {
+    ar: "منصة التتويج",
+    en: "Podium Finish",
+  },
+  "home.currentTournaments": {
+    ar: "البطولات الحالية",
+    en: "Current Tournaments",
+  },
+  "home.currentTournamentsSubtitle": {
+    ar: "بطولات جارية أو مفتوحة للتسجيل",
+    en: "Active or open for registration",
+  },
+  "home.previousTournaments": {
+    ar: "البطولات السابقة",
+    en: "Previous Tournaments",
+  },
+  "home.previousTournamentsSubtitle": {
+    ar: "سجل البطولات المنتهية",
+    en: "History of finished tournaments",
+  },
+  "home.viewDetails": {
+    ar: "عرض التفاصيل",
+    en: "View Details",
+  },
+  "home.noActiveTournaments": {
+    ar: "لا توجد بطولات نشطة حالياً",
+    en: "No active tournaments at the moment",
+  },
+  "home.noFinishedTournaments": {
+    ar: "لا توجد بطولات منتهية",
+    en: "No finished tournaments",
+  },
+  "home.participants": {
+    ar: "مشارك",
+    en: "participants",
+  },
+  "home.youAreRegistered": {
+    ar: "أنت مسجل",
+    en: "You are registered",
+  },
+  "home.noMatchesYet": {
+    ar: "لم تلعب أي مباريات بعد",
+    en: "You haven't played any matches yet",
+  },
+  "home.participateToSeeStats": {
+    ar: "شارك في البطولات لتظهر إحصائياتك!",
+    en: "Join tournaments to see your stats!",
+  },
+  "home.comingSoon": {
+    ar: "قريباً بطولات جديدة ومثيرة!",
+    en: "Exciting new tournaments coming soon!",
+  },
+  "home.stayTuned": {
+    ar: "ترقب البطولات القادمة!",
+    en: "Stay tuned for upcoming tournaments!",
+  },
+  "home.statusRunning": {
+    ar: "جارية الآن",
+    en: "Live Now",
+  },
+  "home.statusRegOpen": {
+    ar: "التسجيل مفتوح",
+    en: "Registration Open",
+  },
+  "home.statusClosed": {
+    ar: "مغلقة",
+    en: "Closed",
+  },
+  "home.statusUpcoming": {
+    ar: "قادمة",
+    en: "Upcoming",
+  },
+  "home.statusFinished": {
+    ar: "منتهية",
+    en: "Finished",
+  },
+  "home.participantsLabel": {
+    ar: "مشاركون",
+    en: "Participants",
+  },
+  "home.typeLabel": {
+    ar: "النوع",
+    en: "Format",
+  },
+  "home.registerNow": {
+    ar: "سجل الآن",
+    en: "Register Now",
+  },
+  "home.watchNow": {
+    ar: "شاهد الآن",
+    en: "Watch Now",
+  },
+  "home.closingSoon": {
+    ar: "قرب الإغلاق",
+    en: "Closing Soon",
+  },
+  "home.playerLabel": {
+    ar: "لاعب",
+    en: "Player",
+  },
+  "home.matchLabel": {
+    ar: "مباراة",
+    en: "Match",
+  },
+  "home.goalLabel": {
+    ar: "هدف",
+    en: "Goal",
+  },
+  "home.viewResults": {
+    ar: "عرض النتائج",
+    en: "View Results",
+  },
+  "home.browseAllTournaments": {
+    ar: "تصفح جميع البطولات",
+    en: "Browse All Tournaments",
+  },
 
   // ============ TOURNAMENTS ============
   "tournament.backToList": {
