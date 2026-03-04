@@ -41,7 +41,6 @@ export function StandingsContent({
           title={pageTitle}
           icon={<BarChart3 className="h-6 w-6 text-primary" />}
           backHref={`/t/${encodeSlug(tournament.slug)}`}
-          backText={t("standingsPage.backToTournament")}
           badge={<StatusBadge status={tournament.status} />}
           liveIndicator="STANDINGS"
           scoreboard

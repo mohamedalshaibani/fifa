@@ -119,7 +119,7 @@ export function ChampionContent({
 
         {/* Navigation Back */}
         <div className="text-center mt-8">
-          <BackLink href={`/t/${encodeSlug(tournament.slug)}`} text={t("championPage.backToTournament")} />
+          <BackLink fallbackHref={`/t/${encodeSlug(tournament.slug)}`} />
         </div>
       </Container>
     </div>

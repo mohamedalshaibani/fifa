@@ -263,7 +263,7 @@ export default function AccountPage() {
         <div className="max-w-4xl mx-auto space-y-6">
           
           {/* Back Link - Unified styling */}
-          <BackLink href="/" text={t("account.back")} />
+          <BackLink fallbackHref="/" />
           
           {/* Header Card */}
           <SportCard padding="lg" variant="elevated">

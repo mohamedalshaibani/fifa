@@ -28,7 +28,7 @@ export default function AdminUsersContent({ users, currentUserId }: AdminUsersCo
       <Container>
         <div className="py-8 md:py-12 space-y-8">
           {/* Back Link */}
-          <BackLink href="/admin" text={t("admin.backToPanel")} />
+          <BackLink fallbackHref="/admin" />
 
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

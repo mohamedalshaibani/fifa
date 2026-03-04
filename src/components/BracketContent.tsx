@@ -38,7 +38,6 @@ export function BracketContent({
           title={pageTitle}
           icon={<GitBranch className="h-6 w-6 text-primary" />}
           backHref={`/t/${encodeSlug(tournament.slug)}`}
-          backText={t("bracketPage.backToTournament")}
           badge={<StatusBadge status={tournament.status} />}
           liveIndicator="BRACKET"
           scoreboard

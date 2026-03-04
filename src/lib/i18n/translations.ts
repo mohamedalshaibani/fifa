@@ -38,7 +38,7 @@ export const translations = {
     en: "Close",
   },
   "common.back": {
-    ar: "رجوع",
+    ar: "العودة",
     en: "Back",
   },
   "common.next": {

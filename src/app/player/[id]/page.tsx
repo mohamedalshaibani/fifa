@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/Container";
+import BackLink from "@/components/BackLink";
 import SportCard from "@/components/ui/SportCard";
 import SportButton from "@/components/ui/SportButton";
 import { useLanguage } from "@/lib/i18n";
@@ -15,8 +16,6 @@ import {
   Calendar, 
   Award,
   Medal,
-  ArrowLeft,
-  ArrowRight,
   Swords
 } from "lucide-react";
 
@@ -65,7 +64,6 @@ export default function PlayerProfilePage({
   const { t, language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [player, setPlayer] = useState<PlayerData | null>(null);
-  const isRTL = language === "ar";
 
   useEffect(() => {
     async function fetchPlayer() {
@@ -119,18 +117,10 @@ export default function PlayerProfilePage({
     { year: "numeric", month: "long", day: "numeric" }
   );
 
-  const BackArrow = isRTL ? ArrowRight : ArrowLeft;
-
   return (
     <Container className="py-6 sm:py-10">
-      {/* Back link */}
-      <Link 
-        href="/" 
-        className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
-      >
-        <BackArrow className="w-4 h-4" />
-        <span>{t("player.backToHome")}</span>
-      </Link>
+      {/* Back button */}
+      <BackLink fallbackHref="/" />
 
       {/* Profile Header */}
       <SportCard padding="lg" className="mb-6">

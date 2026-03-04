@@ -140,7 +140,7 @@ export function TournamentDetailContent({
       <div className="min-h-screen bg-background">
         <Container>
           <div className="mb-8">
-            <BackLink href="/tournaments" text={t("tournamentDetail.backToTournaments")} />
+            <BackLink fallbackHref="/tournaments" />
 
             <Card className="p-8 md:p-10 bg-surface border-border relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
@@ -617,7 +617,7 @@ export function TournamentDetailContent({
     <div className="min-h-screen bg-background scroll-smooth">
       <Container>
         <div className="mb-8">
-          <BackLink href="/tournaments" text={t("tournamentDetail.backToTournaments")} />
+          <BackLink fallbackHref="/tournaments" />
 
           {setupStatus.isIncomplete && (
             <div className="mb-6">

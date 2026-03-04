@@ -134,7 +134,7 @@ export default function AdminTournamentDashContent({
       <Container>
         <div className="py-8 md:py-12 space-y-8">
           {/* Back Button */}
-          <BackLink href="/admin/tournaments" text={t("admin.backToTournaments")} />
+          <BackLink fallbackHref="/admin/tournaments" />
 
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

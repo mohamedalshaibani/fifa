@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { useLanguage } from "@/lib/i18n";
@@ -10,10 +10,8 @@ interface PageHeaderProps {
   title: string;
   /** Optional icon to display before the title */
   icon?: ReactNode;
-  /** Back link URL */
+  /** Fallback back link URL (if history not available) */
   backHref?: string;
-  /** Back link text */
-  backText?: string;
   /** Optional badge/status element to display */
   badge?: ReactNode;
   /** Optional subtitle text */
@@ -27,44 +25,58 @@ interface PageHeaderProps {
 }
 
 /**
- * Unified page header with consistent back link styling.
+ * Unified page header with consistent back button styling.
  * 
- * Back Link Standards:
+ * Back Button Standards:
+ * - Uses browser history.back() for natural navigation
+ * - Falls back to backHref if provided
  * - Font: text-sm font-semibold
  * - Color: text-primary hover:text-primary-hover
  * - Icon: ArrowRight for RTL, ArrowLeft for LTR
- * - Spacing: mb-4 (space between back link and title)
+ * - Text: "العودة" (Arabic) / "Back" (English)
+ * - Spacing: mb-4 (space between back button and title)
  */
 export default function PageHeader({
   title,
   icon,
   backHref,
-  backText,
   badge,
   subtitle,
   actions,
   liveIndicator,
   scoreboard = false,
 }: PageHeaderProps) {
-  const { isRTL } = useLanguage();
+  const { isRTL, t } = useLanguage();
+  const router = useRouter();
   const ArrowIcon = isRTL ? ArrowRight : ArrowLeft;
   
-  // Unified back link component used in both variants
-  const BackLinkElement = backHref ? (
-    <Link
-      href={backHref}
-      className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-hover transition-colors"
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else if (backHref) {
+      router.push(backHref);
+    } else {
+      router.push("/");
+    }
+  };
+  
+  // Unified back button component used in both variants
+  const BackButtonElement = backHref !== undefined ? (
+    <button
+      type="button"
+      onClick={handleBack}
+      className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-hover transition-colors cursor-pointer"
     >
       <ArrowIcon className="w-4 h-4" />
-      <span>{backText}</span>
-    </Link>
+      <span>{t("common.back")}</span>
+    </button>
   ) : null;
 
   if (scoreboard) {
     return (
       <header className="mb-8 space-y-4">
-        {/* Back Link - Consistent styling */}
-        {BackLinkElement}
+        {/* Back Button - Consistent styling */}
+        {BackButtonElement}
 
         {/* Scoreboard Style Header */}
         <div className="scoreboard">
@@ -100,8 +112,8 @@ export default function PageHeader({
 
   return (
     <header className="mb-8 space-y-4">
-      {/* Back Link - Consistent styling */}
-      {BackLinkElement}
+      {/* Back Button - Consistent styling */}
+      {BackButtonElement}
 
       {/* Title Row */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

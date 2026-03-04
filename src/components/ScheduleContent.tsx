@@ -37,7 +37,6 @@ export function ScheduleContent({
           title={t("schedule.title")}
           icon={<CalendarDays className="h-6 w-6 text-primary" />}
           backHref={`/t/${encodeSlug(tournament.slug)}`}
-          backText={tournament.name}
           badge={<StatusBadge status={tournament.status} />}
         />
 
