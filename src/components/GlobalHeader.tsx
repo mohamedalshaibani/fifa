@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, usePathname } from "next/navigation";
 import { 
-  Trophy, LogOut, User, Settings, Menu, X, LogIn, UserPlus
+  Trophy, LogOut, User, Settings, Menu, X, LogIn, UserPlus, Crown
 } from "lucide-react";
 import HeaderButton from "@/components/HeaderButton";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -172,6 +172,15 @@ export default function GlobalHeader({
               {/* Language Toggle */}
               <LanguageToggle />
               
+              {/* Leaderboard Link - Always visible */}
+              <HeaderButton
+                href="/leaderboard"
+                variant="ghost"
+                icon={Crown}
+              >
+                {t("leaderboard.title")}
+              </HeaderButton>
+              
               {!user && (
               <>
                 <HeaderButton
@@ -252,6 +261,17 @@ export default function GlobalHeader({
               <div className="pb-3 mb-2 border-b border-border">
                 <LanguageToggle />
               </div>
+              
+              {/* Leaderboard Link - Always visible */}
+              <HeaderButton
+                href="/leaderboard"
+                onClick={() => setShowMobileMenu(false)}
+                variant="ghost"
+                icon={Crown}
+                fullWidth
+              >
+                {t("leaderboard.title")}
+              </HeaderButton>
               
               {/* User greeting if logged in */}
               {user && (

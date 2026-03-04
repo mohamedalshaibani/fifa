@@ -1125,3 +1125,104 @@ export async function getUserTournamentActivities(userId: string): Promise<Tourn
     return [];
   }
 }
+
+// ===== PUBLIC PLAYER PROFILE FUNCTIONS =====
+
+export async function getPlayerProfileById(userId: string): Promise<{
+  profile: UserProfile | null;
+  stats: ComputedUserStats;
+  placements: TournamentPlacementStats;
+  tournaments: TournamentActivity[];
+} | null> {
+  try {
+    const profile = await getUserProfile(userId);
+    if (!profile) return null;
+    
+    const stats = await computeUserStatsFromMatches(userId);
+    const placements = await getUserTournamentPlacementStats(userId);
+    const tournaments = await getUserTournamentActivities(userId);
+    
+    return { profile, stats, placements, tournaments };
+  } catch (err) {
+    console.error("[getPlayerProfileById] Exception:", err);
+    return null;
+  }
+}
+
+// ===== LEADERBOARD FUNCTIONS =====
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  name: string;
+  avatarUrl: string | null;
+  matchesPlayed: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  winRate: number;
+  goalsScored: number;
+  goalsConceded: number;
+  tournamentsWon: number;
+  podiumFinishes: number;
+}
+
+export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
+  try {
+    const supabase = createAdminClient();
+    
+    // Get all user profiles
+    const { data: profiles, error: profilesError } = await supabase
+      .from("user_profiles")
+      .select("id, first_name, last_name, avatar_url");
+    
+    if (profilesError || !profiles) {
+      console.error("[getLeaderboard] Error fetching profiles:", profilesError);
+      return [];
+    }
+    
+    // For each user, compute their stats
+    const entries: LeaderboardEntry[] = [];
+    
+    for (const profile of profiles) {
+      const stats = await computeUserStatsFromMatches(profile.id);
+      const placements = await getUserTournamentPlacementStats(profile.id);
+      
+      // Only include players who have played at least one match
+      if (stats.matchesPlayed === 0) continue;
+      
+      entries.push({
+        rank: 0, // Will be set after sorting
+        userId: profile.id,
+        name: `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "لاعب",
+        avatarUrl: profile.avatar_url || null,
+        matchesPlayed: stats.matchesPlayed,
+        wins: stats.wins,
+        losses: stats.losses,
+        draws: stats.draws,
+        winRate: stats.winRate,
+        goalsScored: stats.goalsScored,
+        goalsConceded: stats.goalsConceded,
+        tournamentsWon: placements.firstPlaceFinishes,
+        podiumFinishes: placements.podiumFinishes,
+      });
+    }
+    
+    // Sort by wins (primary), then win rate (secondary), then matches played (tertiary)
+    entries.sort((a, b) => {
+      if (b.wins !== a.wins) return b.wins - a.wins;
+      if (b.winRate !== a.winRate) return b.winRate - a.winRate;
+      return b.matchesPlayed - a.matchesPlayed;
+    });
+    
+    // Assign ranks
+    entries.forEach((entry, index) => {
+      entry.rank = index + 1;
+    });
+    
+    return entries;
+  } catch (err) {
+    console.error("[getLeaderboard] Exception:", err);
+    return [];
+  }
+}

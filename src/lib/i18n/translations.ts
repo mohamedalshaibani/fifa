@@ -2799,6 +2799,150 @@ export const translations = {
     ar: "؟",
     en: "?",
   },
+
+  // ============ PLAYER PROFILE PAGE ============
+  "player.profile": {
+    ar: "الملف الشخصي",
+    en: "Player Profile",
+  },
+  "player.notFound": {
+    ar: "اللاعب غير موجود",
+    en: "Player not found",
+  },
+  "player.notFoundDesc": {
+    ar: "لا يوجد لاعب بهذا المعرف",
+    en: "No player found with this ID",
+  },
+  "player.backToHome": {
+    ar: "العودة للصفحة الرئيسية",
+    en: "Back to Home",
+  },
+  "player.joinedOn": {
+    ar: "انضم في",
+    en: "Joined",
+  },
+  "player.statistics": {
+    ar: "الإحصائيات",
+    en: "Statistics",
+  },
+  "player.matches": {
+    ar: "المباريات",
+    en: "Matches",
+  },
+  "player.wins": {
+    ar: "الفوز",
+    en: "Wins",
+  },
+  "player.losses": {
+    ar: "الخسارة",
+    en: "Losses",
+  },
+  "player.draws": {
+    ar: "التعادل",
+    en: "Draws",
+  },
+  "player.winRate": {
+    ar: "نسبة الفوز",
+    en: "Win Rate",
+  },
+  "player.goals": {
+    ar: "الأهداف",
+    en: "Goals",
+  },
+  "player.goalsScored": {
+    ar: "أهداف مسجلة",
+    en: "Goals Scored",
+  },
+  "player.goalsConceded": {
+    ar: "أهداف استقبلها",
+    en: "Goals Conceded",
+  },
+  "player.tournamentHistory": {
+    ar: "سجل البطولات",
+    en: "Tournament History",
+  },
+  "player.noTournaments": {
+    ar: "لم يشارك في أي بطولة بعد",
+    en: "No tournaments played yet",
+  },
+  "player.achievements": {
+    ar: "الإنجازات",
+    en: "Achievements",
+  },
+  "player.firstPlace": {
+    ar: "المركز الأول",
+    en: "1st Place",
+  },
+  "player.secondPlace": {
+    ar: "المركز الثاني",
+    en: "2nd Place",
+  },
+  "player.thirdPlace": {
+    ar: "المركز الثالث",
+    en: "3rd Place",
+  },
+  "player.noAchievements": {
+    ar: "لا توجد إنجازات بعد",
+    en: "No achievements yet",
+  },
+  "player.viewTournament": {
+    ar: "عرض البطولة",
+    en: "View Tournament",
+  },
+
+  // ============ LEADERBOARD PAGE ============
+  "leaderboard.title": {
+    ar: "لوحة المتصدرين",
+    en: "Leaderboard",
+  },
+  "leaderboard.subtitle": {
+    ar: "ترتيب أفضل اللاعبين على المنصة",
+    en: "Ranking of the best players on the platform",
+  },
+  "leaderboard.rank": {
+    ar: "الترتيب",
+    en: "Rank",
+  },
+  "leaderboard.player": {
+    ar: "اللاعب",
+    en: "Player",
+  },
+  "leaderboard.wins": {
+    ar: "الفوز",
+    en: "Wins",
+  },
+  "leaderboard.matches": {
+    ar: "المباريات",
+    en: "Matches",
+  },
+  "leaderboard.winRate": {
+    ar: "نسبة الفوز",
+    en: "Win Rate",
+  },
+  "leaderboard.goals": {
+    ar: "الأهداف",
+    en: "Goals",
+  },
+  "leaderboard.tournamentsWon": {
+    ar: "بطولات فاز بها",
+    en: "Tournaments Won",
+  },
+  "leaderboard.podiumFinishes": {
+    ar: "التتويجات",
+    en: "Podium Finishes",
+  },
+  "leaderboard.noPlayers": {
+    ar: "لا يوجد لاعبون بعد",
+    en: "No players yet",
+  },
+  "leaderboard.noPlayersDesc": {
+    ar: "ابدأ المشاركة في البطولات لتظهر في لوحة المتصدرين",
+    en: "Start playing tournaments to appear on the leaderboard",
+  },
+  "leaderboard.viewProfile": {
+    ar: "عرض الملف الشخصي",
+    en: "View Profile",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
