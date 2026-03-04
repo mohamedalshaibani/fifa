@@ -13,6 +13,7 @@ import SetupBanner from "@/components/SetupBanner";
 import { TeamCard } from "@/components/TeamCard";
 import RegisterButton from "@/components/RegisterButton";
 import type { TeamMemberInfo } from "@/components/TeamCard";
+import type { UserProfile } from "@/lib/types";
 import { computeStandings, computeTeamStandings, groupMatchesByRound } from "@/lib/tournament-utils";
 import { encodeSlug } from "@/lib/slug";
 import { Match, Tournament, Team, Participant } from "@/lib/types";
@@ -31,6 +32,7 @@ interface TournamentDetailContentProps {
   matches: Match[];
   teams: Team[];
   teamMembersMap: Map<string, TeamMemberInfo[]>;
+  participantProfilesMap: Map<string, UserProfile>;
   isAdmin: boolean;
   currentUser: { id: string } | null;
   setupStatus: SetupStatus;
@@ -43,6 +45,7 @@ export function TournamentDetailContent({
   matches,
   teams,
   teamMembersMap,
+  participantProfilesMap,
   isAdmin,
   currentUser,
   setupStatus,
@@ -58,6 +61,7 @@ export function TournamentDetailContent({
     : false;
 
   const nameMap = new Map(participants.map((p) => [p.id, p.name]));
+  const participantUserIdMap = new Map(participants.map((p) => [p.id, p.user_id]));
   const teamNameMap = new Map(teams.map((t) => [t.id, t.name]));
 
   const completedMatches = matches.filter((m) => m.status === "completed").length;
@@ -329,17 +333,42 @@ export function TournamentDetailContent({
                       </p>
                     )}
                     <ul className="grid gap-3 sm:grid-cols-2">
-                      {participants.map((participant, index) => (
-                        <li
-                          key={participant.id}
-                          className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 px-4 py-3 text-sm"
-                        >
-                          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface border border-border text-xs font-bold text-primary">
-                            {index + 1}
-                          </span>
-                          <span className="font-semibold text-foreground">{participant.name}</span>
-                        </li>
-                      ))}
+                      {participants.map((participant, index) => {
+                        const profile = participant.user_id ? participantProfilesMap.get(participant.user_id) : null;
+                        const avatarUrl = profile?.avatar_url;
+                        
+                        return (
+                          <li
+                            key={participant.id}
+                            className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 px-4 py-3 text-sm"
+                          >
+                            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface border border-border text-xs font-bold text-primary">
+                              {index + 1}
+                            </span>
+                            {avatarUrl ? (
+                              <img
+                                src={avatarUrl}
+                                alt={participant.name}
+                                className="h-9 w-9 rounded-full object-cover border border-border"
+                              />
+                            ) : (
+                              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 border border-border text-lg">
+                                👤
+                              </span>
+                            )}
+                            {participant.user_id ? (
+                              <Link
+                                href={`/player/${participant.user_id}`}
+                                className="font-semibold text-foreground hover:text-primary transition-colors"
+                              >
+                                {participant.name}
+                              </Link>
+                            ) : (
+                              <span className="font-semibold text-foreground">{participant.name}</span>
+                            )}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}
@@ -384,6 +413,13 @@ export function TournamentDetailContent({
                                 isTeamBased && match.away_team_id
                                   ? teamMembersMap.get(match.away_team_id) || []
                                   : [];
+                              
+                              const homeUserId = !isTeamBased && match.home_participant_id 
+                                ? participantUserIdMap.get(match.home_participant_id) 
+                                : null;
+                              const awayUserId = !isTeamBased && match.away_participant_id 
+                                ? participantUserIdMap.get(match.away_participant_id) 
+                                : null;
 
                               return (
                                 <div
@@ -391,7 +427,13 @@ export function TournamentDetailContent({
                                   className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface-2 px-4 py-4 text-sm"
                                 >
                                   <div className="flex-1 text-right">
-                                    <p className="font-semibold text-foreground">{homeName}</p>
+                                    {homeUserId ? (
+                                      <Link href={`/player/${homeUserId}`} className="font-semibold text-foreground hover:text-primary transition-colors">
+                                        {homeName}
+                                      </Link>
+                                    ) : (
+                                      <p className="font-semibold text-foreground">{homeName}</p>
+                                    )}
                                     {isTeamBased && homeMembers.length > 0 && (
                                       <p className="text-xs text-muted mt-1">{homeMembers.map(m => m.name).join(" • ")}</p>
                                     )}
@@ -409,7 +451,13 @@ export function TournamentDetailContent({
                                     </span>
                                   </div>
                                   <div className="flex-1 text-left">
-                                    <p className="font-semibold text-foreground">{awayName}</p>
+                                    {awayUserId ? (
+                                      <Link href={`/player/${awayUserId}`} className="font-semibold text-foreground hover:text-primary transition-colors">
+                                        {awayName}
+                                      </Link>
+                                    ) : (
+                                      <p className="font-semibold text-foreground">{awayName}</p>
+                                    )}
                                     {isTeamBased && awayMembers.length > 0 && (
                                       <p className="text-xs text-muted mt-1">{awayMembers.map(m => m.name).join(" • ")}</p>
                                     )}
@@ -550,6 +598,7 @@ export function TournamentDetailContent({
                     matches={matches} 
                     isTeamBased={isTeamBased} 
                     nameMap={nameMap} 
+                    participantUserIdMap={participantUserIdMap}
                     teamNameMap={teamNameMap} 
                     teamMembersMap={teamMembersMap}
                   />
@@ -838,17 +887,42 @@ export function TournamentDetailContent({
                   </p>
                 )}
                 <ul className="grid gap-3 sm:grid-cols-2">
-                  {participants.map((participant, index) => (
-                    <li
-                      key={participant.id}
-                      className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 px-4 py-3 text-sm"
-                    >
-                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface border border-border text-xs font-bold text-primary">
-                        {index + 1}
-                      </span>
-                      <span className="font-semibold text-foreground">{participant.name}</span>
-                    </li>
-                  ))}
+                  {participants.map((participant, index) => {
+                    const profile = participant.user_id ? participantProfilesMap.get(participant.user_id) : null;
+                    const avatarUrl = profile?.avatar_url;
+                    
+                    return (
+                      <li
+                        key={participant.id}
+                        className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 px-4 py-3 text-sm"
+                      >
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface border border-border text-xs font-bold text-primary">
+                          {index + 1}
+                        </span>
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt={participant.name}
+                            className="h-9 w-9 rounded-full object-cover border border-border"
+                          />
+                        ) : (
+                          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 border border-border text-lg">
+                            👤
+                          </span>
+                        )}
+                        {participant.user_id ? (
+                          <Link
+                            href={`/player/${participant.user_id}`}
+                            className="font-semibold text-foreground hover:text-primary transition-colors"
+                          >
+                            {participant.name}
+                          </Link>
+                        ) : (
+                          <span className="font-semibold text-foreground">{participant.name}</span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             )}
@@ -893,6 +967,13 @@ export function TournamentDetailContent({
                             isTeamBased && match.away_team_id
                               ? teamMembersMap.get(match.away_team_id) || []
                               : [];
+                          
+                          const homeUserId = !isTeamBased && match.home_participant_id 
+                            ? participantUserIdMap.get(match.home_participant_id) 
+                            : null;
+                          const awayUserId = !isTeamBased && match.away_participant_id 
+                            ? participantUserIdMap.get(match.away_participant_id) 
+                            : null;
 
                           return (
                             <div
@@ -900,7 +981,13 @@ export function TournamentDetailContent({
                               className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-surface-2 px-4 py-4 text-sm"
                             >
                               <div className="flex-1 text-right">
-                                <p className="font-semibold text-foreground">{homeName}</p>
+                                {homeUserId ? (
+                                  <Link href={`/player/${homeUserId}`} className="font-semibold text-foreground hover:text-primary transition-colors">
+                                    {homeName}
+                                  </Link>
+                                ) : (
+                                  <p className="font-semibold text-foreground">{homeName}</p>
+                                )}
                                 {isTeamBased && homeMembers.length > 0 && (
                                   <p className="text-xs text-muted mt-1">{homeMembers.map(m => m.name).join(" • ")}</p>
                                 )}
@@ -918,7 +1005,13 @@ export function TournamentDetailContent({
                                 </span>
                               </div>
                               <div className="flex-1 text-left">
-                                <p className="font-semibold text-foreground">{awayName}</p>
+                                {awayUserId ? (
+                                  <Link href={`/player/${awayUserId}`} className="font-semibold text-foreground hover:text-primary transition-colors">
+                                    {awayName}
+                                  </Link>
+                                ) : (
+                                  <p className="font-semibold text-foreground">{awayName}</p>
+                                )}
                                 {isTeamBased && awayMembers.length > 0 && (
                                   <p className="text-xs text-muted mt-1">{awayMembers.map(m => m.name).join(" • ")}</p>
                                 )}
@@ -950,6 +1043,7 @@ export function TournamentDetailContent({
                 matches={matches}
                 isTeamBased={isTeamBased}
                 teamMembersMap={teamMembersMap}
+                participantUserIdMap={participantUserIdMap}
               />
             </Card>
           </section>
@@ -972,6 +1066,7 @@ export function TournamentDetailContent({
                   matches={matches} 
                   isTeamBased={isTeamBased} 
                   nameMap={nameMap} 
+                  participantUserIdMap={participantUserIdMap}
                   teamNameMap={teamNameMap} 
                   teamMembersMap={teamMembersMap}
                 />
@@ -1050,12 +1145,14 @@ function StandingsTable({
   matches,
   isTeamBased,
   teamMembersMap,
+  participantUserIdMap,
 }: {
   participants: Participant[];
   teams: Team[];
   matches: Match[];
   isTeamBased: boolean;
   teamMembersMap: Map<string, TeamMemberInfo[]>;
+  participantUserIdMap: Map<string, string>;
 }) {
   const { t } = useLanguage();
   const participantStandings = !isTeamBased ? computeStandings(participants, matches) : [];
@@ -1108,12 +1205,21 @@ function StandingsTable({
               })
             : participantStandings.map((standing, index) => {
                 const highlight = index === 0 ? "bg-primary/5" : index < 3 ? "bg-surface-2" : "";
+                const userId = participantUserIdMap.get(standing.participant.id);
                 return (
                   <tr key={standing.participant.id} className={`border-b border-border ${highlight}`}>
                     <td className="px-3 py-3 text-right font-bold text-foreground">
                       {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
                     </td>
-                    <td className="px-3 py-3 text-right font-semibold text-foreground">{standing.participant.name}</td>
+                    <td className="px-3 py-3 text-right font-semibold text-foreground">
+                      {userId ? (
+                        <Link href={`/player/${userId}`} className="hover:text-primary transition-colors">
+                          {standing.participant.name}
+                        </Link>
+                      ) : (
+                        standing.participant.name
+                      )}
+                    </td>
                     <td className="px-3 py-3 text-center text-secondary">{standing.played}</td>
                     <td className="px-3 py-3 text-center text-success font-semibold">{standing.wins}</td>
                     <td className="px-3 py-3 text-center text-secondary">{standing.draws}</td>
@@ -1135,12 +1241,14 @@ function BracketView({
   matches,
   isTeamBased,
   nameMap,
+  participantUserIdMap,
   teamNameMap,
   teamMembersMap,
 }: {
   matches: Match[];
   isTeamBased: boolean;
   nameMap: Map<string, string>;
+  participantUserIdMap: Map<string, string>;
   teamNameMap: Map<string, string | null>;
   teamMembersMap: Map<string, TeamMemberInfo[]>;
 }) {
@@ -1173,20 +1281,39 @@ function BracketView({
                 const isAwayWinner = isTeamBased
                   ? match.winner_team_id === match.away_team_id
                   : match.winner_participant_id === match.away_participant_id;
+                
+                const homeUserId = !isTeamBased && match.home_participant_id 
+                  ? participantUserIdMap.get(match.home_participant_id) 
+                  : null;
+                const awayUserId = !isTeamBased && match.away_participant_id 
+                  ? participantUserIdMap.get(match.away_participant_id) 
+                  : null;
 
                 return (
                   <div key={match.id} className="rounded-2xl border border-border bg-surface-2 p-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className={isHomeWinner ? "font-bold text-foreground" : "text-secondary"}>{homeName}</span>
+                          {homeUserId ? (
+                            <Link href={`/player/${homeUserId}`} className={`${isHomeWinner ? "font-bold text-foreground" : "text-secondary"} hover:text-primary transition-colors`}>
+                              {homeName}
+                            </Link>
+                          ) : (
+                            <span className={isHomeWinner ? "font-bold text-foreground" : "text-secondary"}>{homeName}</span>
+                          )}
                           {isTeamBased && homeMembers.length > 0 && <p className="text-xs text-muted">{homeMembers.map(m => m.name).join(" • ")}</p>}
                         </div>
                         <span className="text-sm font-bold text-primary">{match.home_score ?? "—"}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className={isAwayWinner ? "font-bold text-foreground" : "text-secondary"}>{awayName}</span>
+                          {awayUserId ? (
+                            <Link href={`/player/${awayUserId}`} className={`${isAwayWinner ? "font-bold text-foreground" : "text-secondary"} hover:text-primary transition-colors`}>
+                              {awayName}
+                            </Link>
+                          ) : (
+                            <span className={isAwayWinner ? "font-bold text-foreground" : "text-secondary"}>{awayName}</span>
+                          )}
                           {isTeamBased && awayMembers.length > 0 && <p className="text-xs text-muted">{awayMembers.map(m => m.name).join(" • ")}</p>}
                         </div>
                         <span className="text-sm font-bold text-primary">{match.away_score ?? "—"}</span>

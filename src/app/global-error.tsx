@@ -10,15 +10,17 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const [lang, setLang] = useState<"ar" | "en">("ar");
+  // Read language from localStorage synchronously during render to avoid setState in effect
+  const getStoredLang = (): "ar" | "en" => {
+    if (typeof window === "undefined") return "ar";
+    const stored = localStorage.getItem("language");
+    return stored === "en" ? "en" : "ar";
+  };
+  
+  const [lang] = useState<"ar" | "en">(getStoredLang);
   
   useEffect(() => {
     console.error("[Global Error]", error);
-    // Try to detect language from localStorage
-    const stored = localStorage.getItem("language");
-    if (stored === "en" || stored === "ar") {
-      setLang(stored);
-    }
   }, [error]);
 
   const texts = {

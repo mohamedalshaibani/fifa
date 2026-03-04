@@ -45,12 +45,17 @@ export default function TournamentCountdown({
       return { days, hours, minutes, seconds };
     };
 
-    // Initial calculation
+    // Initial calculation - use interval callback to avoid stale closure
     const initial = calculateTimeLeft();
-    setTimeLeft(initial);
-    if (initial === null) {
-      setHasStarted(true);
-    }
+    // Use queueMicrotask to defer the initial state update
+    queueMicrotask(() => {
+      if (initial === null) {
+        setTimeLeft(null);
+        setHasStarted(true);
+      } else {
+        setTimeLeft(initial);
+      }
+    });
 
     // Update every second
     const interval = setInterval(() => {
@@ -63,6 +68,7 @@ export default function TournamentCountdown({
     }, 1000);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate]);
 
   // Tournament finished

@@ -6,10 +6,11 @@ import Card from "@/components/Card";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useLanguage } from "@/lib/i18n/context";
+import type { User } from "@supabase/supabase-js";
 
 export default function AdminBootstrapPage() {
   const { t } = useLanguage();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [copySql, setCopySql] = useState(false);
 

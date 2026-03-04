@@ -16,8 +16,6 @@ export default function RegisterPage() {
   const supabase = createClient();
   const { t, isRTL } = useLanguage();
 
-  const getFallbackAvatars = (): Avatar[] => [];
-
   // Form state
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -37,6 +35,7 @@ export default function RegisterPage() {
   useEffect(() => {
     const loadAvatars = async () => {
       try {
+        const supabase = createClient();
         const { data, error } = await supabase
           .from("avatars")
           .select("*")
@@ -146,8 +145,9 @@ export default function RegisterPage() {
       // Auto-login after registration - redirect directly to homepage
       router.push("/");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || t("auth.registrationFailed"));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("auth.registrationFailed");
+      setError(message);
     } finally {
       setLoading(false);
     }

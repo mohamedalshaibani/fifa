@@ -59,7 +59,8 @@ export default async function TournamentHomePage(props: Props) {
   // Create a map from participant_id to user_id (for fallback when team_members.user_id is null)
   const participantUserIdMap = new Map(participants.map((p) => [p.id, p.user_id]));
   
-  // Fetch user profiles for team members to get avatars
+  // Collect all user IDs from participants and team members
+  const participantUserIds = participants.map(p => p.user_id).filter(Boolean);
   const teamMemberUserIds = teamMembers
     .map(tm => {
       if (tm.user_id) return tm.user_id;
@@ -68,8 +69,9 @@ export default async function TournamentHomePage(props: Props) {
     })
     .filter((id): id is string => !!id);
   
-  const uniqueUserIds = [...new Set(teamMemberUserIds)];
-  const userProfilesMap = await getUserProfiles(uniqueUserIds);
+  // Combine and dedupe all user IDs
+  const allUserIds = [...new Set([...participantUserIds, ...teamMemberUserIds])];
+  const userProfilesMap = await getUserProfiles(allUserIds);
   
   // Build team members map with avatar data
   const teamMembersMap = new Map<string, TeamMemberInfo[]>();
@@ -95,6 +97,7 @@ export default async function TournamentHomePage(props: Props) {
       matches={matches}
       teams={teams}
       teamMembersMap={teamMembersMap}
+      participantProfilesMap={userProfilesMap}
       isAdmin={isAdmin}
       currentUser={currentUser}
       setupStatus={setupStatus}

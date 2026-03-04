@@ -32,6 +32,7 @@ export default function RegisterButton({
   // Translate server error or return as-is
   const translateError = (err: string): string => {
     const key = errorKeyMap[err];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return key ? t(key as any) : err;
   };
 
