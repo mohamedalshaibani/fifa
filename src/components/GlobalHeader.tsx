@@ -132,8 +132,11 @@ export default function GlobalHeader({
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-gradient-to-b from-[#E8DDD2] via-[#FFFFFF]/90 to-[#FFFFFF]/80 backdrop-blur-md">
-        {/* Container: flex direction changes based on language */}
-        <div className={`container-responsive h-16 flex items-center justify-between gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+        {/* Container: use dir attribute to control layout direction */}
+        <div 
+          dir={isRTL ? 'rtl' : 'ltr'}
+          className="container-responsive h-16 flex items-center justify-between gap-4"
+        >
           
           {/* LOGO ZONE: Logo/Brand - Always visible */}
           <Link href="/" className="flex items-center gap-2 sm:gap-3 transition-opacity hover:opacity-90">
@@ -142,7 +145,7 @@ export default function GlobalHeader({
               <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
             {/* Text - Responsive: smaller on mobile, full on desktop */}
-            <div className={`flex flex-col ${isRTL ? 'items-end' : 'items-start'}`}>
+            <div className="flex flex-col items-start rtl:items-end">
               <h1 className="text-sm sm:text-lg font-black leading-none heading-tight text-foreground">
                 {t("header.platformName")}
               </h1>
@@ -153,7 +156,7 @@ export default function GlobalHeader({
           </Link>
 
           {/* ACTIONS ZONE: Actions (Desktop) / Hamburger (Mobile) */}
-          <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+          <div className="flex items-center gap-3">
             {/* Mobile Menu Toggle - lg:hidden = visible on mobile/tablet, hidden on desktop */}
             <button 
               onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -165,7 +168,7 @@ export default function GlobalHeader({
             </button>
 
             {/* Desktop Navigation - hidden lg:flex = visible only on desktop */}
-            <nav className={`hidden lg:flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
+            <nav className="hidden lg:flex items-center gap-3">
               {/* Language Toggle */}
               <LanguageToggle />
               
