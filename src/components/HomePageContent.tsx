@@ -7,7 +7,7 @@ import SportCard from "@/components/ui/SportCard";
 import SportBadge from "@/components/ui/SportBadge";
 import { useLanguage } from "@/lib/i18n";
 import { Tournament } from "@/lib/types";
-import { Users, Trophy, Flame, Target, Award, Zap, CheckCircle, Calendar, BarChart3, Swords, TrendingUp, Minus, X as XIcon, CircleDot, Medal, Crown, Star } from "lucide-react";
+import { Users, Trophy, Flame, Target, Award, Zap, CheckCircle, Calendar, BarChart3, Swords, TrendingUp, Minus, X as XIcon, CircleDot, Medal, Crown, Star, Lock } from "lucide-react";
 
 interface TournamentData {
   tournament: Tournament;
@@ -383,7 +383,13 @@ export function HomePageContent({
 
                             {/* CTA Button */}
                             <div className="pt-2 mt-auto">
-                              {isUserRegistered ? (
+                              {tournament.status === "registration_closed" ? (
+                                /* Registration closed: show indicator */
+                                <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-muted/10 border border-muted/30 text-muted font-bold text-sm">
+                                  <Lock className="w-4 h-4" />
+                                  {t("tournament.registrationClosed")}
+                                </div>
+                              ) : isUserRegistered ? (
                                 <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-green-500/20 border border-green-500/40 text-green-500 font-bold text-sm">
                                   <CheckCircle className="w-4 h-4" />
                                   {t("home.youAreRegistered")} ✅
@@ -473,8 +479,8 @@ export function HomePageContent({
                           <div className="space-y-4 flex-1 flex flex-col">
                             {/* Finished Badge */}
                             <div className="flex items-center justify-between gap-2">
-                              <SportBadge variant="success" icon={<CheckCircle className="w-3 h-3" />}>
-                                ✅ {t("home.statusFinished")}
+                              <SportBadge variant="danger" icon={<CheckCircle className="w-3 h-3" />}>
+                                🔴 {t("home.statusFinished")}
                               </SportBadge>
                               <SportBadge variant="info" icon={tournament.type === "league" ? "🏆" : "⚡"}>
                                 {tournament.type === "league" ? t("tournament.league") : t("tournament.knockout")}
@@ -512,14 +518,10 @@ export function HomePageContent({
 
                             {/* CTA Button */}
                             <div className="pt-2 mt-auto">
-                              <SportButton
-                                variant="ghost"
-                                size="sm"
-                                className="w-full font-bold"
-                              >
+                              <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-primary/10 border border-primary/30 text-primary font-bold text-sm">
                                 <BarChart3 className="w-4 h-4" />
                                 {t("home.viewResults")}
-                              </SportButton>
+                              </div>
                             </div>
                           </div>
                         </SportCard>

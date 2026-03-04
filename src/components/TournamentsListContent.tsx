@@ -6,7 +6,7 @@ import SportBadge from "@/components/ui/SportBadge";
 import SportButton from "@/components/ui/SportButton";
 import SportCard from "@/components/ui/SportCard";
 import { useLanguage } from "@/lib/i18n";
-import { Users, Trophy, Flame, Filter, CheckCircle, Zap, Award } from "lucide-react";
+import { Users, Trophy, Flame, Filter, CheckCircle, Zap, Award, Lock, BarChart3 } from "lucide-react";
 
 interface Tournament {
   id: string;
@@ -28,12 +28,12 @@ export function TournamentsListContent({ tournaments, isLoggedIn }: TournamentsL
   const { t } = useLanguage();
 
   const getStatusInfo = (status: string) => {
-    const statusMap: Record<string, { variant: "primary" | "warning" | "info" | "success"; label: string; icon: string }> = {
+    const statusMap: Record<string, { variant: "primary" | "warning" | "info" | "success" | "danger"; label: string; icon: string }> = {
       running: { variant: "primary", label: `🔴 ${t("home.statusRunning")}`, icon: "🔥" },
       registration_open: { variant: "warning", label: `🟡 ${t("home.statusRegOpen")}`, icon: "⚡" },
       registration_closed: { variant: "info", label: `🟠 ${t("home.statusClosed")}`, icon: "🔒" },
       pending: { variant: "info", label: `🟤 ${t("home.statusUpcoming")}`, icon: "📅" },
-      finished: { variant: "info", label: `⚪ ${t("home.statusFinished")}`, icon: "✅" }
+      finished: { variant: "danger", label: `🔴 ${t("home.statusFinished")}`, icon: "✅" }
     };
     return statusMap[status] || statusMap.pending;
   };
@@ -136,22 +136,38 @@ export function TournamentsListContent({ tournaments, isLoggedIn }: TournamentsL
 
                       {/* CTA Button */}
                       <div className="pt-2 mt-auto">
-                        {tournament.isUserRegistered ? (
+                        {tournament.status === "finished" ? (
+                          /* Finished tournaments: View Results */
+                          <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-primary/10 border border-primary/30 text-primary font-bold text-sm">
+                            <BarChart3 className="w-4 h-4" />
+                            {t("home.viewResults")}
+                          </div>
+                        ) : tournament.status === "registration_closed" ? (
+                          /* Registration closed: show indicator */
+                          <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-muted/10 border border-muted/30 text-muted font-bold text-sm">
+                            <Lock className="w-4 h-4" />
+                            {t("tournament.registrationClosed")}
+                          </div>
+                        ) : tournament.isUserRegistered ? (
+                          /* User is registered */
                           <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-green-500/20 border border-green-500/40 text-green-500 font-bold text-sm">
                             <CheckCircle className="w-4 h-4" />
                             {t("home.youAreRegistered")} ✅
                           </div>
                         ) : isRegistrationOpen ? (
+                          /* Registration open: Register Now */
                           <SportButton variant="primary" size="sm" className="w-full font-bold">
                             <Zap className="w-4 h-4" />
                             {t("home.registerNow")}
                           </SportButton>
                         ) : isRunning ? (
+                          /* Running: Watch Now */
                           <SportButton variant="secondary" size="sm" className="w-full font-bold">
                             <Flame className="w-4 h-4" />
                             {t("home.watchNow")}
                           </SportButton>
                         ) : (
+                          /* Default: View Details */
                           <SportButton variant="ghost" size="sm" className="w-full font-bold">
                             <Award className="w-4 h-4" />
                             {t("home.viewDetails")}
