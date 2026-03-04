@@ -5,8 +5,10 @@ import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { createTournament } from "@/app/admin/actions";
 import { Trophy, Check, Users, User, Shuffle, UserCheck } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 export default function TournamentCreateForm() {
+  const { t } = useLanguage();
   const [tournamentType, setTournamentType] = useState<string | null>(null);
   const [playersPerTeam, setPlayersPerTeam] = useState<string | null>(null);
   const [teamFormationMode, setTeamFormationMode] = useState<string | null>(null);
@@ -19,20 +21,20 @@ export default function TournamentCreateForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1">
           <label htmlFor="name" className="block text-[10px] font-bold text-primary uppercase tracking-wider">
-            اسم البطولة
+            {t("admin.createForm.tournamentName")}
           </label>
           <Input
             id="name"
             name="name"
             type="text"
-            placeholder="مثال: كأس المجلس"
+            placeholder={t("admin.createForm.namePlaceholder")}
             required
             className="h-10 text-sm"
           />
         </div>
         <div className="space-y-1">
           <label htmlFor="start_date" className="block text-[10px] font-bold text-primary uppercase tracking-wider">
-            تاريخ البدء
+            {t("admin.createForm.startDate")}
           </label>
           <Input
             id="start_date"
@@ -47,7 +49,7 @@ export default function TournamentCreateForm() {
       {/* Row 2: Tournament Type - Compact inline */}
       <div className="space-y-1.5">
         <label className="block text-[10px] font-bold text-primary uppercase tracking-wider">
-          نظام البطولة
+          {t("admin.createForm.tournamentSystem")}
         </label>
         <div className="flex gap-2">
           {/* League */}
@@ -72,7 +74,7 @@ export default function TournamentCreateForm() {
                 <Check className="w-4 h-4 text-primary" strokeWidth={3} />
               )}
               <span>🏆</span>
-              <span>دوري</span>
+              <span>{t("admin.createForm.league")}</span>
             </div>
           </label>
 
@@ -98,7 +100,7 @@ export default function TournamentCreateForm() {
                 <Check className="w-4 h-4 text-primary" strokeWidth={3} />
               )}
               <span>⚡</span>
-              <span>خروج مباشر</span>
+              <span>{t("admin.createForm.knockout")}</span>
             </div>
           </label>
         </div>
@@ -107,7 +109,7 @@ export default function TournamentCreateForm() {
       {/* Row 3: Players per Team - Compact inline */}
       <div className="space-y-1.5">
         <label className="block text-[10px] font-bold text-secondary uppercase tracking-wider">
-          نوع المشاركة
+          {t("admin.createForm.participationType")}
         </label>
         <div className="flex gap-2">
           {/* Individual 1v1 */}
@@ -135,7 +137,7 @@ export default function TournamentCreateForm() {
                 <Check className="w-4 h-4 text-secondary" strokeWidth={3} />
               )}
               <User className="w-4 h-4" />
-              <span>فردي</span>
+              <span>{t("admin.createForm.individual")}</span>
               <span className="text-xs opacity-80">1v1</span>
             </div>
           </label>
@@ -162,7 +164,7 @@ export default function TournamentCreateForm() {
                 <Check className="w-4 h-4 text-secondary" strokeWidth={3} />
               )}
               <Users className="w-4 h-4" />
-              <span>فرق</span>
+              <span>{t("admin.createForm.teams")}</span>
               <span className="text-xs opacity-80">2v2</span>
             </div>
           </label>
@@ -173,7 +175,7 @@ export default function TournamentCreateForm() {
       {showFormationMode && (
         <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-200">
           <label className="block text-[10px] font-bold text-accent uppercase tracking-wider">
-            طريقة تشكيل الفرق
+            {t("admin.createForm.teamFormation")}
           </label>
           <div className="flex gap-2">
             {/* Preformed */}
@@ -198,7 +200,7 @@ export default function TournamentCreateForm() {
                   <Check className="w-4 h-4 text-accent" strokeWidth={3} />
                 )}
                 <UserCheck className="w-4 h-4" />
-                <span>فرق جاهزة</span>
+                <span>{t("admin.createForm.preformed")}</span>
               </div>
             </label>
 
@@ -224,7 +226,7 @@ export default function TournamentCreateForm() {
                   <Check className="w-4 h-4 text-accent" strokeWidth={3} />
                 )}
                 <Shuffle className="w-4 h-4" />
-                <span>قرعة عشوائية</span>
+                <span>{t("admin.createForm.randomDraw")}</span>
               </div>
             </label>
           </div>
@@ -238,7 +240,7 @@ export default function TournamentCreateForm() {
           className="w-full h-11 text-sm font-bold shadow-[0_4px_14px_rgba(0,92,255,0.3)] hover:shadow-[0_6px_20px_rgba(0,92,255,0.4)] transition-all"
         >
           <Trophy className="w-4 h-4" />
-          إنشاء البطولة
+          {t("admin.createForm.create")}
         </Button>
       </div>
     </form>

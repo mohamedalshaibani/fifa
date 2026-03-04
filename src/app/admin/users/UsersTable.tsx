@@ -6,6 +6,7 @@ import SportCard from "@/components/ui/SportCard";
 import SportButton from "@/components/ui/SportButton";
 import SportBadge from "@/components/ui/SportBadge";
 import { Search, Shield, ShieldOff, UserX, UserCheck, Trash2, ChevronDown, X, AlertTriangle } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 import { 
   UserWithDetails, 
   promoteToAdmin, 
@@ -24,6 +25,7 @@ interface UsersTableProps {
 }
 
 export function UsersTable({ users, currentUserId }: UsersTableProps) {
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<FilterRole>("all");
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("all");
@@ -70,9 +72,9 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
     startTransition(async () => {
       const result = await action();
       if (result.success) {
-        showMessage("success", "تمت العملية بنجاح");
+        showMessage("success", t("admin.users.operationSuccess"));
       } else {
-        showMessage("error", result.error || "حدث خطأ");
+        showMessage("error", result.error || t("admin.users.operationError"));
       }
       setConfirmModal(null);
     });
@@ -86,7 +88,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ar-SA", {
+    return new Date(dateString).toLocaleDateString(language === "ar" ? "ar-SA" : "en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -112,7 +114,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted pointer-events-none" />
             <input
               type="text"
-              placeholder="بحث بالاسم أو البريد الإلكتروني..."
+              placeholder={t("admin.users.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-12 pr-12 pl-10 rounded-xl bg-surface border border-border text-foreground placeholder-muted text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all"
@@ -140,9 +142,9 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                     : "bg-surface border-border text-foreground hover:border-primary/40"
                 }`}
               >
-                <option value="all">جميع الأدوار</option>
-                <option value="admin">المشرفين</option>
-                <option value="user">المستخدمين</option>
+                <option value="all">{t("admin.users.allRoles")}</option>
+                <option value="admin">{t("admin.users.adminsOnly")}</option>
+                <option value="user">{t("admin.users.usersOnly")}</option>
               </select>
               <ChevronDown className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors ${
                 roleFilter !== "all" ? "text-primary" : "text-muted"
@@ -160,9 +162,9 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                     : "bg-surface border-border text-foreground hover:border-primary/40"
                 }`}
               >
-                <option value="all">جميع الحالات</option>
-                <option value="active">نشط</option>
-                <option value="suspended">معلق</option>
+                <option value="all">{t("admin.users.allStatuses")}</option>
+                <option value="active">{t("admin.users.activeOnly")}</option>
+                <option value="suspended">{t("admin.users.suspendedOnly")}</option>
               </select>
               <ChevronDown className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors ${
                 statusFilter !== "all" ? "text-primary" : "text-muted"
@@ -180,7 +182,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                 className="h-12 px-4 rounded-xl bg-danger/10 text-danger text-sm font-semibold hover:bg-danger/20 transition-colors flex items-center gap-2 whitespace-nowrap"
               >
                 <X className="w-4 h-4" />
-                مسح الفلاتر
+                {t("admin.users.clearFilters")}
               </button>
             )}
           </div>
@@ -190,11 +192,11 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
       {/* Results Count - Integrated better */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted font-medium">
-          عرض <span className="text-foreground font-bold">{filteredUsers.length}</span> من <span className="text-foreground font-bold">{users.length}</span> مستخدم
+          {t("admin.users.showing")} <span className="text-foreground font-bold">{filteredUsers.length}</span> {t("admin.users.of")} <span className="text-foreground font-bold">{users.length}</span> {t("admin.users.user")}
         </div>
         {filteredUsers.length !== users.length && (
           <div className="text-xs text-primary font-semibold">
-            تم تصفية النتائج
+            {t("admin.users.filteredResults")}
           </div>
         )}
       </div>
@@ -204,19 +206,19 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
         {filteredUsers.length === 0 ? (
           <div className="p-8 text-center text-muted">
             <Search className="w-12 h-12 mx-auto mb-4 opacity-30" />
-            <p>لا يوجد مستخدمون يطابقون البحث</p>
+            <p>{t("admin.users.noUsersMatch")}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-surface border-b border-border">
-                  <th className="px-4 py-4 text-right font-bold text-foreground">المستخدم</th>
-                  <th className="px-4 py-4 text-right font-bold text-foreground">البريد الإلكتروني</th>
-                  <th className="px-4 py-4 text-center font-bold text-foreground">الدور</th>
-                  <th className="px-4 py-4 text-center font-bold text-foreground">الحالة</th>
-                  <th className="px-4 py-4 text-center font-bold text-foreground">تاريخ التسجيل</th>
-                  <th className="px-4 py-4 text-center font-bold text-foreground">الإجراءات</th>
+                  <th className="px-4 py-4 text-right font-bold text-foreground">{t("admin.users.tableUser")}</th>
+                  <th className="px-4 py-4 text-right font-bold text-foreground">{t("admin.users.tableEmail")}</th>
+                  <th className="px-4 py-4 text-center font-bold text-foreground">{t("admin.users.tableRole")}</th>
+                  <th className="px-4 py-4 text-center font-bold text-foreground">{t("admin.users.tableStatus")}</th>
+                  <th className="px-4 py-4 text-center font-bold text-foreground">{t("admin.users.tableJoined")}</th>
+                  <th className="px-4 py-4 text-center font-bold text-foreground">{t("admin.users.tableActions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -248,7 +250,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                             <div className="font-semibold text-foreground">
                               {displayName}
                               {isCurrentUser && (
-                                <span className="mr-2 text-xs text-muted">(أنت)</span>
+                                <span className="mr-2 text-xs text-muted">{t("admin.users.you")}</span>
                               )}
                             </div>
                           </div>
@@ -265,19 +267,19 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                         {user.is_admin ? (
                           <SportBadge variant="primary">
                             <Shield className="w-3 h-3 ml-1" />
-                            مشرف
+                            {t("admin.users.roleAdmin")}
                           </SportBadge>
                         ) : (
-                          <SportBadge variant="info">مستخدم</SportBadge>
+                          <SportBadge variant="info">{t("admin.users.roleUser")}</SportBadge>
                         )}
                       </td>
 
                       {/* Status Badge */}
                       <td className="px-4 py-4 text-center">
                         {user.is_suspended ? (
-                          <SportBadge variant="danger">معلق</SportBadge>
+                          <SportBadge variant="danger">{t("admin.users.statusSuspended")}</SportBadge>
                         ) : (
-                          <SportBadge variant="success">نشط</SportBadge>
+                          <SportBadge variant="success">{t("admin.users.statusActive")}</SportBadge>
                         )}
                       </td>
 
@@ -295,7 +297,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                               onClick={() => setConfirmModal({ action: "demote", userId: user.id, userName: displayName })}
                               disabled={isPending || isCurrentUser}
                               className="p-2 rounded-lg text-warning hover:bg-warning/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="إزالة صلاحيات المشرف"
+                              title={t("admin.users.demoteFromAdmin")}
                             >
                               <ShieldOff className="w-4 h-4" />
                             </button>
@@ -306,7 +308,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                                 type="submit"
                                 disabled={isPending}
                                 className="p-2 rounded-lg text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
-                                title="ترقية إلى مشرف"
+                                title={t("admin.users.promoteToAdmin")}
                               >
                                 <Shield className="w-4 h-4" />
                               </button>
@@ -321,7 +323,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                                 type="submit"
                                 disabled={isPending}
                                 className="p-2 rounded-lg text-success hover:bg-success/10 transition-colors disabled:opacity-50"
-                                title="إعادة تفعيل"
+                                title={t("admin.users.reactivate")}
                               >
                                 <UserCheck className="w-4 h-4" />
                               </button>
@@ -331,7 +333,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                               onClick={() => setConfirmModal({ action: "suspend", userId: user.id, userName: displayName })}
                               disabled={isPending || isCurrentUser || user.is_admin}
                               className="p-2 rounded-lg text-warning hover:bg-warning/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              title={user.is_admin ? "لا يمكن تعليق مشرف" : "تعليق الحساب"}
+                              title={user.is_admin ? t("admin.users.cannotSuspendAdmin") : t("admin.users.suspend")}
                             >
                               <UserX className="w-4 h-4" />
                             </button>
@@ -342,7 +344,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                             onClick={() => setConfirmModal({ action: "delete", userId: user.id, userName: displayName })}
                             disabled={isPending || isCurrentUser || user.is_admin}
                             className="p-2 rounded-lg text-danger hover:bg-danger/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title={user.is_admin ? "لا يمكن حذف مشرف" : "حذف الحساب"}
+                            title={user.is_admin ? t("admin.users.cannotDeleteAdmin") : t("admin.users.deleteAccount")}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -374,20 +376,20 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
               </div>
 
               <h3 className="text-xl font-bold text-foreground">
-                {confirmModal.action === "delete" && "تأكيد حذف الحساب"}
-                {confirmModal.action === "suspend" && "تأكيد تعليق الحساب"}
-                {confirmModal.action === "demote" && "تأكيد إزالة صلاحيات المشرف"}
+                {confirmModal.action === "delete" && t("admin.users.confirmDeleteTitle")}
+                {confirmModal.action === "suspend" && t("admin.users.confirmSuspendTitle")}
+                {confirmModal.action === "demote" && t("admin.users.confirmDemoteTitle")}
               </h3>
 
               <p className="text-muted">
                 {confirmModal.action === "delete" && (
-                  <>هل أنت متأكد من حذف حساب <strong className="text-foreground">{confirmModal.userName}</strong>؟ هذا الإجراء لا يمكن التراجع عنه.</>
+                  <>{t("admin.users.confirmDeleteDesc")} <strong className="text-foreground">{confirmModal.userName}</strong>؟ {t("admin.users.confirmDeleteWarning")}</>
                 )}
                 {confirmModal.action === "suspend" && (
-                  <>هل أنت متأكد من تعليق حساب <strong className="text-foreground">{confirmModal.userName}</strong>؟ لن يتمكن من تسجيل الدخول حتى إعادة التفعيل.</>
+                  <>{t("admin.users.confirmSuspendDesc")} <strong className="text-foreground">{confirmModal.userName}</strong>؟ {t("admin.users.confirmSuspendWarning")}</>
                 )}
                 {confirmModal.action === "demote" && (
-                  <>هل أنت متأكد من إزالة صلاحيات المشرف من <strong className="text-foreground">{confirmModal.userName}</strong>؟</>
+                  <>{t("admin.users.confirmDemoteDesc")} <strong className="text-foreground">{confirmModal.userName}</strong>؟</>
                 )}
               </p>
 
@@ -397,7 +399,7 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                   onClick={() => setConfirmModal(null)}
                   disabled={isPending}
                 >
-                  إلغاء
+                  {t("common.cancel")}
                 </SportButton>
                 <form action={(formData) => {
                   if (confirmModal.action === "delete") {
@@ -415,9 +417,9 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
                     disabled={isPending}
                     isLoading={isPending}
                   >
-                    {confirmModal.action === "delete" && "حذف"}
-                    {confirmModal.action === "suspend" && "تعليق"}
-                    {confirmModal.action === "demote" && "إزالة"}
+                    {confirmModal.action === "delete" && t("common.delete")}
+                    {confirmModal.action === "suspend" && t("admin.users.suspend")}
+                    {confirmModal.action === "demote" && t("admin.users.demoteFromAdmin")}
                   </SportButton>
                 </form>
               </div>

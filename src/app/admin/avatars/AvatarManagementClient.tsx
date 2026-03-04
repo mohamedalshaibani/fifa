@@ -7,6 +7,7 @@ import SportButton from "@/components/ui/SportButton";
 import SafeImage from "@/components/SafeImage";
 import UploadAvatarForm from "./UploadAvatarForm";
 import AvatarCardActions from "./AvatarCardActions";
+import { useLanguage } from "@/lib/i18n";
 import type { Avatar } from "@/lib/types";
 
 interface AvatarManagementClientProps {
@@ -15,6 +16,7 @@ interface AvatarManagementClientProps {
 }
 
 export default function AvatarManagementClient({ avatars, grouped }: AvatarManagementClientProps) {
+  const { t } = useLanguage();
   const [showUploadModal, setShowUploadModal] = useState(false);
 
   return (
@@ -27,7 +29,7 @@ export default function AvatarManagementClient({ avatars, grouped }: AvatarManag
           icon={Plus}
           onClick={() => setShowUploadModal(true)}
         >
-          إضافة صورة رمزية جديدة
+          {t("admin.avatars.addNew")}
         </SportButton>
       </div>
 
@@ -38,8 +40,8 @@ export default function AvatarManagementClient({ avatars, grouped }: AvatarManag
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-surface-2 flex items-center justify-center">
               <Plus className="w-10 h-10 text-muted" />
             </div>
-            <p className="text-lg font-semibold text-foreground">لا توجد صور رمزية بعد</p>
-            <p className="text-sm text-muted mt-2">اضغط على الزر أعلاه لإضافة أول صورة</p>
+            <p className="text-lg font-semibold text-foreground">{t("admin.avatars.noAvatarsYet")}</p>
+            <p className="text-sm text-muted mt-2">{t("admin.avatars.clickToAdd")}</p>
           </div>
         </SportCard>
       ) : (
@@ -47,7 +49,7 @@ export default function AvatarManagementClient({ avatars, grouped }: AvatarManag
           {Object.entries(grouped).map(([category, list]) => (
             <div key={category} className="space-y-4">
               <h2 className="text-sm font-extrabold text-muted uppercase tracking-[0.2em] text-right">
-                {category === "legend" ? "فئة الأساطير" : "فئة اللاعبين"}
+                {category === "legend" ? t("admin.avatars.legendCategory") : t("admin.avatars.playerCategory")}
               </h2>
               <SportCard padding="lg" variant="default" className="bg-white/80">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
@@ -95,7 +97,7 @@ export default function AvatarManagementClient({ avatars, grouped }: AvatarManag
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-              <h3 className="text-xl font-bold text-foreground">رفع صورة رمزية جديدة</h3>
+              <h3 className="text-xl font-bold text-foreground">{t("admin.avatars.uploadNew")}</h3>
               <button
                 onClick={() => setShowUploadModal(false)}
                 className="p-2 rounded-lg hover:bg-surface transition-colors"

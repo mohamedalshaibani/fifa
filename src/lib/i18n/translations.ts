@@ -1367,6 +1367,664 @@ export const translations = {
     ar: "الإنجليزية",
     en: "English",
   },
+
+  // ============ ADMIN COMMON ============
+  "admin.dashboard": {
+    ar: "لوحة التحكم",
+    en: "Control Panel",
+  },
+  "admin.manageTournamentsAndUsers": {
+    ar: "إدارة البطولات والمستخدمين والنظام",
+    en: "Manage tournaments, users, and system",
+  },
+  "admin.backToPanel": {
+    ar: "العودة للوحة التحكم",
+    en: "Back to Control Panel",
+  },
+  "admin.backToTournaments": {
+    ar: "العودة للبطولات",
+    en: "Back to Tournaments",
+  },
+  "admin.manage": {
+    ar: "إدارة",
+    en: "Manage",
+  },
+
+  // ============ ADMIN SECTIONS ============
+  "admin.sections.tournaments": {
+    ar: "البطولات",
+    en: "Tournaments",
+  },
+  "admin.sections.tournamentsDesc": {
+    ar: "إنشاء وإدارة البطولات",
+    en: "Create and manage tournaments",
+  },
+  "admin.sections.users": {
+    ar: "المستخدمون",
+    en: "Users",
+  },
+  "admin.sections.usersDesc": {
+    ar: "إدارة الحسابات والصلاحيات",
+    en: "Manage accounts and permissions",
+  },
+  "admin.sections.avatars": {
+    ar: "الأفتارات",
+    en: "Avatars",
+  },
+  "admin.sections.avatarsDesc": {
+    ar: "رفع وتعديل الصور",
+    en: "Upload and edit images",
+  },
+
+  // ============ ADMIN TOURNAMENTS ============
+  "admin.tournaments.title": {
+    ar: "إدارة البطولات",
+    en: "Tournament Management",
+  },
+  "admin.tournaments.subtitle": {
+    ar: "إنشاء وتحرير وحذف البطولات",
+    en: "Create, edit, and delete tournaments",
+  },
+  "admin.tournaments.total": {
+    ar: "إجمالي",
+    en: "Total",
+  },
+  "admin.tournaments.running": {
+    ar: "جارية",
+    en: "Running",
+  },
+  "admin.tournaments.completed": {
+    ar: "مكتملة",
+    en: "Completed",
+  },
+  "admin.tournaments.pending": {
+    ar: "انتظار",
+    en: "Pending",
+  },
+  "admin.tournaments.newTournament": {
+    ar: "بطولة جديدة",
+    en: "New Tournament",
+  },
+  "admin.tournaments.noTournamentsYet": {
+    ar: "📭 لا توجد بطولات بعد",
+    en: "📭 No tournaments yet",
+  },
+  "admin.tournaments.tournamentsList": {
+    ar: "البطولات",
+    en: "Tournaments",
+  },
+  "admin.tournaments.delete": {
+    ar: "حذف",
+    en: "Delete",
+  },
+  "admin.tournaments.deleteConfirm": {
+    ar: "⚠️ حذف نهائي!",
+    en: "⚠️ Delete permanently!",
+  },
+  "admin.tournaments.statusRunning": {
+    ar: "🔴 جارية",
+    en: "🔴 Running",
+  },
+  "admin.tournaments.statusRegistration": {
+    ar: "🟡 تسجيل",
+    en: "🟡 Registration",
+  },
+  "admin.tournaments.statusFinished": {
+    ar: "⚪ انتهت",
+    en: "⚪ Finished",
+  },
+  "admin.tournaments.statusUpcoming": {
+    ar: "🟤 قادمة",
+    en: "🟤 Upcoming",
+  },
+  "admin.tournaments.typeLeague": {
+    ar: "🏆 دوري",
+    en: "🏆 League",
+  },
+  "admin.tournaments.typeKnockout": {
+    ar: "⚡ خروج مباشر",
+    en: "⚡ Knockout",
+  },
+
+  // ============ CREATE TOURNAMENT FORM ============
+  "admin.createForm.tournamentName": {
+    ar: "اسم البطولة",
+    en: "Tournament Name",
+  },
+  "admin.createForm.namePlaceholder": {
+    ar: "مثال: كأس المجلس",
+    en: "Example: Council Cup",
+  },
+  "admin.createForm.startDate": {
+    ar: "تاريخ البدء",
+    en: "Start Date",
+  },
+  "admin.createForm.tournamentSystem": {
+    ar: "نظام البطولة",
+    en: "Tournament System",
+  },
+  "admin.createForm.league": {
+    ar: "دوري",
+    en: "League",
+  },
+  "admin.createForm.knockout": {
+    ar: "خروج مباشر",
+    en: "Knockout",
+  },
+  "admin.createForm.participationType": {
+    ar: "نوع المشاركة",
+    en: "Participation Type",
+  },
+  "admin.createForm.individual": {
+    ar: "فردي",
+    en: "Individual",
+  },
+  "admin.createForm.teams": {
+    ar: "فرق",
+    en: "Teams",
+  },
+  "admin.createForm.teamFormation": {
+    ar: "طريقة تشكيل الفرق",
+    en: "Team Formation Method",
+  },
+  "admin.createForm.preformed": {
+    ar: "فرق جاهزة",
+    en: "Preformed Teams",
+  },
+  "admin.createForm.randomDraw": {
+    ar: "قرعة عشوائية",
+    en: "Random Draw",
+  },
+  "admin.createForm.create": {
+    ar: "إنشاء البطولة",
+    en: "Create Tournament",
+  },
+
+  // ============ ADMIN TOURNAMENT DASHBOARD ============
+  "admin.tournamentDash.participant": {
+    ar: "مشارك",
+    en: "Participant",
+  },
+  "admin.tournamentDash.participants": {
+    ar: "المشاركون",
+    en: "Participants",
+  },
+  "admin.tournamentDash.match": {
+    ar: "مباراة",
+    en: "Match",
+  },
+  "admin.tournamentDash.matches": {
+    ar: "المباريات",
+    en: "Matches",
+  },
+  "admin.tournamentDash.completedMatch": {
+    ar: "مباراة منتهية",
+    en: "Completed Match",
+  },
+  "admin.tournamentDash.upcomingMatch": {
+    ar: "مباراة قادمة",
+    en: "Upcoming Match",
+  },
+  "admin.tournamentDash.quickActions": {
+    ar: "إجراءات سريعة",
+    en: "Quick Actions",
+  },
+  "admin.tournamentDash.closeRegistration": {
+    ar: "إغلاق التسجيل",
+    en: "Close Registration",
+  },
+  "admin.tournamentDash.reopenRegistration": {
+    ar: "إعادة فتح التسجيل",
+    en: "Reopen Registration",
+  },
+  "admin.tournamentDash.startTournament": {
+    ar: "بدء البطولة",
+    en: "Start Tournament",
+  },
+  "admin.tournamentDash.drawTeams": {
+    ar: "سحب الفرق",
+    en: "Draw Teams",
+  },
+  "admin.tournamentDash.redrawTeams": {
+    ar: "إعادة القرعة",
+    en: "Redraw",
+  },
+  "admin.tournamentDash.generateMatches": {
+    ar: "إنشاء المباريات",
+    en: "Generate Matches",
+  },
+  "admin.tournamentDash.needsTeamDraw": {
+    ar: "⚠️ يجب سحب الفرق أولاً",
+    en: "⚠️ Teams must be drawn first",
+  },
+  "admin.tournamentDash.needsTournamentType": {
+    ar: "⚠️ يجب تحديد نوع البطولة أولاً",
+    en: "⚠️ Tournament type must be set first",
+  },
+  "admin.tournamentDash.addParticipants": {
+    ar: "إضافة مشاركين",
+    en: "Add Participants",
+  },
+  "admin.tournamentDash.addSingle": {
+    ar: "إضافة مشارك واحد",
+    en: "Add Single Participant",
+  },
+  "admin.tournamentDash.participantName": {
+    ar: "اسم المشارك",
+    en: "Participant Name",
+  },
+  "admin.tournamentDash.add": {
+    ar: "إضافة",
+    en: "Add",
+  },
+  "admin.tournamentDash.addBulk": {
+    ar: "إضافة عدة مشاركين (اسم في كل سطر)",
+    en: "Add Multiple Participants (one name per line)",
+  },
+  "admin.tournamentDash.addAll": {
+    ar: "إضافة الكل",
+    en: "Add All",
+  },
+  "admin.tournamentDash.noParticipantsYet": {
+    ar: "لا يوجد مشاركون بعد",
+    en: "No participants yet",
+  },
+  "admin.tournamentDash.teams": {
+    ar: "الفرق",
+    en: "Teams",
+  },
+  "admin.tournamentDash.randomDrawBadge": {
+    ar: "قرعة عشوائية",
+    en: "Random Draw",
+  },
+  "admin.tournamentDash.teamsNotDrawn": {
+    ar: "لم يتم سحب الفرق بعد",
+    en: "Teams not drawn yet",
+  },
+  "admin.tournamentDash.useDrawButton": {
+    ar: "استخدم زر \"سحب الفرق\" أعلاه لإجراء القرعة",
+    en: "Use the \"Draw Teams\" button above to perform the draw",
+  },
+  "admin.tournamentDash.needMinPlayers": {
+    ar: "⚠️ يجب وجود 4 مشاركين على الأقل لسحب الفرق",
+    en: "⚠️ At least 4 participants are needed to draw teams",
+  },
+  "admin.tournamentDash.unnamed": {
+    ar: "بدون اسم",
+    en: "Unnamed",
+  },
+  "admin.tournamentDash.moreMatches": {
+    ar: "مباراة أخرى",
+    en: "more matches",
+  },
+  "admin.tournamentDash.deleteParticipant": {
+    ar: "حذف المشارك؟",
+    en: "Delete participant?",
+  },
+  "admin.tournamentDash.tournamentFormat": {
+    ar: "👥 صيغة البطولة (فردي / فرق)",
+    en: "👥 Tournament Format (Individual / Teams)",
+  },
+  "admin.tournamentDash.currentFormat": {
+    ar: "الصيغة الحالية:",
+    en: "Current Format:",
+  },
+  "admin.tournamentDash.teamsRandomDraw": {
+    ar: "فرق (قرعة عشوائية) 2v2",
+    en: "Teams (Random Draw) 2v2",
+  },
+  "admin.tournamentDash.teamsPreformed": {
+    ar: "فرق (جاهزة) 2v2",
+    en: "Teams (Preformed) 2v2",
+  },
+  "admin.tournamentDash.individual1v1": {
+    ar: "فردي 1v1",
+    en: "Individual 1v1",
+  },
+  "admin.tournamentDash.formatIndividual": {
+    ar: "🧍 فردي (1v1)",
+    en: "🧍 Individual (1v1)",
+  },
+  "admin.tournamentDash.formatTeamsRandom": {
+    ar: "🎲 فرق بالقرعة (2v2)",
+    en: "🎲 Teams by Draw (2v2)",
+  },
+  "admin.tournamentDash.formatTeamsPreformed": {
+    ar: "👥 فرق جاهزة (2v2)",
+    en: "👥 Preformed Teams (2v2)",
+  },
+  "admin.tournamentDash.teamsDrawn": {
+    ar: "✅ تم سحب",
+    en: "✅ Drew",
+  },
+  "admin.tournamentDash.teamsCount": {
+    ar: "فرق",
+    en: "teams",
+  },
+  "admin.tournamentDash.teamsNotDrawnWarning": {
+    ar: "⚠️ لم يتم سحب الفرق بعد - اضغط على \"سحب الفرق\" في الأسفل",
+    en: "⚠️ Teams not drawn yet - click \"Draw Teams\" below",
+  },
+  "admin.tournamentDash.selectType": {
+    ar: "⚙️ اختيار نوع البطولة",
+    en: "⚙️ Select Tournament Type",
+  },
+  "admin.tournamentDash.selectTypeDesc": {
+    ar: "يجب اختيار نوع البطولة قبل إنشاء المباريات",
+    en: "You must select the tournament type before creating matches",
+  },
+  "admin.tournamentDash.leagueFull": {
+    ar: "🏆 دوري (كل فريق يلعب مع الآخرين)",
+    en: "🏆 League (every team plays against others)",
+  },
+  "admin.tournamentDash.knockoutFull": {
+    ar: "⚡ خروج مباشر (إقصائي)",
+    en: "⚡ Knockout (elimination)",
+  },
+  "admin.tournamentDash.tournamentType": {
+    ar: "نوع البطولة:",
+    en: "Tournament Type:",
+  },
+  "admin.tournamentDash.changeToKnockout": {
+    ar: "تغيير إلى خروج مباشر",
+    en: "Change to Knockout",
+  },
+  "admin.tournamentDash.changeToLeague": {
+    ar: "تغيير إلى دوري",
+    en: "Change to League",
+  },
+
+  // ============ TOURNAMENT STATUS ============
+  "admin.status.pending": {
+    ar: "قيد الانتظار",
+    en: "Pending",
+  },
+  "admin.status.registrationOpen": {
+    ar: "التسجيل مفتوح",
+    en: "Registration Open",
+  },
+  "admin.status.registrationClosed": {
+    ar: "التسجيل مغلق",
+    en: "Registration Closed",
+  },
+  "admin.status.running": {
+    ar: "جارية",
+    en: "Running",
+  },
+  "admin.status.finished": {
+    ar: "انتهت",
+    en: "Finished",
+  },
+
+  // ============ ADMIN USERS ============
+  "admin.users.title": {
+    ar: "إدارة المستخدمين",
+    en: "User Management",
+  },
+  "admin.users.subtitle": {
+    ar: "إدارة الحسابات والصلاحيات",
+    en: "Manage accounts and permissions",
+  },
+  "admin.users.totalUsers": {
+    ar: "إجمالي المستخدمين",
+    en: "Total Users",
+  },
+  "admin.users.activeUsers": {
+    ar: "مستخدم نشط",
+    en: "Active Users",
+  },
+  "admin.users.admins": {
+    ar: "مشرف",
+    en: "Admin",
+  },
+  "admin.users.suspended": {
+    ar: "معلق",
+    en: "Suspended",
+  },
+  "admin.users.searchPlaceholder": {
+    ar: "بحث بالاسم أو البريد الإلكتروني...",
+    en: "Search by name or email...",
+  },
+  "admin.users.allRoles": {
+    ar: "جميع الأدوار",
+    en: "All Roles",
+  },
+  "admin.users.adminsOnly": {
+    ar: "المشرفين",
+    en: "Admins",
+  },
+  "admin.users.usersOnly": {
+    ar: "المستخدمين",
+    en: "Users",
+  },
+  "admin.users.allStatuses": {
+    ar: "جميع الحالات",
+    en: "All Statuses",
+  },
+  "admin.users.activeOnly": {
+    ar: "نشط",
+    en: "Active",
+  },
+  "admin.users.suspendedOnly": {
+    ar: "معلق",
+    en: "Suspended",
+  },
+  "admin.users.clearFilters": {
+    ar: "مسح الفلاتر",
+    en: "Clear Filters",
+  },
+  "admin.users.showing": {
+    ar: "عرض",
+    en: "Showing",
+  },
+  "admin.users.of": {
+    ar: "من",
+    en: "of",
+  },
+  "admin.users.user": {
+    ar: "مستخدم",
+    en: "user",
+  },
+  "admin.users.filteredResults": {
+    ar: "تم تصفية النتائج",
+    en: "Results filtered",
+  },
+  "admin.users.noUsersMatch": {
+    ar: "لا يوجد مستخدمون يطابقون البحث",
+    en: "No users match the search",
+  },
+  "admin.users.tableUser": {
+    ar: "المستخدم",
+    en: "User",
+  },
+  "admin.users.tableEmail": {
+    ar: "البريد الإلكتروني",
+    en: "Email",
+  },
+  "admin.users.tableRole": {
+    ar: "الدور",
+    en: "Role",
+  },
+  "admin.users.tableStatus": {
+    ar: "الحالة",
+    en: "Status",
+  },
+  "admin.users.tableJoined": {
+    ar: "تاريخ التسجيل",
+    en: "Joined",
+  },
+  "admin.users.tableActions": {
+    ar: "الإجراءات",
+    en: "Actions",
+  },
+  "admin.users.roleAdmin": {
+    ar: "مشرف",
+    en: "Admin",
+  },
+  "admin.users.roleUser": {
+    ar: "مستخدم",
+    en: "User",
+  },
+  "admin.users.statusActive": {
+    ar: "نشط",
+    en: "Active",
+  },
+  "admin.users.statusSuspended": {
+    ar: "معلق",
+    en: "Suspended",
+  },
+  "admin.users.you": {
+    ar: "(أنت)",
+    en: "(you)",
+  },
+  "admin.users.promoteToAdmin": {
+    ar: "ترقية إلى مشرف",
+    en: "Promote to Admin",
+  },
+  "admin.users.demoteFromAdmin": {
+    ar: "إزالة صلاحيات المشرف",
+    en: "Remove Admin Rights",
+  },
+  "admin.users.suspend": {
+    ar: "تعليق الحساب",
+    en: "Suspend Account",
+  },
+  "admin.users.reactivate": {
+    ar: "إعادة تفعيل",
+    en: "Reactivate",
+  },
+  "admin.users.deleteAccount": {
+    ar: "حذف الحساب",
+    en: "Delete Account",
+  },
+  "admin.users.cannotSuspendAdmin": {
+    ar: "لا يمكن تعليق مشرف",
+    en: "Cannot suspend an admin",
+  },
+  "admin.users.cannotDeleteAdmin": {
+    ar: "لا يمكن حذف مشرف",
+    en: "Cannot delete an admin",
+  },
+  "admin.users.operationSuccess": {
+    ar: "تمت العملية بنجاح",
+    en: "Operation completed successfully",
+  },
+  "admin.users.operationError": {
+    ar: "حدث خطأ",
+    en: "An error occurred",
+  },
+  "admin.users.confirmDeleteTitle": {
+    ar: "تأكيد حذف الحساب",
+    en: "Confirm Account Deletion",
+  },
+  "admin.users.confirmSuspendTitle": {
+    ar: "تأكيد تعليق الحساب",
+    en: "Confirm Account Suspension",
+  },
+  "admin.users.confirmDemoteTitle": {
+    ar: "تأكيد إزالة صلاحيات المشرف",
+    en: "Confirm Admin Rights Removal",
+  },
+  "admin.users.confirmDeleteDesc": {
+    ar: "هل أنت متأكد من حذف حساب",
+    en: "Are you sure you want to delete the account of",
+  },
+  "admin.users.confirmDeleteWarning": {
+    ar: "هذا الإجراء لا يمكن التراجع عنه.",
+    en: "This action cannot be undone.",
+  },
+  "admin.users.confirmSuspendDesc": {
+    ar: "هل أنت متأكد من تعليق حساب",
+    en: "Are you sure you want to suspend the account of",
+  },
+  "admin.users.confirmSuspendWarning": {
+    ar: "لن يتمكن من تسجيل الدخول حتى إعادة التفعيل.",
+    en: "They won't be able to log in until reactivated.",
+  },
+  "admin.users.confirmDemoteDesc": {
+    ar: "هل أنت متأكد من إزالة صلاحيات المشرف من",
+    en: "Are you sure you want to remove admin rights from",
+  },
+
+  // ============ ADMIN AVATARS ============
+  "admin.avatars.title": {
+    ar: "إدارة الأفتارات",
+    en: "Avatar Management",
+  },
+  "admin.avatars.library": {
+    ar: "مكتبة الصور الرمزية",
+    en: "Avatar Library",
+  },
+  "admin.avatars.subtitle": {
+    ar: "أضف وعدّل واحذف صور اللاعبين المستخدمة في التسجيل والملفات الشخصية.",
+    en: "Add, edit, and delete player images used in registration and profiles.",
+  },
+  "admin.avatars.totalImages": {
+    ar: "إجمالي الصور",
+    en: "Total Images",
+  },
+  "admin.avatars.legendsCategory": {
+    ar: "أساطير",
+    en: "Legends",
+  },
+  "admin.avatars.playersCategory": {
+    ar: "لاعبون",
+    en: "Players",
+  },
+  "admin.avatars.addNew": {
+    ar: "إضافة صورة رمزية جديدة",
+    en: "Add New Avatar",
+  },
+  "admin.avatars.noAvatarsYet": {
+    ar: "لا توجد صور رمزية بعد",
+    en: "No avatars yet",
+  },
+  "admin.avatars.clickToAdd": {
+    ar: "اضغط على الزر أعلاه لإضافة أول صورة",
+    en: "Click the button above to add the first image",
+  },
+  "admin.avatars.legendCategory": {
+    ar: "فئة الأساطير",
+    en: "Legends Category",
+  },
+  "admin.avatars.playerCategory": {
+    ar: "فئة اللاعبين",
+    en: "Players Category",
+  },
+  "admin.avatars.uploadNew": {
+    ar: "رفع صورة رمزية جديدة",
+    en: "Upload New Avatar",
+  },
+
+  // ============ RESET STAGE ============
+  "admin.reset.title": {
+    ar: "إعادة تعيين البطولة",
+    en: "Reset Tournament",
+  },
+  "admin.reset.description": {
+    ar: "إرجاع البطولة إلى مرحلة سابقة",
+    en: "Return tournament to a previous stage",
+  },
+  "admin.reset.toRegistrationOpen": {
+    ar: "إعادة فتح التسجيل",
+    en: "Reopen Registration",
+  },
+  "admin.reset.toRegistrationClosed": {
+    ar: "إغلاق التسجيل",
+    en: "Close Registration",
+  },
+  "admin.reset.toTypeSelection": {
+    ar: "اختيار نوع البطولة",
+    en: "Select Tournament Type",
+  },
+  "admin.reset.toAfterTeamDraw": {
+    ar: "بعد سحب الفرق",
+    en: "After Team Draw",
+  },
+  "admin.reset.toAfterMatchGeneration": {
+    ar: "بعد إنشاء المباريات",
+    en: "After Match Generation",
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
