@@ -109,25 +109,47 @@ export default function GlobalHeader({
 
   void pathname;
 
-  return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-gradient-to-b from-[#E8DDD2] via-[#FFFFFF]/20 to-transparent backdrop-blur-md">
-      {/* dir="ltr" forces standard left-to-right flex behavior, then we position manually */}
-      <div dir="ltr" className="container-responsive h-16 flex items-center justify-between gap-4">
-        
-        {/* LEFT ZONE: Actions (Desktop) / Hamburger (Mobile) */}
-        <div className="flex items-center gap-3">
-          {/* Mobile Menu Toggle - lg:hidden = visible on mobile/tablet, hidden on desktop */}
-          <button 
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-muted hover:text-foreground hover:bg-surface-alt transition-colors lg:hidden"
-            aria-label="Toggle menu"
-          >
-            {showMobileMenu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+  // Close mobile menu when clicking outside or pressing escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowMobileMenu(false);
+    };
+    
+    if (showMobileMenu) {
+      document.addEventListener("keydown", handleEscape);
+      // Prevent body scroll when menu is open
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [showMobileMenu]);
 
-          {/* Desktop Navigation - hidden lg:flex = visible only on desktop */}
-          <nav className="hidden lg:flex items-center gap-3">
-            {!user && (
+  return (
+    <>
+      <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-gradient-to-b from-[#E8DDD2] via-[#FFFFFF]/90 to-[#FFFFFF]/80 backdrop-blur-md">
+        {/* dir="ltr" forces standard left-to-right flex behavior, then we position manually */}
+        <div dir="ltr" className="container-responsive h-16 flex items-center justify-between gap-4">
+          
+          {/* LEFT ZONE: Actions (Desktop) / Hamburger (Mobile) */}
+          <div className="flex items-center gap-3">
+            {/* Mobile Menu Toggle - lg:hidden = visible on mobile/tablet, hidden on desktop */}
+            <button 
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-foreground hover:text-primary hover:bg-primary/10 transition-colors lg:hidden"
+              aria-label="Toggle menu"
+              aria-expanded={showMobileMenu}
+            >
+              {showMobileMenu ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+
+            {/* Desktop Navigation - hidden lg:flex = visible only on desktop */}
+            <nav className="hidden lg:flex items-center gap-3">
+              {!user && (
               <>
                 <HeaderButton
                   href={loginUrl}
@@ -178,87 +200,117 @@ export default function GlobalHeader({
           </nav>
         </div>
 
-        {/* RIGHT ZONE: Logo/Brand */}
-        <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-90">
-          <div className="hidden sm:flex flex-col items-end">
-            <h1 className="text-lg font-black leading-none heading-tight text-foreground">
+        {/* RIGHT ZONE: Logo/Brand - Always visible */}
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 transition-opacity hover:opacity-90">
+          {/* Text - Responsive: smaller on mobile, full on desktop */}
+          <div className="flex flex-col items-end">
+            <h1 className="text-sm sm:text-lg font-black leading-none heading-tight text-foreground">
               بطولات <span className="text-primary">فيفا</span>
             </h1>
-            <span className="text-[11px] font-semibold text-muted mt-1">
+            <span className="text-[9px] sm:text-[11px] font-semibold text-muted mt-0.5 sm:mt-1 hidden xs:block">
               منصة تحديات الأبطال
             </span>
           </div>
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md">
-            <Trophy className="h-5 w-5" />
+          {/* Logo Icon */}
+          <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md flex-shrink-0">
+            <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
         </Link>
       </div>
+    </header>
 
-      {/* Mobile Menu Overlay */}
-      {showMobileMenu && (
-        <div className="lg:hidden absolute top-16 left-0 w-full bg-surface border-b border-border p-4 shadow-xl animate-in slide-in-from-top-2">
-          <nav className="flex flex-col gap-2">
-            {!user && (
-              <div className="flex flex-col gap-2">
-                <HeaderButton
-                  href={loginUrl}
-                  onClick={() => setShowMobileMenu(false)}
-                  variant="outline"
-                  icon={LogIn}
-                  fullWidth
-                >
-                  دخول
-                </HeaderButton>
-                <HeaderButton
-                  href="/auth/register"
-                  onClick={() => setShowMobileMenu(false)}
-                  variant="secondary"
-                  icon={UserPlus}
-                  fullWidth
-                >
-                  تسجيل
-                </HeaderButton>
-              </div>
-            )}
+    {/* Mobile Menu Overlay - Full screen drawer */}
+    {showMobileMenu && (
+      <>
+        {/* Backdrop */}
+        <div 
+          className="fixed inset-0 bg-black/50 z-[60] lg:hidden animate-in fade-in duration-200"
+          onClick={() => setShowMobileMenu(false)}
+          aria-hidden="true"
+        />
+        
+        {/* Menu Drawer */}
+        <div className="fixed top-16 left-0 right-0 bottom-0 z-[70] lg:hidden overflow-y-auto">
+          <div className="bg-white border-b border-border shadow-2xl animate-in slide-in-from-top-2 duration-200">
+            <nav className="container-responsive py-6 flex flex-col gap-3">
+              {/* User greeting if logged in */}
+              {user && (
+                <div className="pb-4 mb-2 border-b border-border">
+                  <p className="text-sm text-muted">مرحباً،</p>
+                  <p className="text-lg font-bold text-foreground">
+                    {user.firstName || user.email?.split("@")[0] || "مستخدم"}
+                  </p>
+                </div>
+              )}
 
-            {user && (
-              <div className="flex flex-col gap-2">
-                {/* Account first (top of mobile menu) */}
-                <HeaderButton
-                  href="/account"
-                  onClick={() => setShowMobileMenu(false)}
-                  variant="ghost"
-                  icon={User}
-                  fullWidth
-                >
-                  حسابي
-                </HeaderButton>
-                {/* Admin Panel second */}
-                {isAdmin && (
+              {!user && (
+                <>
                   <HeaderButton
-                    href="/admin"
+                    href={loginUrl}
                     onClick={() => setShowMobileMenu(false)}
                     variant="primary"
-                    icon={Settings}
+                    icon={LogIn}
                     fullWidth
                   >
-                    لوحة الأدمن
+                    تسجيل الدخول
                   </HeaderButton>
-                )}
-                {/* Logout last (bottom - destructive action) */}
-                <HeaderButton
-                  variant="danger"
-                  icon={LogOut}
-                  onClick={handleLogout}
-                  fullWidth
-                >
-                  تسجيل خروج
-                </HeaderButton>
-              </div>
-            )}
-          </nav>
+                  <HeaderButton
+                    href="/auth/register"
+                    onClick={() => setShowMobileMenu(false)}
+                    variant="secondary"
+                    icon={UserPlus}
+                    fullWidth
+                  >
+                    إنشاء حساب جديد
+                  </HeaderButton>
+                </>
+              )}
+
+              {user && (
+                <>
+                  {/* Account */}
+                  <HeaderButton
+                    href="/account"
+                    onClick={() => setShowMobileMenu(false)}
+                    variant="outline"
+                    icon={User}
+                    fullWidth
+                  >
+                    حسابي
+                  </HeaderButton>
+                  
+                  {/* Admin Panel */}
+                  {isAdmin && (
+                    <HeaderButton
+                      href="/admin"
+                      onClick={() => setShowMobileMenu(false)}
+                      variant="primary"
+                      icon={Settings}
+                      fullWidth
+                    >
+                      لوحة الإدارة
+                    </HeaderButton>
+                  )}
+                  
+                  {/* Divider */}
+                  <div className="my-2 border-t border-border" />
+                  
+                  {/* Logout */}
+                  <HeaderButton
+                    variant="danger"
+                    icon={LogOut}
+                    onClick={handleLogout}
+                    fullWidth
+                  >
+                    تسجيل الخروج
+                  </HeaderButton>
+                </>
+              )}
+            </nav>
+          </div>
         </div>
-      )}
-    </header>
+      </>
+    )}
+    </>
   );
 }
