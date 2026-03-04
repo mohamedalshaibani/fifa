@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Check, X, Edit2 } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n';
+import SportButton from '@/components/ui/SportButton';
 
 interface MatchScoreEditorProps {
   matchId: string;
@@ -187,25 +188,25 @@ export default function MatchScoreEditor({
         <p className="text-sm text-danger text-center">{error}</p>
       )}
       
-      <div className="flex justify-center gap-2">
-        <button
-          type="button"
+      <div className="flex justify-center gap-3">
+        <SportButton
+          variant="primary"
+          size="base"
+          icon={Check}
           onClick={handleSave}
           disabled={isPending}
-          className="flex items-center gap-1.5 px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50 text-sm font-bold shadow-md transition-all"
         >
-          <Check className="w-4 h-4" />
           {isPending ? t('matchEditor.saving') : t('matchEditor.save')}
-        </button>
-        <button
-          type="button"
+        </SportButton>
+        <SportButton
+          variant="outline"
+          size="base"
+          icon={X}
           onClick={handleCancel}
           disabled={isPending}
-          className="flex items-center gap-1.5 px-5 py-2.5 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 disabled:opacity-50 text-sm font-bold transition-all"
         >
-          <X className="w-4 h-4" />
           {t('matchEditor.cancel')}
-        </button>
+        </SportButton>
       </div>
     </div>
   );
