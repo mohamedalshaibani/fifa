@@ -8,12 +8,14 @@ import BackLink from "@/components/BackLink";
 import SportCard from "@/components/ui/SportCard";
 import SportButton from "@/components/ui/SportButton";
 import AvatarSelector from "@/components/AvatarSelector";
+import { useLanguage } from "@/lib/i18n";
 import { User, Palette, BarChart3, Lock, Check } from "lucide-react";
 import { Avatar as AvatarType } from "@/lib/types";
 
 type Tab = "profile" | "avatar" | "stats" | "password";
 
 export default function AccountPage() {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -158,8 +160,8 @@ export default function AccountPage() {
       const payload = {
         id: user.id,
         email: user.email,
-        first_name: profile.first_name || "مستخدم",
-        last_name: profile.last_name || "جديد",
+        first_name: profile.first_name || t("account.newUser"),
+        last_name: profile.last_name || "",
         whatsapp_number: profile.whatsapp_number || "",
         avatar_url: profile.avatar_url || null,
       };
@@ -175,10 +177,10 @@ export default function AccountPage() {
         throw error;
       }
       console.log("Profile saved:", data);
-      showMessage("success", "تم حفظ الملف الشخصي بنجاح");
+      showMessage("success", t("account.profileSaved"));
     } catch (error: unknown) {
       const err = error as { message?: string; details?: string };
-      showMessage("error", err.message || "فشل في حفظ الملف الشخصي");
+      showMessage("error", err.message || t("account.profileSaveFailed"));
       console.error("Full error:", JSON.stringify(error, null, 2));
     } finally {
       setSaving(false);
@@ -203,9 +205,9 @@ export default function AccountPage() {
       
       if (error) throw error;
       setProfile(prev => ({ ...prev, avatar_id: selectedAvatarId, avatar_url: avatarUrl }));
-      showMessage("success", "تم تغيير الصورة الرمزية بنجاح");
+      showMessage("success", t("account.avatarChanged"));
     } catch (error) {
-      showMessage("error", "فشل في تغيير الصورة الرمزية");
+      showMessage("error", t("account.avatarChangeFailed"));
       console.error(error);
     } finally {
       setSaving(false);
@@ -214,11 +216,11 @@ export default function AccountPage() {
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      showMessage("error", "كلمات المرور غير متطابقة");
+      showMessage("error", t("account.passwordsMismatch"));
       return;
     }
     if (newPassword.length < 6) {
-      showMessage("error", "كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+      showMessage("error", t("account.passwordTooShort"));
       return;
     }
     setSaving(true);
@@ -231,9 +233,9 @@ export default function AccountPage() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      showMessage("success", "تم تغيير كلمة المرور بنجاح");
+      showMessage("success", t("account.passwordChanged"));
     } catch (error) {
-      showMessage("error", "فشل في تغيير كلمة المرور");
+      showMessage("error", t("account.passwordChangeFailed"));
       console.error(error);
     } finally {
       setSaving(false);
@@ -241,16 +243,16 @@ export default function AccountPage() {
   };
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
-    { id: "profile", label: "الملف الشخصي", icon: User },
-    { id: "avatar", label: "الصورة الرمزية", icon: Palette },
-    { id: "stats", label: "إحصائياتي", icon: BarChart3 },
-    { id: "password", label: "كلمة المرور", icon: Lock },
+    { id: "profile", label: t("account.profile"), icon: User },
+    { id: "avatar", label: t("account.avatar"), icon: Palette },
+    { id: "stats", label: t("account.stats"), icon: BarChart3 },
+    { id: "password", label: t("account.password"), icon: Lock },
   ];
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-xl text-foreground font-bold">جاري التحميل...</div>
+        <div className="text-xl text-foreground font-bold">{t("common.loading")}</div>
       </div>
     );
   }
@@ -261,7 +263,7 @@ export default function AccountPage() {
         <div className="max-w-4xl mx-auto space-y-6">
           
           {/* Back Link - Unified styling */}
-          <BackLink href="/" text="العودة" />
+          <BackLink href="/" text={t("account.back")} />
           
           {/* Header Card */}
           <SportCard padding="lg" variant="elevated">
@@ -286,11 +288,11 @@ export default function AccountPage() {
               </div>
               
               {/* User Info */}
-              <div className="flex-1 text-right">
+              <div className="flex-1 text-right rtl:text-right ltr:text-left">
                 <h1 className="text-xl md:text-2xl font-black text-foreground mb-1">
                   {profile.first_name && profile.last_name 
                     ? `${profile.first_name} ${profile.last_name}` 
-                    : "مستخدم جديد"}
+                    : t("account.newUser")}
                 </h1>
                 <p className="text-muted text-sm md:text-base">{user?.email}</p>
               </div>
@@ -341,32 +343,30 @@ export default function AccountPage() {
             {/* Profile Tab */}
             {activeTab === "profile" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-black text-foreground">تعديل الملف الشخصي</h2>
+                <h2 className="text-xl font-black text-foreground">{t("account.editProfile")}</h2>
                 <div className="grid gap-4">
                   <div>
-                    <label className="block text-secondary font-semibold mb-2 text-sm">الاسم الأول</label>
+                    <label className="block text-secondary font-semibold mb-2 text-sm">{t("account.firstName")}</label>
                     <input
                       type="text"
                       value={profile.first_name}
                       onChange={(e) => setProfile(prev => ({ ...prev, first_name: e.target.value }))}
                       className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                      placeholder="أدخل الاسم الأول"
-                      dir="rtl"
+                      placeholder={t("account.enterFirstName")}
                     />
                   </div>
                   <div>
-                    <label className="block text-secondary font-semibold mb-2 text-sm">الاسم الأخير</label>
+                    <label className="block text-secondary font-semibold mb-2 text-sm">{t("account.lastName")}</label>
                     <input
                       type="text"
                       value={profile.last_name}
                       onChange={(e) => setProfile(prev => ({ ...prev, last_name: e.target.value }))}
                       className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                      placeholder="أدخل الاسم الأخير"
-                      dir="rtl"
+                      placeholder={t("account.enterLastName")}
                     />
                   </div>
                   <div>
-                    <label className="block text-secondary font-semibold mb-2 text-sm">رقم الواتساب</label>
+                    <label className="block text-secondary font-semibold mb-2 text-sm">{t("account.whatsappNumber")}</label>
                     <input
                       type="tel"
                       value={profile.whatsapp_number}
@@ -385,7 +385,7 @@ export default function AccountPage() {
                   disabled={saving}
                   isLoading={saving}
                 >
-                  {saving ? "جاري الحفظ..." : "حفظ التغييرات"}
+                  {saving ? t("account.saving") : t("account.saveChanges")}
                 </SportButton>
               </div>
             )}
@@ -395,7 +395,7 @@ export default function AccountPage() {
               <div className="space-y-8">
                 {/* Current Avatar Section */}
                 <div className="text-center pb-6 border-b border-border">
-                  <p className="text-sm font-semibold text-muted mb-3">الصورة الحالية</p>
+                  <p className="text-sm font-semibold text-muted mb-3">{t("account.currentAvatar")}</p>
                   <div 
                     className="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-primary shadow-lg flex items-center justify-center"
                     style={{ background: "linear-gradient(135deg, #F0F4FF 0%, #E2E8F0 100%)" }}
@@ -411,14 +411,14 @@ export default function AccountPage() {
                     ) : profile.avatar_url ? (
                       <span className="text-4xl">{profile.avatar_url}</span>
                     ) : (
-                      <span className="text-3xl font-bold text-primary">{profile.first_name?.[0] || "؟"}</span>
+                      <span className="text-3xl font-bold text-primary">{profile.first_name?.[0] || "?"}</span>
                     )}
                   </div>
                 </div>
 
                 {/* Avatar Selection using shared component */}
                 <div>
-                  <h2 className="text-lg font-black text-foreground mb-4">اختر صورة جديدة</h2>
+                  <h2 className="text-lg font-black text-foreground mb-4">{t("account.chooseNewAvatar")}</h2>
                   {avatars.length > 0 ? (
                     <AvatarSelector
                       avatars={avatars}
@@ -429,7 +429,7 @@ export default function AccountPage() {
                   ) : (
                     <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
                       <div className="text-5xl mb-4">🎨</div>
-                      <p className="text-muted font-semibold">لا توجد صور رمزية متاحة</p>
+                      <p className="text-muted font-semibold">{t("account.noAvatarsAvailable")}</p>
                     </div>
                   )}
                 </div>
@@ -444,11 +444,11 @@ export default function AccountPage() {
                     disabled={saving || !selectedAvatarId || selectedAvatarId === profile.avatar_id}
                     isLoading={saving}
                   >
-                    {saving ? "جاري الحفظ..." : "حفظ الصورة الرمزية"}
+                    {saving ? t("account.saving") : t("account.saveAvatar")}
                   </SportButton>
                   {selectedAvatarId && selectedAvatarId !== profile.avatar_id && (
                     <p className="text-center text-sm text-success mt-2 font-semibold">
-                      ✓ تم اختيار صورة جديدة
+                      ✓ {t("account.newAvatarSelected")}
                     </p>
                   )}
                 </div>
@@ -458,20 +458,20 @@ export default function AccountPage() {
             {/* Stats Tab */}
             {activeTab === "stats" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-black text-foreground">إحصائياتي</h2>
+                <h2 className="text-xl font-black text-foreground">{t("account.stats")}</h2>
                 {statsLoading ? (
                   <div className="text-center py-8">
-                    <div className="text-muted">جاري تحميل الإحصائيات...</div>
+                    <div className="text-muted">{t("account.loadingStats")}</div>
                   </div>
                 ) : (
                   <>
                     {/* Main Stats Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {[
-                        { label: "المباريات", value: stats.matchesPlayed.toString(), icon: "⚽", variant: "highlighted" as const },
-                        { label: "الانتصارات", value: stats.wins.toString(), icon: "🏆", variant: "success" as const },
-                        { label: "التعادلات", value: stats.draws.toString(), icon: "🤝", variant: "warning" as const },
-                        { label: "الخسائر", value: stats.losses.toString(), icon: "😢", variant: "danger" as const },
+                        { label: t("account.matchesPlayed"), value: stats.matchesPlayed.toString(), icon: "⚽", variant: "highlighted" as const },
+                        { label: t("account.victories"), value: stats.wins.toString(), icon: "🏆", variant: "success" as const },
+                        { label: t("account.drawsLabel"), value: stats.draws.toString(), icon: "🤝", variant: "warning" as const },
+                        { label: t("account.lossesLabel"), value: stats.losses.toString(), icon: "😢", variant: "danger" as const },
                       ].map((stat, i) => (
                         <SportCard key={i} padding="base" variant={stat.variant}>
                           <div className="text-center">
@@ -489,25 +489,25 @@ export default function AccountPage() {
                         <SportCard padding="sm" variant="default">
                           <div className="text-center">
                             <div className="text-lg font-black text-primary">{stats.winRate}%</div>
-                            <div className="text-xs text-muted">نسبة الفوز</div>
+                            <div className="text-xs text-muted">{t("account.winRate")}</div>
                           </div>
                         </SportCard>
                         <SportCard padding="sm" variant="default">
                           <div className="text-center">
                             <div className="text-lg font-black text-success">{stats.goalsScored}</div>
-                            <div className="text-xs text-muted">أهداف مسجلة</div>
+                            <div className="text-xs text-muted">{t("account.goalsScored")}</div>
                           </div>
                         </SportCard>
                         <SportCard padding="sm" variant="default">
                           <div className="text-center">
                             <div className="text-lg font-black text-danger">{stats.goalsConceded}</div>
-                            <div className="text-xs text-muted">أهداف مستقبلة</div>
+                            <div className="text-xs text-muted">{t("account.goalsConceded")}</div>
                           </div>
                         </SportCard>
                         <SportCard padding="sm" variant="default">
                           <div className="text-center">
                             <div className="text-lg font-black text-foreground">{stats.tournamentsParticipated}</div>
-                            <div className="text-xs text-muted">البطولات</div>
+                            <div className="text-xs text-muted">{t("account.tournaments")}</div>
                           </div>
                         </SportCard>
                       </div>
@@ -516,33 +516,33 @@ export default function AccountPage() {
                     {/* Tournament History */}
                     {stats.tournaments && stats.tournaments.length > 0 && (
                       <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-foreground">سجل البطولات</h3>
+                        <h3 className="text-lg font-bold text-foreground">{t("account.tournamentHistory")}</h3>
                         <div className="space-y-3">
-                          {stats.tournaments.map((t) => (
-                            <SportCard key={t.tournamentId} padding="base" variant="default">
+                          {stats.tournaments.map((t_item) => (
+                            <SportCard key={t_item.tournamentId} padding="base" variant="default">
                               <div className="flex items-center justify-between">
-                                <div className="flex-1 text-right">
-                                  <h4 className="font-bold text-foreground">{t.tournamentName}</h4>
+                                <div className="flex-1">
+                                  <h4 className="font-bold text-foreground">{t_item.tournamentName}</h4>
                                   <div className="flex items-center gap-3 text-sm text-muted mt-1">
                                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                      t.tournamentStatus === "finished" ? "bg-success/10 text-success" :
-                                      t.tournamentStatus === "in_progress" ? "bg-primary/10 text-primary" :
+                                      t_item.tournamentStatus === "finished" ? "bg-success/10 text-success" :
+                                      t_item.tournamentStatus === "in_progress" ? "bg-primary/10 text-primary" :
                                       "bg-muted/10 text-muted"
                                     }`}>
-                                      {t.tournamentStatus === "finished" ? "منتهية" :
-                                       t.tournamentStatus === "in_progress" ? "جارية" : "قادمة"}
+                                      {t_item.tournamentStatus === "finished" ? t("account.finished") :
+                                       t_item.tournamentStatus === "in_progress" ? t("account.inProgress") : t("account.upcoming")}
                                     </span>
-                                    <span>{t.matchesPlayed} مباريات</span>
+                                    <span>{t_item.matchesPlayed} {t("account.matchesLabel")}</span>
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm">
-                                  <span className="text-success font-bold">{t.wins}ف</span>
+                                  <span className="text-success font-bold">{t_item.wins}W</span>
                                   <span className="text-muted">/</span>
-                                  <span className="text-warning font-bold">{t.draws}ت</span>
+                                  <span className="text-warning font-bold">{t_item.draws}D</span>
                                   <span className="text-muted">/</span>
-                                  <span className="text-danger font-bold">{t.losses}خ</span>
+                                  <span className="text-danger font-bold">{t_item.losses}L</span>
                                   <span className="text-muted mr-2">|</span>
-                                  <span className="text-foreground font-semibold">{t.goalsScored}-{t.goalsConceded}</span>
+                                  <span className="text-foreground font-semibold">{t_item.goalsScored}-{t_item.goalsConceded}</span>
                                 </div>
                               </div>
                             </SportCard>
@@ -553,7 +553,7 @@ export default function AccountPage() {
 
                     {stats.matchesPlayed === 0 && (
                       <p className="text-muted text-center text-sm">
-                        لم تلعب أي مباريات بعد. شارك في البطولات لتظهر إحصائياتك!
+                        {t("account.noMatchesYet")}
                       </p>
                     )}
                   </>
@@ -564,10 +564,10 @@ export default function AccountPage() {
             {/* Password Tab */}
             {activeTab === "password" && (
               <div className="space-y-6">
-                <h2 className="text-xl font-black text-foreground">تغيير كلمة المرور</h2>
+                <h2 className="text-xl font-black text-foreground">{t("account.changePassword")}</h2>
                 <div className="grid gap-4">
                   <div>
-                    <label className="block text-secondary font-semibold mb-2 text-sm">كلمة المرور الحالية</label>
+                    <label className="block text-secondary font-semibold mb-2 text-sm">{t("account.currentPassword")}</label>
                     <input
                       type="password"
                       value={currentPassword}
@@ -577,7 +577,7 @@ export default function AccountPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-secondary font-semibold mb-2 text-sm">كلمة المرور الجديدة</label>
+                    <label className="block text-secondary font-semibold mb-2 text-sm">{t("account.newPassword")}</label>
                     <input
                       type="password"
                       value={newPassword}
@@ -587,7 +587,7 @@ export default function AccountPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-secondary font-semibold mb-2 text-sm">تأكيد كلمة المرور الجديدة</label>
+                    <label className="block text-secondary font-semibold mb-2 text-sm">{t("account.confirmNewPassword")}</label>
                     <input
                       type="password"
                       value={confirmPassword}
@@ -605,7 +605,7 @@ export default function AccountPage() {
                   disabled={saving || !newPassword || !confirmPassword}
                   isLoading={saving}
                 >
-                  {saving ? "جاري التغيير..." : "تغيير كلمة المرور"}
+                  {saving ? t("account.changing") : t("account.changePassword")}
                 </SportButton>
               </div>
             )}

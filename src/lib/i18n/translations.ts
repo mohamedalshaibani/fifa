@@ -553,6 +553,166 @@ export const translations = {
     ar: "الأهداف المستقبلة",
     en: "Goals Conceded",
   },
+  "account.password": {
+    ar: "كلمة المرور",
+    en: "Password",
+  },
+  "account.editProfile": {
+    ar: "تعديل الملف الشخصي",
+    en: "Edit Profile",
+  },
+  "account.firstName": {
+    ar: "الاسم الأول",
+    en: "First Name",
+  },
+  "account.lastName": {
+    ar: "الاسم الأخير",
+    en: "Last Name",
+  },
+  "account.whatsappNumber": {
+    ar: "رقم الواتساب",
+    en: "WhatsApp Number",
+  },
+  "account.enterFirstName": {
+    ar: "أدخل الاسم الأول",
+    en: "Enter first name",
+  },
+  "account.enterLastName": {
+    ar: "أدخل الاسم الأخير",
+    en: "Enter last name",
+  },
+  "account.saveChanges": {
+    ar: "حفظ التغييرات",
+    en: "Save Changes",
+  },
+  "account.saving": {
+    ar: "جاري الحفظ...",
+    en: "Saving...",
+  },
+  "account.profileSaved": {
+    ar: "تم حفظ الملف الشخصي بنجاح",
+    en: "Profile saved successfully",
+  },
+  "account.profileSaveFailed": {
+    ar: "فشل في حفظ الملف الشخصي",
+    en: "Failed to save profile",
+  },
+  "account.currentAvatar": {
+    ar: "الصورة الحالية",
+    en: "Current Avatar",
+  },
+  "account.chooseNewAvatar": {
+    ar: "اختر صورة جديدة",
+    en: "Choose New Avatar",
+  },
+  "account.noAvatarsAvailable": {
+    ar: "لا توجد صور رمزية متاحة",
+    en: "No avatars available",
+  },
+  "account.saveAvatar": {
+    ar: "حفظ الصورة الرمزية",
+    en: "Save Avatar",
+  },
+  "account.avatarChanged": {
+    ar: "تم تغيير الصورة الرمزية بنجاح",
+    en: "Avatar changed successfully",
+  },
+  "account.avatarChangeFailed": {
+    ar: "فشل في تغيير الصورة الرمزية",
+    en: "Failed to change avatar",
+  },
+  "account.newAvatarSelected": {
+    ar: "تم اختيار صورة جديدة",
+    en: "New avatar selected",
+  },
+  "account.loadingStats": {
+    ar: "جاري تحميل الإحصائيات...",
+    en: "Loading stats...",
+  },
+  "account.victories": {
+    ar: "الانتصارات",
+    en: "Victories",
+  },
+  "account.drawsLabel": {
+    ar: "التعادلات",
+    en: "Draws",
+  },
+  "account.lossesLabel": {
+    ar: "الخسائر",
+    en: "Losses",
+  },
+  "account.tournaments": {
+    ar: "البطولات",
+    en: "Tournaments",
+  },
+  "account.tournamentHistory": {
+    ar: "سجل البطولات",
+    en: "Tournament History",
+  },
+  "account.finished": {
+    ar: "منتهية",
+    en: "Finished",
+  },
+  "account.inProgress": {
+    ar: "جارية",
+    en: "In Progress",
+  },
+  "account.upcoming": {
+    ar: "قادمة",
+    en: "Upcoming",
+  },
+  "account.matchesLabel": {
+    ar: "مباريات",
+    en: "matches",
+  },
+  "account.noMatchesYet": {
+    ar: "لم تلعب أي مباريات بعد. شارك في البطولات لتظهر إحصائياتك!",
+    en: "No matches played yet. Join tournaments to see your stats!",
+  },
+  "account.changePassword": {
+    ar: "تغيير كلمة المرور",
+    en: "Change Password",
+  },
+  "account.currentPassword": {
+    ar: "كلمة المرور الحالية",
+    en: "Current Password",
+  },
+  "account.newPassword": {
+    ar: "كلمة المرور الجديدة",
+    en: "New Password",
+  },
+  "account.confirmNewPassword": {
+    ar: "تأكيد كلمة المرور الجديدة",
+    en: "Confirm New Password",
+  },
+  "account.changing": {
+    ar: "جاري التغيير...",
+    en: "Changing...",
+  },
+  "account.passwordChanged": {
+    ar: "تم تغيير كلمة المرور بنجاح",
+    en: "Password changed successfully",
+  },
+  "account.passwordChangeFailed": {
+    ar: "فشل في تغيير كلمة المرور",
+    en: "Failed to change password",
+  },
+  "account.passwordsMismatch": {
+    ar: "كلمات المرور غير متطابقة",
+    en: "Passwords do not match",
+  },
+  "account.passwordTooShort": {
+    ar: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+    en: "Password must be at least 6 characters",
+  },
+  "account.back": {
+    ar: "العودة",
+    en: "Back",
+  },
+  "account.newUser": {
+    ar: "مستخدم جديد",
+    en: "New User",
+  },
 
   // ============ STANDINGS TABLE ============
   "standings.rank": {
