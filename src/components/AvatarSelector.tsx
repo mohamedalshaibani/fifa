@@ -3,6 +3,7 @@
 import { Avatar } from "@/lib/types";
 import { useMemo } from "react";
 import { Check } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 interface AvatarSelectorProps {
   avatars: Avatar[];
@@ -17,6 +18,8 @@ export default function AvatarSelector({
   onSelectAvatar,
   showCategories = true,
 }: AvatarSelectorProps) {
+  const { t, isRTL } = useLanguage();
+  
   // Group avatars by category
   const groupedAvatars = useMemo(() => {
     if (!showCategories) {
@@ -34,10 +37,10 @@ export default function AvatarSelector({
   }, [avatars, showCategories]);
 
   const categoryLabels: Record<string, string> = {
-    legend: "الأساطير",
-    current: "النجوم الحاليون",
-    player: "اللاعبون",
-    all: "الصور الرمزية",
+    legend: t("avatar.categories.legend"),
+    current: t("avatar.categories.current"),
+    player: t("avatar.categories.player"),
+    all: t("avatar.categories.all"),
   };
 
   return (
@@ -51,9 +54,9 @@ export default function AvatarSelector({
                 fontWeight: 700, 
                 color: "#64748B", 
                 marginBottom: "12px", 
-                textAlign: "right" 
+                textAlign: isRTL ? "right" : "left" 
               }}
-              dir="rtl"
+              dir={isRTL ? "rtl" : "ltr"}
             >
               {categoryLabels[category] || category}
             </h4>

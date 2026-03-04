@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { Pencil } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n';
 
 interface EditTeamNameButtonProps {
   teamId: string;
@@ -18,6 +19,7 @@ export function EditTeamNameButton({
   onUpdate,
   iconOnly = false,
 }: EditTeamNameButtonProps) {
+  const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(initialName);
   const [isSaving, setIsSaving] = useState(false);
@@ -29,7 +31,7 @@ export function EditTeamNameButton({
 
     const trimmedName = name.trim();
     if (!trimmedName) {
-      setError('اسم الفريق لا يمكن أن يكون فارغًا');
+      setError(t('editTeam.teamNameRequired'));
       return;
     }
 
@@ -49,7 +51,7 @@ export function EditTeamNameButton({
       setIsEditing(false);
       setName(trimmedName);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'خطأ في تحديث اسم الفريق';
+      const message = err instanceof Error ? err.message : t('editTeam.updateError');
       setError(message);
     } finally {
       setIsSaving(false);
@@ -68,9 +70,9 @@ export function EditTeamNameButton({
         type="button"
         onClick={() => setIsEditing(true)}
         className={iconOnly ? "p-1 text-primary hover:opacity-90" : "text-xs text-primary hover:opacity-90 font-semibold"}
-        title="تعديل اسم الفريق"
+        title={t('editTeam.editTitle')}
       >
-        {iconOnly ? <Pencil className="w-3.5 h-3.5" /> : "✎ تعديل الاسم"}
+        {iconOnly ? <Pencil className="w-3.5 h-3.5" /> : t('editTeam.editName')}
       </button>
     );
   }
@@ -91,7 +93,7 @@ export function EditTeamNameButton({
           disabled={isSaving}
           className="button-primary px-3 py-2 text-xs font-bold disabled:opacity-50"
         >
-          {isSaving ? '...' : 'حفظ'}
+          {isSaving ? '...' : t('matchEditor.save')}
         </button>
         <button
           type="button"
@@ -99,7 +101,7 @@ export function EditTeamNameButton({
           disabled={isSaving}
           className="button-secondary px-3 py-2 text-xs font-bold disabled:opacity-50"
         >
-          إلغاء
+          {t('matchEditor.cancel')}
         </button>
       </div>
       {error && (

@@ -4,8 +4,8 @@ import { ArrowRight } from "lucide-react";
 interface BackLinkProps {
   /** The URL to navigate back to */
   href: string;
-  /** The text to display - defaults to "العودة" */
-  text?: string;
+  /** The text to display */
+  text: string;
 }
 
 /**
@@ -21,7 +21,7 @@ interface BackLinkProps {
  * - Icon: ArrowRight (RTL-aware, points right in RTL)
  * - Gap: gap-2 between icon and text
  */
-export default function BackLink({ href, text = "العودة" }: BackLinkProps) {
+export default function BackLink({ href, text }: BackLinkProps) {
   return (
     <Link
       href={href}

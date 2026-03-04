@@ -3,15 +3,28 @@
  * Provides user-friendly fallback messages when data is missing
  */
 
-export const getEmptyStateText = (fieldType: 'description' | 'champion' | 'generic'): string => {
-  switch (fieldType) {
-    case 'description':
-      return 'لا يوجد وصف لهذه البطولة بعد';
-    case 'champion':
-      return 'لم يتم تحديد بطل البطولة بعد';
-    default:
-      return 'غير متوفر حالياً';
-  }
+import { type Language } from "@/lib/i18n/translations";
+
+const emptyStateTexts = {
+  description: {
+    ar: "لا يوجد وصف لهذه البطولة بعد",
+    en: "No description available for this tournament yet",
+  },
+  champion: {
+    ar: "لم يتم تحديد بطل البطولة بعد",
+    en: "Tournament champion not yet determined",
+  },
+  generic: {
+    ar: "غير متوفر حالياً",
+    en: "Not available yet",
+  },
+};
+
+export const getEmptyStateText = (
+  fieldType: "description" | "champion" | "generic",
+  language: Language = "ar"
+): string => {
+  return emptyStateTexts[fieldType]?.[language] || emptyStateTexts.generic[language];
 };
 
 export interface TournamentSetupStatus {
@@ -20,15 +33,23 @@ export interface TournamentSetupStatus {
   setupMessage: string;
 }
 
+const setupMessages = {
+  ar: "هذه البطولة قيد الإعداد — سيتم إكمال التفاصيل قريباً",
+  en: "This tournament is being set up — details coming soon",
+};
+
 /**
  * Check if a tournament is missing required setup fields
  * Required fields: format (type), start_date, team_mode (players_per_team)
  */
-export function checkTournamentSetupStatus(tournament: {
-  type?: string | null;
-  start_date?: string | null;
-  players_per_team?: number;
-}): TournamentSetupStatus {
+export function checkTournamentSetupStatus(
+  tournament: {
+    type?: string | null;
+    start_date?: string | null;
+    players_per_team?: number;
+  },
+  language: Language = "ar"
+): TournamentSetupStatus {
   const missingFields: string[] = [];
 
   if (!tournament.type) {
@@ -46,9 +67,7 @@ export function checkTournamentSetupStatus(tournament: {
   return {
     isIncomplete,
     missingFields,
-    setupMessage: isIncomplete
-      ? 'هذه البطولة قيد الإعداد — سيتم إكمال التفاصيل قريباً'
-      : '',
+    setupMessage: isIncomplete ? setupMessages[language] : '',
   };
 }
 

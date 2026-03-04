@@ -465,6 +465,18 @@ export const translations = {
     ar: "جاري التسجيل...",
     en: "Registering...",
   },
+  "registration.tournamentNotFound": {
+    ar: "البطولة غير موجودة",
+    en: "Tournament not found",
+  },
+  "registration.closed": {
+    ar: "التسجيل مغلق حالياً",
+    en: "Registration is currently closed",
+  },
+  "registration.error": {
+    ar: "حدث خطأ أثناء التسجيل",
+    en: "An error occurred during registration",
+  },
 
   // ============ AUTH ============
   "auth.loginTitle": {
@@ -910,6 +922,10 @@ export const translations = {
   "tournamentDetail.backToTournaments": {
     ar: "العودة للبطولات",
     en: "Back to Tournaments",
+  },
+  "tournamentDetail.setupMessage": {
+    ar: "هذه البطولة قيد الإعداد — سيتم إكمال التفاصيل قريباً",
+    en: "This tournament is being set up — details coming soon",
   },
   "tournamentDetail.teams": {
     ar: "فرق",
@@ -2024,6 +2040,744 @@ export const translations = {
   "admin.reset.toAfterMatchGeneration": {
     ar: "بعد إنشاء المباريات",
     en: "After Match Generation",
+  },
+
+  // ============ RESET TO STAGE COMPONENT ============
+  "reset.title": {
+    ar: "إعادة تعيين المرحلة",
+    en: "Reset Stage",
+  },
+  "reset.subtitle": {
+    ar: "التراجع إلى نقطة سابقة في البطولة",
+    en: "Return to a previous point in the tournament",
+  },
+  "reset.successMessage": {
+    ar: "تمت العودة بنجاح إلى:",
+    en: "Successfully returned to:",
+  },
+  "reset.selectPlaceholder": {
+    ar: "— اختر نقطة العودة —",
+    en: "— Select return point —",
+  },
+  "reset.selectedStage": {
+    ar: "المرحلة المختارة",
+    en: "Selected Stage",
+  },
+  "reset.willKeep": {
+    ar: "✓ سيتم الاحتفاظ بـ:",
+    en: "✓ Will be kept:",
+  },
+  "reset.willDelete": {
+    ar: "✕ سيتم حذف:",
+    en: "✕ Will be deleted:",
+  },
+  "reset.clearTypeAlso": {
+    ar: "مسح نوع البطولة وصيغتها أيضاً",
+    en: "Also clear tournament type and format",
+  },
+  "reset.continueToConfirm": {
+    ar: "المتابعة للتأكيد",
+    en: "Continue to Confirm",
+  },
+  "reset.selectStagePrompt": {
+    ar: "يرجى اختيار مرحلة للعودة إليها من القائمة أعلاه",
+    en: "Please select a stage to return to from the list above",
+  },
+  "reset.confirmTitle": {
+    ar: "تأكيد العودة",
+    en: "Confirm Reset",
+  },
+  "reset.confirmMessage": {
+    ar: "هل أنت متأكد من العودة إلى مرحلة",
+    en: "Are you sure you want to return to stage",
+  },
+  "reset.warningTitle": {
+    ar: "⚠️ تحذير:",
+    en: "⚠️ Warning:",
+  },
+  "reset.warningMessage": {
+    ar: "سيتم حذف جميع البيانات اللاحقة لهذه المرحلة. هذا الإجراء لا يمكن التراجع عنه.",
+    en: "All data after this stage will be deleted. This action cannot be undone.",
+  },
+  "reset.confirmExecute": {
+    ar: "تأكيد التنفيذ",
+    en: "Confirm",
+  },
+  "reset.resetComplete": {
+    ar: "تم إعادة التعيين",
+    en: "Reset complete",
+  },
+  // Reset stage options
+  "reset.stage1.label": {
+    ar: "فتح الاشتراكات",
+    en: "Open Registration",
+  },
+  "reset.stage1.description": {
+    ar: "الرجوع لمرحلة التسجيل المفتوح",
+    en: "Return to open registration stage",
+  },
+  "reset.stage1.disabledReason": {
+    ar: "البطولة بالفعل في مرحلة التسجيل المفتوح",
+    en: "Tournament is already in open registration stage",
+  },
+  "reset.stage2.label": {
+    ar: "إغلاق الاشتراكات",
+    en: "Close Registration",
+  },
+  "reset.stage2.description": {
+    ar: "الرجوع لمرحلة بعد إغلاق التسجيل (قبل اختيار النوع)",
+    en: "Return to after registration closed (before type selection)",
+  },
+  "reset.stage2.disabledOpen": {
+    ar: "يجب أن يكون التسجيل مغلقاً أولاً",
+    en: "Registration must be closed first",
+  },
+  "reset.stage2.disabledAlready": {
+    ar: "البطولة بالفعل في هذه المرحلة",
+    en: "Tournament is already at this stage",
+  },
+  "reset.stage3.label": {
+    ar: "اختيار نوع البطولة + الصيغة",
+    en: "Select Tournament Type + Format",
+  },
+  "reset.stage3.description": {
+    ar: "الإبقاء على المشاركين والنوع، حذف الفرق والمباريات",
+    en: "Keep participants and type, delete teams and matches",
+  },
+  "reset.stage3.disabledNoType": {
+    ar: "لم يتم تحديد نوع البطولة بعد",
+    en: "Tournament type not set yet",
+  },
+  "reset.stage4.label": {
+    ar: "بعد تشكيل الفرق",
+    en: "After Team Formation",
+  },
+  "reset.stage4.description": {
+    ar: "الإبقاء على الفرق، حذف المباريات فقط لإعادة القرعة",
+    en: "Keep teams, delete matches only for re-draw",
+  },
+  "reset.stage4.disabled2v2Only": {
+    ar: "هذه المرحلة متاحة فقط لبطولات 2v2",
+    en: "This stage is only available for 2v2 tournaments",
+  },
+  "reset.stage4.disabledNoTeams": {
+    ar: "لم يتم تشكيل الفرق بعد",
+    en: "Teams not formed yet",
+  },
+  "reset.stage5.label": {
+    ar: "بعد توليد المباريات",
+    en: "After Match Generation",
+  },
+  "reset.stage5.description": {
+    ar: "الإبقاء على كل شيء، مسح النتائج فقط وإعادة المباريات للبداية",
+    en: "Keep everything, clear scores only and reset matches to start",
+  },
+  "reset.stage5.disabledNoMatches": {
+    ar: "لا توجد مباريات لإعادة تعيينها",
+    en: "No matches to reset",
+  },
+  // Data labels for keeps/deletes
+  "reset.data.participants": {
+    ar: "المشاركون الحاليون",
+    en: "Current participants",
+  },
+  "reset.data.participantsOnly": {
+    ar: "المشاركون",
+    en: "Participants",
+  },
+  "reset.data.teams": {
+    ar: "الفرق",
+    en: "Teams",
+  },
+  "reset.data.teamMembers": {
+    ar: "أعضاء الفرق",
+    en: "Team members",
+  },
+  "reset.data.matches": {
+    ar: "المباريات",
+    en: "Matches",
+  },
+  "reset.data.results": {
+    ar: "النتائج",
+    en: "Results",
+  },
+  "reset.data.tournamentType": {
+    ar: "نوع البطولة",
+    en: "Tournament type",
+  },
+  "reset.data.tournamentTypeOptional": {
+    ar: "نوع البطولة (اختياري)",
+    en: "Tournament type (optional)",
+  },
+  "reset.data.matchStructure": {
+    ar: "هيكل المباريات",
+    en: "Match structure",
+  },
+  "reset.data.matchResults": {
+    ar: "نتائج المباريات",
+    en: "Match results",
+  },
+  "reset.data.winners": {
+    ar: "الفائزين",
+    en: "Winners",
+  },
+  "reset.data.advancedRounds": {
+    ar: "الجولات المتقدمة (إقصائي)",
+    en: "Advanced rounds (knockout)",
+  },
+
+  // ============ MATCH SCORE EDITOR ============
+  "matchEditor.round": {
+    ar: "الجولة",
+    en: "Round",
+  },
+  "matchEditor.vs": {
+    ar: "ضد",
+    en: "vs",
+  },
+  "matchEditor.completed": {
+    ar: "مكتملة",
+    en: "Completed",
+  },
+  "matchEditor.pending": {
+    ar: "قادمة",
+    en: "Pending",
+  },
+  "matchEditor.edit": {
+    ar: "تعديل",
+    en: "Edit",
+  },
+  "matchEditor.save": {
+    ar: "حفظ",
+    en: "Save",
+  },
+  "matchEditor.cancel": {
+    ar: "إلغاء",
+    en: "Cancel",
+  },
+  "matchEditor.homeScore": {
+    ar: "نتيجة المضيف",
+    en: "Home score",
+  },
+  "matchEditor.awayScore": {
+    ar: "نتيجة الضيف",
+    en: "Away score",
+  },
+  "matchEditor.editResult": {
+    ar: "تعديل النتيجة",
+    en: "Edit result",
+  },
+  "matchEditor.mustBeNumber": {
+    ar: "النتيجة يجب أن تكون رقم",
+    en: "Score must be a number",
+  },
+  "matchEditor.cannotBeNegative": {
+    ar: "النتيجة لا يمكن أن تكون سالبة",
+    en: "Score cannot be negative",
+  },
+  "matchEditor.saveError": {
+    ar: "خطأ في حفظ النتيجة",
+    en: "Error saving score",
+  },
+  "matchEditor.saving": {
+    ar: "جاري الحفظ...",
+    en: "Saving...",
+  },
+
+  // ============ EDIT TEAM NAME ============
+  "editTeam.editName": {
+    ar: "✎ تعديل الاسم",
+    en: "✎ Edit Name",
+  },
+  "editTeam.editTitle": {
+    ar: "تعديل اسم الفريق",
+    en: "Edit Team Name",
+  },
+  "editTeam.teamNameRequired": {
+    ar: "اسم الفريق لا يمكن أن يكون فارغًا",
+    en: "Team name cannot be empty",
+  },
+  "editTeam.updateError": {
+    ar: "خطأ في تحديث اسم الفريق",
+    en: "Error updating team name",
+  },
+
+  // ============ DELETE BUTTON ============
+  "deleteButton.confirm": {
+    ar: "تأكيد",
+    en: "Confirm",
+  },
+  "deleteButton.defaultMessage": {
+    ar: "هل أنت متأكد؟",
+    en: "Are you sure?",
+  },
+
+  // ============ ERROR PAGES ============
+  "error.title": {
+    ar: "حدث خطأ",
+    en: "An error occurred",
+  },
+  "error.appTitle": {
+    ar: "خطأ في التطبيق",
+    en: "Application Error",
+  },
+  "error.apology": {
+    ar: "نعتذر، حدث خطأ أثناء تحميل الصفحة.",
+    en: "Sorry, an error occurred while loading the page.",
+  },
+  "error.tryAgain": {
+    ar: "حاول مرة أخرى",
+    en: "Try again",
+  },
+
+  // ============ BACK LINK / PAGE HEADER ============
+  "navigation.back": {
+    ar: "العودة",
+    en: "Back",
+  },
+
+  // ============ DRAW CONTROLS ============
+  "draw.previewMatchups": {
+    ar: "معاينة المواجهات",
+    en: "Preview Matchups",
+  },
+  "draw.previewSchedule": {
+    ar: "معاينة الجدول",
+    en: "Preview Schedule",
+  },
+  "draw.round": {
+    ar: "جولة",
+    en: "Round",
+  },
+  "draw.generateMatchups": {
+    ar: "قرعة تشكيل المواجهات",
+    en: "Generate Matchup Draw",
+  },
+  "draw.generateSchedule": {
+    ar: "قرعة إعداد جدول المباريات",
+    en: "Generate Schedule Draw",
+  },
+  "draw.resetDraw": {
+    ar: "إعادة ضبط القرعة",
+    en: "Reset Draw",
+  },
+  "draw.saveMatchups": {
+    ar: "حفظ المواجهات",
+    en: "Save Matchups",
+  },
+  "draw.saveSchedule": {
+    ar: "حفظ الجدول",
+    en: "Save Schedule",
+  },
+
+  // ============ AVATAR SELECTOR ============
+  "avatar.categories.legend": {
+    ar: "الأساطير",
+    en: "Legends",
+  },
+  "avatar.categories.current": {
+    ar: "النجوم الحاليون",
+    en: "Current Stars",
+  },
+  "avatar.categories.player": {
+    ar: "اللاعبون",
+    en: "Players",
+  },
+  "avatar.categories.all": {
+    ar: "الصور الرمزية",
+    en: "Avatars",
+  },
+
+  // ============ EDIT PARTICIPANT ============
+  "editParticipant.title": {
+    ar: "تعديل اسم المشارك",
+    en: "Edit participant name",
+  },
+  "editParticipant.placeholder": {
+    ar: "اسم المشارك",
+    en: "Participant name",
+  },
+  "editParticipant.edit": {
+    ar: "✎ تعديل",
+    en: "✎ Edit",
+  },
+  "editParticipant.emptyError": {
+    ar: "اسم المشارك لا يمكن أن يكون فارغًا",
+    en: "Participant name cannot be empty",
+  },
+  "editParticipant.updateError": {
+    ar: "خطأ في تحديث اسم المشارك",
+    en: "Error updating participant name",
+  },
+
+  // ============ STATUS BADGE ============
+  "status.registrationOpen": {
+    ar: "التسجيل مفتوح",
+    en: "Registration Open",
+  },
+  "status.registrationClosed": {
+    ar: "التسجيل مغلق",
+    en: "Registration Closed",
+  },
+  "status.inProgress": {
+    ar: "جارية الآن",
+    en: "In Progress",
+  },
+  "status.completed": {
+    ar: "منتهية",
+    en: "Completed",
+  },
+  "status.scheduled": {
+    ar: "مجدولة",
+    en: "Scheduled",
+  },
+  "status.pending": {
+    ar: "قيد الانتظار",
+    en: "Pending",
+  },
+
+  // ============ COUNTDOWN ============
+  "countdown.remaining": {
+    ar: "تبقى",
+    en: "remaining",
+  },
+  "countdown.day": {
+    ar: "يوم",
+    en: "day",
+  },
+  "countdown.days": {
+    ar: "أيام",
+    en: "days",
+  },
+  "countdown.hour": {
+    ar: "ساعة",
+    en: "hour",
+  },
+  "countdown.hours": {
+    ar: "ساعات",
+    en: "hours",
+  },
+  "countdown.minute": {
+    ar: "دقيقة",
+    en: "minute",
+  },
+  "countdown.minutes": {
+    ar: "دقائق",
+    en: "minutes",
+  },
+  "countdown.second": {
+    ar: "ثانية",
+    en: "second",
+  },
+  "countdown.seconds": {
+    ar: "ثواني",
+    en: "seconds",
+  },
+  "countdown.and": {
+    ar: "و",
+    en: "and",
+  },
+  "countdown.tournamentEnded": {
+    ar: "انتهت البطولة",
+    en: "Tournament ended",
+  },
+  "countdown.matchesNotStarted": {
+    ar: "لم تبدأ المباريات",
+    en: "Matches not started",
+  },
+  "countdown.match": {
+    ar: "مباراة",
+    en: "match",
+  },
+
+  // ============ REGISTER PAGE ============
+  "register.loading": {
+    ar: "جاري التحميل...",
+    en: "Loading...",
+  },
+  "register.backToTournaments": {
+    ar: "العودة للبطولات",
+    en: "Back to Tournaments",
+  },
+  "register.backToTournament": {
+    ar: "العودة للبطولة",
+    en: "Back to Tournament",
+  },
+  "register.login": {
+    ar: "تسجيل الدخول",
+    en: "Sign In",
+  },
+  "register.createAccount": {
+    ar: "إنشاء حساب جديد",
+    en: "Create New Account",
+  },
+  "register.cancel": {
+    ar: "إلغاء",
+    en: "Cancel",
+  },
+  "register.registrationError": {
+    ar: "حدث خطأ في التسجيل، حاول مرة أخرى",
+    en: "Registration error, please try again",
+  },
+  "register.tournamentEnded": {
+    ar: "البطولة انتهت",
+    en: "Tournament ended",
+  },
+  "register.registrationClosed": {
+    ar: "التسجيل مغلق",
+    en: "Registration closed",
+  },
+  "register.notAvailable": {
+    ar: "عذراً، التسجيل في هذه البطولة غير متاح حالياً",
+    en: "Sorry, registration for this tournament is not currently available",
+  },
+  "register.loginFirst": {
+    ar: "سجّل دخولك أولاً",
+    en: "Sign in first",
+  },
+  "register.loginRequired": {
+    ar: "لازم تسجل دخول عشان تسجل في البطولة",
+    en: "You need to sign in to register for the tournament",
+  },
+  "register.alreadyRegistered": {
+    ar: "أنت مسجل مسبقاً",
+    en: "You're already registered",
+  },
+  "register.alreadyRegisteredDesc": {
+    ar: "لقد سجلت في هذه البطولة من قبل",
+    en: "You have already registered for this tournament",
+  },
+  "register.success": {
+    ar: "تم التسجيل بنجاح!",
+    en: "Registration successful!",
+  },
+  "register.successDesc": {
+    ar: "مبروك! تم تسجيلك في {name}",
+    en: "Congratulations! You've registered for {name}",
+  },
+  "register.redirecting": {
+    ar: "جاري تحويلك لصفحة البطولة...",
+    en: "Redirecting to tournament page...",
+  },
+  "register.registerIn": {
+    ar: "التسجيل في",
+    en: "Register for",
+  },
+  "register.leagueTournament": {
+    ar: "بطولة دوري",
+    en: "League tournament",
+  },
+  "register.knockoutTournament": {
+    ar: "بطولة خروج المغلوب",
+    en: "Knockout tournament",
+  },
+  "register.player": {
+    ar: "لاعب",
+    en: "Player",
+  },
+  "register.registering": {
+    ar: "جاري التسجيل...",
+    en: "Registering...",
+  },
+  "register.registerMe": {
+    ar: "سجّلني في البطولة 🎮",
+    en: "Register me 🎮",
+  },
+
+  // ============ AVATAR FORMS ============
+  "avatarUpload.cropImage": {
+    ar: "قص الصورة",
+    en: "Crop Image",
+  },
+  "avatarUpload.invalidType": {
+    ar: "نوع الملف غير مدعوم. يجب أن يكون JPG أو PNG أو WebP",
+    en: "Invalid file type. Must be JPG, PNG, or WebP",
+  },
+  "avatarUpload.fileTooLarge": {
+    ar: "حجم الملف كبير جداً. الحد الأقصى 10 ميجابايت",
+    en: "File too large. Maximum size is 10MB",
+  },
+  "avatarUpload.selectImage": {
+    ar: "الرجاء اختيار صورة",
+    en: "Please select an image",
+  },
+  "avatarUpload.unexpectedError": {
+    ar: "حدث خطأ غير متوقع",
+    en: "An unexpected error occurred",
+  },
+  "avatarUpload.editAvatar": {
+    ar: "تعديل الصورة الرمزية",
+    en: "Edit Avatar",
+  },
+  "avatarUpload.clickToChange": {
+    ar: "انقر على الصورة لتغييرها",
+    en: "Click image to change",
+  },
+  "avatarUpload.nameIdentifier": {
+    ar: "الاسم (معرّف)",
+    en: "Name (identifier)",
+  },
+  "avatarUpload.displayName": {
+    ar: "الاسم المعروض",
+    en: "Display Name",
+  },
+  "avatarUpload.category": {
+    ar: "الفئة",
+    en: "Category",
+  },
+  "avatarUpload.currentPlayer": {
+    ar: "لاعب حالي",
+    en: "Current Player",
+  },
+  "avatarUpload.legend": {
+    ar: "أسطورة",
+    en: "Legend",
+  },
+  "avatarUpload.saveChanges": {
+    ar: "حفظ التغييرات",
+    en: "Save Changes",
+  },
+  "avatarUpload.deleteAvatar": {
+    ar: "حذف الصورة الرمزية؟",
+    en: "Delete Avatar?",
+  },
+  "avatarUpload.deleteWarning": {
+    ar: "سيتم حذف \"{name}\" نهائياً. هذا الإجراء لا يمكن التراجع عنه.",
+    en: "\"{name}\" will be permanently deleted. This action cannot be undone.",
+  },
+  "avatarUpload.namePlaceholder": {
+    ar: "مثال: messi",
+    en: "e.g. messi",
+  },
+  "avatarUpload.displayNamePlaceholder": {
+    ar: "مثال: ليونيل ميسي",
+    en: "e.g. Lionel Messi",
+  },
+  "avatarUpload.preview": {
+    ar: "معاينة",
+    en: "Preview",
+  },
+  "avatarUpload.uploadAvatar": {
+    ar: "رفع صورة رمزية",
+    en: "Upload Avatar",
+  },
+  "avatarUpload.dragDrop": {
+    ar: "اسحب وأفلت الصورة هنا",
+    en: "Drag and drop image here",
+  },
+  "avatarUpload.or": {
+    ar: "أو",
+    en: "or",
+  },
+  "avatarUpload.chooseFile": {
+    ar: "اختر ملف",
+    en: "Choose File",
+  },
+  "avatarUpload.supports": {
+    ar: "يدعم JPG, PNG, WebP",
+    en: "Supports JPG, PNG, WebP",
+  },
+  "avatarUpload.orClickToSelect": {
+    ar: "أو انقر للاختيار",
+    en: "or click to select",
+  },
+  "avatarUpload.fileRestrictions": {
+    ar: "JPG, PNG, WebP (حتى 5 ميجابايت)",
+    en: "JPG, PNG, WebP (up to 5MB)",
+  },
+  "avatarUpload.fileLimit": {
+    ar: "(حتى 5 ميجابايت)",
+    en: "(up to 5MB)",
+  },
+  "avatarUpload.changeImage": {
+    ar: "تغيير الصورة",
+    en: "Change Image",
+  },
+  "avatarUpload.remove": {
+    ar: "إزالة",
+    en: "Remove",
+  },
+  "avatarUpload.uploading": {
+    ar: "جاري الرفع...",
+    en: "Uploading...",
+  },
+  "avatarUpload.uploadImage": {
+    ar: "رفع الصورة",
+    en: "Upload Image",
+  },
+  "avatarUpload.saving": {
+    ar: "جاري الحفظ...",
+    en: "Saving...",
+  },
+  "avatarUpload.cropTitle": {
+    ar: "قص الصورة",
+    en: "Crop Image",
+  },
+
+  // ============ BOOTSTRAP ============
+  "bootstrap.title": {
+    ar: "تهيئة المشرف",
+    en: "Admin Bootstrap",
+  },
+  "bootstrap.description": {
+    ar: "أول مستخدم يسجل دخوله سيصبح مشرفًا تلقائيًا إذا كان جدول المشرفين فارغًا. لا حاجة لأي خطوات إضافية.",
+    en: "The first user to sign in will automatically become an admin if the admins table is empty. No additional steps needed.",
+  },
+  "bootstrap.sqlLabel": {
+    ar: "SQL لإضافتك كمشرف يدويًا (عند الحاجة):",
+    en: "SQL to add yourself as admin manually (if needed):",
+  },
+  "bootstrap.copySQL": {
+    ar: "نسخ SQL",
+    en: "Copy SQL",
+  },
+  "bootstrap.copied": {
+    ar: "تم النسخ!",
+    en: "Copied!",
+  },
+  "bootstrap.manualHelp": {
+    ar: "إذا واجهت مشكلة في التهيئة التلقائية، انسخ هذا المعرف ونفذ SQL يدويًا.",
+    en: "If you encounter issues with automatic setup, copy this ID and execute SQL manually.",
+  },
+  "bootstrap.loginFirst": {
+    ar: "سجّل الدخول أولاً.",
+    en: "Please sign in first.",
+  },
+
+  // ============ TEAM CARD ============
+  "teamCard.noMembers": {
+    ar: "لا يوجد أعضاء",
+    en: "No members",
+  },
+
+  // ============ SETUP BANNER ============
+  "setupBanner.inProgress": {
+    ar: "قيد الإعداد",
+    en: "Setup in progress",
+  },
+  "setupBanner.completeSetup": {
+    ar: "إكمال الإعدادات",
+    en: "Complete Setup",
+  },
+
+  // ============ REGISTER (additional) ============
+  "register.tournamentNotFound": {
+    ar: "البطولة غير موجودة",
+    en: "Tournament not found",
+  },
+  "register.loadError": {
+    ar: "حدث خطأ في تحميل البيانات",
+    en: "Error loading data",
+  },
+
+  // ============ COMMON ============
+  "common.unknown": {
+    ar: "غير معروف",
+    en: "Unknown",
+  },
+  "common.questionMark": {
+    ar: "؟",
+    en: "?",
   },
 } as const;
 

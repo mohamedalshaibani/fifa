@@ -4,6 +4,7 @@ import { useState, useTransition, useRef, useEffect } from "react";
 import { RotateCcw, AlertTriangle, CheckCircle2, ChevronDown } from "lucide-react";
 import Card from "@/components/Card";
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/lib/i18n";
 
 type ResetStage = 1 | 2 | 3 | 4 | 5;
 
@@ -44,6 +45,7 @@ export default function ResetToStage({
   onResetToAfterTeamDraw,
   onResetToAfterMatchGeneration,
 }: ResetToStageProps) {
+  const { t } = useLanguage();
   const [selectedStage, setSelectedStage] = useState<ResetStage | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [clearType, setClearType] = useState(false);
@@ -65,56 +67,56 @@ export default function ResetToStage({
   const stages: StageInfo[] = [
     {
       id: 1,
-      label: "فتح الاشتراكات",
-      description: "الرجوع لمرحلة التسجيل المفتوح",
-      keeps: ["المشاركون الحاليون"],
-      deletes: ["الفرق", "أعضاء الفرق", "المباريات", "النتائج", "نوع البطولة"],
+      label: t("reset.stage1.label"),
+      description: t("reset.stage1.description"),
+      keeps: [t("reset.data.participants")],
+      deletes: [t("reset.data.teams"), t("reset.data.teamMembers"), t("reset.data.matches"), t("reset.data.results"), t("reset.data.tournamentType")],
       disabled: isRegOpen,
-      disabledReason: "البطولة بالفعل في مرحلة التسجيل المفتوح",
+      disabledReason: t("reset.stage1.disabledReason"),
     },
     {
       id: 2,
-      label: "إغلاق الاشتراكات",
-      description: "الرجوع لمرحلة بعد إغلاق التسجيل (قبل اختيار النوع)",
-      keeps: ["المشاركون"],
-      deletes: ["الفرق", "أعضاء الفرق", "المباريات", "النتائج", "نوع البطولة"],
+      label: t("reset.stage2.label"),
+      description: t("reset.stage2.description"),
+      keeps: [t("reset.data.participantsOnly")],
+      deletes: [t("reset.data.teams"), t("reset.data.teamMembers"), t("reset.data.matches"), t("reset.data.results"), t("reset.data.tournamentType")],
       disabled: isRegOpen || (isRegClosed && !hasType && !hasTeams && !hasMatches),
       disabledReason: isRegOpen
-        ? "يجب أن يكون التسجيل مغلقاً أولاً"
-        : "البطولة بالفعل في هذه المرحلة",
+        ? t("reset.stage2.disabledOpen")
+        : t("reset.stage2.disabledAlready"),
     },
     {
       id: 3,
-      label: "اختيار نوع البطولة + الصيغة",
-      description: "الإبقاء على المشاركين والنوع، حذف الفرق والمباريات",
-      keeps: ["المشاركون", "نوع البطولة (اختياري)"],
-      deletes: ["الفرق", "أعضاء الفرق", "المباريات", "النتائج"],
+      label: t("reset.stage3.label"),
+      description: t("reset.stage3.description"),
+      keeps: [t("reset.data.participantsOnly"), t("reset.data.tournamentTypeOptional")],
+      deletes: [t("reset.data.teams"), t("reset.data.teamMembers"), t("reset.data.matches"), t("reset.data.results")],
       disabled: isRegOpen || !hasType,
       disabledReason: isRegOpen
-        ? "يجب أن يكون التسجيل مغلقاً أولاً"
-        : "لم يتم تحديد نوع البطولة بعد",
+        ? t("reset.stage2.disabledOpen")
+        : t("reset.stage3.disabledNoType"),
     },
     {
       id: 4,
-      label: "بعد تشكيل الفرق",
-      description: "الإبقاء على الفرق، حذف المباريات فقط لإعادة القرعة",
-      keeps: ["المشاركون", "الفرق", "أعضاء الفرق"],
-      deletes: ["المباريات", "النتائج"],
+      label: t("reset.stage4.label"),
+      description: t("reset.stage4.description"),
+      keeps: [t("reset.data.participantsOnly"), t("reset.data.teams"), t("reset.data.teamMembers")],
+      deletes: [t("reset.data.matches"), t("reset.data.results")],
       disabled: isRegOpen || !isTeamBased || !hasTeams,
       disabledReason: isRegOpen
-        ? "يجب أن يكون التسجيل مغلقاً أولاً"
+        ? t("reset.stage2.disabledOpen")
         : !isTeamBased
-          ? "هذه المرحلة متاحة فقط لبطولات 2v2"
-          : "لم يتم تشكيل الفرق بعد",
+          ? t("reset.stage4.disabled2v2Only")
+          : t("reset.stage4.disabledNoTeams"),
     },
     {
       id: 5,
-      label: "بعد توليد المباريات",
-      description: "الإبقاء على كل شيء، مسح النتائج فقط وإعادة المباريات للبداية",
-      keeps: ["المشاركون", "الفرق", "هيكل المباريات"],
-      deletes: ["نتائج المباريات", "الفائزين", "الجولات المتقدمة (إقصائي)"],
+      label: t("reset.stage5.label"),
+      description: t("reset.stage5.description"),
+      keeps: [t("reset.data.participantsOnly"), t("reset.data.teams"), t("reset.data.matchStructure")],
+      deletes: [t("reset.data.matchResults"), t("reset.data.winners"), t("reset.data.advancedRounds")],
       disabled: !hasMatches,
-      disabledReason: "لا توجد مباريات لإعادة تعيينها",
+      disabledReason: t("reset.stage5.disabledNoMatches"),
     },
   ];
 
@@ -147,7 +149,7 @@ export default function ResetToStage({
 
         if (action) {
             await action(formData);
-            setSuccess(selectedInfo?.label ?? "تم إعادة التعيين");
+            setSuccess(selectedInfo?.label ?? t("reset.resetComplete"));
             setShowModal(false);
             setSelectedStage(null);
             setClearType(false);
@@ -163,8 +165,8 @@ export default function ResetToStage({
                 <RotateCcw className="w-5 h-5" />
             </div>
             <div>
-                <h3 className="font-bold text-lg text-foreground">إعادة تعيين المرحلة</h3>
-                <p className="text-xs text-muted">التراجع إلى نقطة سابقة في البطولة</p>
+                <h3 className="font-bold text-lg text-foreground">{t("reset.title")}</h3>
+                <p className="text-xs text-muted">{t("reset.subtitle")}</p>
             </div>
         </div>
 
@@ -172,7 +174,7 @@ export default function ResetToStage({
         {success && (
             <div className="mb-6 flex items-center gap-3 rounded-lg border border-success/20 bg-success/5 p-4 text-sm font-bold text-success animate-in fade-in slide-in-from-top-2">
             <CheckCircle2 className="h-5 w-5 shrink-0" />
-            <span>تمت العودة بنجاح إلى: {success}</span>
+            <span>{t("reset.successMessage")} {success}</span>
             </div>
         )}
 
@@ -183,7 +185,7 @@ export default function ResetToStage({
                     onChange={(e) => handleStageSelect(e.target.value)}
                     className="w-full appearance-none rounded-lg border border-border bg-surface px-4 py-3 pr-10 text-sm font-semibold text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition cursor-pointer hover:bg-surface-hover"
                 >
-                    <option value="">— اختر نقطة العودة —</option>
+                    <option value="">{t("reset.selectPlaceholder")}</option>
                     {stages.map((stage) => (
                     <option key={stage.id} value={stage.id} disabled={stage.disabled}>
                         {stage.disabled ? "🔒 " : "• "}{stage.label}
@@ -196,20 +198,20 @@ export default function ResetToStage({
             {selectedInfo && !selectedInfo.disabled ? (
                 <div className="bg-surface-2 p-4 rounded-lg border border-border animate-in zoom-in-95 duration-200">
                     <div className="mb-4">
-                        <span className="text-xs text-muted font-bold uppercase tracking-wider block mb-1">المرحلة المختارة</span>
+                        <span className="text-xs text-muted font-bold uppercase tracking-wider block mb-1">{t("reset.selectedStage")}</span>
                         <p className="text-sm font-bold text-foreground">{selectedInfo.label}</p>
                         <p className="text-xs text-secondary mt-1">{selectedInfo.description}</p>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2 text-xs mb-4">
                         <div className="bg-success/5 p-3 rounded border border-success/10">
-                            <span className="font-bold text-success block mb-2">✓ سيتم الاحتفاظ بـ:</span>
+                            <span className="font-bold text-success block mb-2">{t("reset.willKeep")}</span>
                             <ul className="space-y-1 text-secondary">
                                 {selectedInfo.keeps.map(k => <li key={k}>• {k}</li>)}
                             </ul>
                         </div>
                         <div className="bg-danger/5 p-3 rounded border border-danger/10">
-                             <span className="font-bold text-danger block mb-2">✕ سيتم حذف:</span>
+                             <span className="font-bold text-danger block mb-2">{t("reset.willDelete")}</span>
                              <ul className="space-y-1 text-secondary">
                                 {selectedInfo.deletes.map(k => <li key={k}>• {k}</li>)}
                              </ul>
@@ -226,7 +228,7 @@ export default function ResetToStage({
                                 className="w-4 h-4 accent-warning rounded"
                             />
                             <label htmlFor="clearType" className="text-sm font-medium text-foreground cursor-pointer select-none">
-                                مسح نوع البطولة وصيغتها أيضاً
+                                {t("reset.clearTypeAlso")}
                             </label>
                         </div>
                     )}
@@ -236,7 +238,7 @@ export default function ResetToStage({
                         variant="ghost" 
                         className="w-full text-warning hover:text-warning hover:bg-warning/10 border-warning/20"
                     >
-                        المتابعة للتأكيد
+                        {t("reset.continueToConfirm")}
                     </Button>
                 </div>
             ) : selectedInfo?.disabled ? (
@@ -245,7 +247,7 @@ export default function ResetToStage({
                  </div>
             ) : (
                 <div className="p-8 text-center border border-dashed border-border rounded-lg text-sm text-muted">
-                    يرجى اختيار مرحلة للعودة إليها من القائمة أعلاه
+                    {t("reset.selectStagePrompt")}
                 </div>
             )}
         </div>
@@ -260,18 +262,18 @@ export default function ResetToStage({
                          <div className="p-2 bg-warning/10 rounded-full text-warning">
                             <AlertTriangle className="w-5 h-5" />
                          </div>
-                         <h3 className="text-lg font-bold text-foreground">تأكيد العودة</h3>
+                         <h3 className="text-lg font-bold text-foreground">{t("reset.confirmTitle")}</h3>
                     </div>
                 </div>
                 
                 <div className="p-6 space-y-4">
                     <p className="text-foreground font-medium">
-                        هل أنت متأكد من العودة إلى مرحلة <span className="text-warning font-bold">&quot;{selectedInfo.label}&quot;</span>؟
+                        {t("reset.confirmMessage")} <span className="text-warning font-bold">&quot;{selectedInfo.label}&quot;</span>?
                     </p>
                     
                     <div className="bg-warning/5 p-4 rounded-lg border border-warning/10 text-sm text-secondary">
-                        <p className="font-bold text-warning mb-1">⚠️ تحذير:</p>
-                        سيتم حذف جميع البيانات اللاحقة لهذه المرحلة. هذا الإجراء لا يمكن التراجع عنه.
+                        <p className="font-bold text-warning mb-1">{t("reset.warningTitle")}</p>
+                        {t("reset.warningMessage")}
                     </div>
 
                     <form ref={formRef}>
@@ -282,7 +284,7 @@ export default function ResetToStage({
                                 className="flex-1" 
                                 onClick={() => setShowModal(false)}
                             >
-                                إلغاء
+                                {t("common.cancel")}
                             </Button>
                             <Button 
                                 type="button" 
@@ -291,7 +293,7 @@ export default function ResetToStage({
                                 onClick={handleConfirm}
                                 isLoading={isPending}
                             >
-                                تأكيد التنفيذ
+                                {t("reset.confirmExecute")}
                             </Button>
                         </div>
                     </form>

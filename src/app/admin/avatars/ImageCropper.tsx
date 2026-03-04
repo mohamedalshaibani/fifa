@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import { X, Check } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 interface Point {
   x: number;
@@ -77,6 +78,7 @@ async function getCroppedImg(
 }
 
 export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCropperProps) {
+  const { t } = useLanguage();
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -113,7 +115,7 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h3 className="text-lg font-bold text-foreground">قص الصورة</h3>
+          <h3 className="text-lg font-bold text-foreground">{t("avatarUpload.cropImage")}</h3>
           <button
             onClick={onCancel}
             className="p-2 rounded-lg hover:bg-surface transition-colors"
@@ -191,7 +193,7 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
             ) : (
               <>
                 <Check className="w-5 h-5" />
-                حفظ
+                {t("matchEditor.save")}
               </>
             )}
           </button>
@@ -206,7 +208,7 @@ export default function ImageCropper({ imageSrc, onCropComplete, onCancel }: Ima
               border: "1px solid #E5E7EB",
             }}
           >
-            إلغاء
+            {t("matchEditor.cancel")}
           </button>
         </div>
       </div>

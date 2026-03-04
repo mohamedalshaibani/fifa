@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import SportButton from '@/components/ui/SportButton';
 import type { User } from '@supabase/supabase-js';
+import { useLanguage } from '@/lib/i18n';
 
 // Card wrapper with dark theme styling
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
@@ -40,6 +41,7 @@ interface UserProfile {
 }
 
 export default function RegisterPage() {
+  const { t } = useLanguage();
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
@@ -70,7 +72,7 @@ export default function RegisterPage() {
           .single();
 
         if (tournamentError || !tournamentData) {
-          setError('البطولة غير موجودة');
+          setError(t('register.tournamentNotFound'));
           setLoading(false);
           return;
         }
@@ -101,7 +103,7 @@ export default function RegisterPage() {
         }
       } catch (err) {
         console.error('Error loading data:', err);
-        setError('حدث خطأ في تحميل البيانات');
+        setError(t('register.loadError'));
       } finally {
         setLoading(false);
       }
@@ -130,7 +132,7 @@ export default function RegisterPage() {
 
       if (insertError) {
         if (insertError.code === '23505') {
-          setError('أنت مسجل مسبقاً في هذه البطولة');
+          setError(t('register.alreadyRegistered'));
         } else {
           throw insertError;
         }
@@ -142,7 +144,7 @@ export default function RegisterPage() {
       }
     } catch (err) {
       console.error('Error registering:', err);
-      setError('حدث خطأ في التسجيل، حاول مرة أخرى');
+      setError(t('register.registrationError'));
     } finally {
       setRegistering(false);
     }
@@ -151,7 +153,7 @@ export default function RegisterPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg-gradient)' }}>
-        <div className="text-xl" style={{ color: 'var(--text-primary)' }}>جاري التحميل...</div>
+        <div className="text-xl" style={{ color: 'var(--text-primary)' }}>{t('register.loading')}</div>
       </div>
     );
   }
@@ -163,7 +165,7 @@ export default function RegisterPage() {
           <div className="text-6xl mb-4">❌</div>
           <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{error}</h1>
           <Link href="/tournaments">
-            <SportButton variant="primary">العودة للبطولات</SportButton>
+            <SportButton variant="primary">{t('register.backToTournaments')}</SportButton>
           </Link>
         </Card>
       </div>
@@ -177,13 +179,13 @@ export default function RegisterPage() {
         <Card>
           <div className="text-6xl mb-4">🚫</div>
           <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-            {tournament.status === 'finished' ? 'البطولة انتهت' : 'التسجيل مغلق'}
+            {tournament.status === 'finished' ? t('register.tournamentEnded') : t('register.registrationClosed')}
           </h1>
           <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
-            عذراً، التسجيل في هذه البطولة غير متاح حالياً
+            {t('register.notAvailable')}
           </p>
           <Link href={`/t/${slug}`}>
-            <SportButton variant="secondary">العودة للبطولة</SportButton>
+            <SportButton variant="secondary">{t('register.backToTournament')}</SportButton>
           </Link>
         </Card>
       </div>
@@ -197,17 +199,17 @@ export default function RegisterPage() {
         <Card>
           <div className="text-6xl mb-4">🔐</div>
           <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-            سجّل دخولك أولاً
+            {t('register.loginFirst')}
           </h1>
           <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
-            لازم تسجل دخول عشان تسجل في البطولة
+            {t('register.loginRequired')}
           </p>
           <div className="flex flex-col gap-3">
             <Link href={`/auth/login?redirect=/t/${slug}/register`}>
-              <SportButton variant="primary" className="w-full">تسجيل الدخول</SportButton>
+              <SportButton variant="primary" className="w-full">{t('register.login')}</SportButton>
             </Link>
             <Link href="/auth/register">
-              <SportButton variant="secondary" className="w-full">إنشاء حساب جديد</SportButton>
+              <SportButton variant="secondary" className="w-full">{t('register.createAccount')}</SportButton>
             </Link>
           </div>
         </Card>
@@ -222,13 +224,13 @@ export default function RegisterPage() {
         <Card>
           <div className="text-6xl mb-4">✅</div>
           <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-            أنت مسجل مسبقاً
+            {t('register.alreadyRegistered')}
           </h1>
           <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
-            لقد سجلت في هذه البطولة من قبل
+            {t('register.alreadyRegisteredDesc')}
           </p>
           <Link href={`/t/${slug}`}>
-            <SportButton variant="primary">العودة للبطولة</SportButton>
+            <SportButton variant="primary">{t('register.backToTournament')}</SportButton>
           </Link>
         </Card>
       </div>
@@ -242,13 +244,13 @@ export default function RegisterPage() {
         <Card>
           <div className="text-6xl mb-4">🎉</div>
           <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-            تم التسجيل بنجاح!
+            {t('register.success')}
           </h1>
           <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
-            مبروك! تم تسجيلك في {tournament?.name}
+            {t('register.successDesc').replace('{name}', tournament?.name || '')}
           </p>
           <p style={{ color: 'var(--text-muted)' }}>
-            جاري تحويلك لصفحة البطولة...
+            {t('register.redirecting')}
           </p>
         </Card>
       </div>
@@ -261,10 +263,10 @@ export default function RegisterPage() {
       <Card>
         <div className="text-6xl mb-4">⚽</div>
         <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-          التسجيل في {tournament?.name}
+          {t('register.registerIn')} {tournament?.name}
         </h1>
         <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
-          {tournament?.format === 'league' ? 'بطولة دوري' : 'بطولة خروج المغلوب'}
+          {tournament?.format === 'league' ? t('register.leagueTournament') : t('register.knockoutTournament')}
           {tournament?.team_size && tournament.team_size > 1 ? ` (${tournament.team_size}v${tournament.team_size})` : ' (1v1)'}
         </p>
 
@@ -288,7 +290,7 @@ export default function RegisterPage() {
             </div>
           )}
           <span className="text-lg font-medium" style={{ color: 'var(--text-primary)' }}>
-            {profile ? `${profile.first_name} ${profile.last_name}`.trim() : 'لاعب'}
+            {profile ? `${profile.first_name} ${profile.last_name}`.trim() : t('register.player')}
           </span>
         </div>
 
@@ -313,10 +315,10 @@ export default function RegisterPage() {
             disabled={registering}
             className="w-full"
           >
-            {registering ? 'جاري التسجيل...' : 'سجّلني في البطولة 🎮'}
+            {registering ? t('register.registering') : t('register.registerMe')}
           </SportButton>
           <Link href={`/t/${slug}`}>
-            <SportButton variant="ghost" className="w-full">إلغاء</SportButton>
+            <SportButton variant="ghost" className="w-full">{t('register.cancel')}</SportButton>
           </Link>
         </div>
       </Card>

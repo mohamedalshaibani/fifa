@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import { useLanguage } from '@/lib/i18n';
 
 interface EditParticipantButtonProps {
   participantId: string;
@@ -15,6 +16,7 @@ export function EditParticipantButton({
   initialName,
   onUpdate,
 }: EditParticipantButtonProps) {
+  const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(initialName);
   const [isSaving, setIsSaving] = useState(false);
@@ -26,7 +28,7 @@ export function EditParticipantButton({
 
     const trimmedName = name.trim();
     if (!trimmedName) {
-      setError('اسم المشارك لا يمكن أن يكون فارغًا');
+      setError(t('editParticipant.emptyError'));
       return;
     }
 
@@ -46,7 +48,7 @@ export function EditParticipantButton({
       setIsEditing(false);
       setName(trimmedName);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'خطأ في تحديث اسم المشارك';
+      const message = err instanceof Error ? err.message : t('editParticipant.updateError');
       setError(message);
     } finally {
       setIsSaving(false);
@@ -67,9 +69,9 @@ export function EditParticipantButton({
           type="button"
           onClick={() => setIsEditing(true)}
           className="ml-2 px-3 py-1 text-xs font-semibold button-secondary"
-          title="تعديل اسم المشارك"
+          title={t('editParticipant.title')}
         >
-          ✎ تعديل
+          {t('editParticipant.edit')}
         </button>
       </div>
     );
@@ -83,7 +85,7 @@ export function EditParticipantButton({
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="flex-1 rounded border border-border bg-surface px-2 py-1 text-sm text-primary placeholder:text-muted focus:border-primary focus:outline-none"
-          placeholder="اسم المشارك"
+          placeholder={t('editParticipant.placeholder')}
           autoFocus
           disabled={isSaving}
         />
@@ -92,7 +94,7 @@ export function EditParticipantButton({
           className="px-3 py-1 text-xs font-semibold button-primary disabled:opacity-50"
           disabled={isSaving}
         >
-          {isSaving ? 'جاري...' : 'حفظ'}
+          {isSaving ? '...' : t('matchEditor.save')}
         </button>
         <button
           type="button"
@@ -100,7 +102,7 @@ export function EditParticipantButton({
           className="px-3 py-1 text-xs font-semibold button-secondary"
           disabled={isSaving}
         >
-          إلغاء
+          {t('matchEditor.cancel')}
         </button>
       </div>
       {error && (

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/lib/i18n";
 
 export default function Error({
   error,
@@ -11,6 +12,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useLanguage();
+  
   useEffect(() => {
     // Log the error to console for debugging
     console.error("[Tournament Page Error]", error);
@@ -24,9 +27,9 @@ export default function Error({
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="max-w-md w-full text-center space-y-6">
         <div className="text-6xl">⚠️</div>
-        <h1 className="text-2xl font-bold text-foreground">حدث خطأ</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("error.title")}</h1>
         <p className="text-secondary">
-          نعتذر، حدث خطأ أثناء تحميل الصفحة.
+          {t("error.apology")}
         </p>
         
         {/* Always show error details for debugging */}
@@ -46,11 +49,11 @@ export default function Error({
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button onClick={reset}>
-            حاول مرة أخرى
+            {t("error.tryAgain")}
           </Button>
           <Link href="/tournaments">
             <Button variant="secondary">
-              العودة للبطولات
+              {t("register.backToTournaments")}
             </Button>
           </Link>
         </div>

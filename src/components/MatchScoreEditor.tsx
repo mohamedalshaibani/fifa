@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { Check, X, Edit2 } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n';
 
 interface MatchScoreEditorProps {
   matchId: string;
@@ -32,6 +33,7 @@ export default function MatchScoreEditor({
   homeMembers = [],
   awayMembers = [],
 }: MatchScoreEditorProps) {
+  const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [home, setHome] = useState<string>(homeScore?.toString() ?? '');
   const [away, setAway] = useState<string>(awayScore?.toString() ?? '');
@@ -47,15 +49,15 @@ export default function MatchScoreEditor({
     const awayNum = parseInt(away, 10);
     
     if (home !== '' && isNaN(homeNum)) {
-      setError('النتيجة يجب أن تكون رقم');
+      setError(t('matchEditor.mustBeNumber'));
       return;
     }
     if (away !== '' && isNaN(awayNum)) {
-      setError('النتيجة يجب أن تكون رقم');
+      setError(t('matchEditor.mustBeNumber'));
       return;
     }
     if (homeNum < 0 || awayNum < 0) {
-      setError('النتيجة لا يمكن أن تكون سالبة');
+      setError(t('matchEditor.cannotBeNegative'));
       return;
     }
 
@@ -71,7 +73,7 @@ export default function MatchScoreEditor({
         await onUpdateScore(formData);
         setIsEditing(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'خطأ في حفظ النتيجة');
+        setError(err instanceof Error ? err.message : t('matchEditor.saveError'));
       }
     });
   };
@@ -123,13 +125,13 @@ export default function MatchScoreEditor({
             <span className={`text-xs px-2 py-1 rounded ${
               status === "completed" ? "bg-success/20 text-success" : "bg-info/20 text-info"
             }`}>
-              {status === "completed" ? "انتهت" : "قادمة"}
+              {status === "completed" ? t('matchEditor.completed') : t('matchEditor.pending')}
             </span>
             <button
               type="button"
               onClick={() => setIsEditing(true)}
               className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-              title="تعديل النتيجة"
+              title={t('matchEditor.editResult')}
             >
               <Edit2 className="w-4 h-4" />
             </button>
@@ -193,7 +195,7 @@ export default function MatchScoreEditor({
           className="flex items-center gap-1 px-4 py-2 bg-success text-white rounded-lg hover:bg-success/90 disabled:opacity-50 text-sm font-bold"
         >
           <Check className="w-4 h-4" />
-          {isPending ? 'جاري الحفظ...' : 'حفظ'}
+          {isPending ? t('matchEditor.saving') : t('matchEditor.save')}
         </button>
         <button
           type="button"
@@ -202,7 +204,7 @@ export default function MatchScoreEditor({
           className="flex items-center gap-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-sm font-bold"
         >
           <X className="w-4 h-4" />
-          إلغاء
+          {t('matchEditor.cancel')}
         </button>
       </div>
     </div>

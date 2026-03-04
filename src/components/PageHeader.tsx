@@ -9,7 +9,7 @@ interface PageHeaderProps {
   icon?: ReactNode;
   /** Back link URL */
   backHref?: string;
-  /** Back link text - defaults to "العودة" */
+  /** Back link text */
   backText?: string;
   /** Optional badge/status element to display */
   badge?: ReactNode;
@@ -36,7 +36,7 @@ export default function PageHeader({
   title,
   icon,
   backHref,
-  backText = "العودة",
+  backText,
   badge,
   subtitle,
   actions,

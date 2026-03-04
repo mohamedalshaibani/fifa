@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { Upload, Loader2, ImagePlus } from "lucide-react";
 import { uploadAvatar } from "./actions";
 import ImageCropper from "./ImageCropper";
+import { useLanguage } from "@/lib/i18n";
 
 interface UploadAvatarFormProps {
   onSuccess?: () => void;
@@ -11,6 +12,7 @@ interface UploadAvatarFormProps {
 }
 
 export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFormProps) {
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -25,11 +27,11 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
     if (file) {
       const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
       if (!allowedTypes.includes(file.type)) {
-        setError("نوع الملف غير مدعوم. يجب أن يكون JPG أو PNG أو WebP");
+        setError(t("avatarUpload.invalidType"));
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
-        setError("حجم الملف كبير جداً. الحد الأقصى 10 ميجابايت");
+        setError(t("avatarUpload.fileTooLarge"));
         return;
       }
       setError(null);
@@ -63,7 +65,7 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
     e.preventDefault();
     
     if (!croppedFile) {
-      setError("الرجاء اختيار صورة");
+      setError(t("avatarUpload.selectImage"));
       return;
     }
 
@@ -82,7 +84,7 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
         onSuccess?.();
       }
     } catch {
-      setError("حدث خطأ غير متوقع");
+      setError(t("avatarUpload.unexpectedError"));
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +133,7 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
           <div className="flex flex-col items-center gap-4">
             <div className="relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-lg">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={preview} alt="معاينة" className="w-full h-full object-cover" />
+              <img src={preview} alt={t("avatarUpload.preview")} className="w-full h-full object-cover" />
             </div>
             <div className="flex gap-3">
               <button
@@ -139,7 +141,7 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
                 onClick={() => fileInputRef.current?.click()}
                 className="text-sm text-primary hover:text-primary/80 font-medium"
               >
-                تغيير الصورة
+                {t("avatarUpload.changeImage")}
               </button>
               <span className="text-muted">|</span>
               <button
@@ -147,7 +149,7 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
                 onClick={clearImage}
                 className="text-sm text-red-500 hover:text-red-600 font-medium"
               >
-                إزالة
+                {t("avatarUpload.remove")}
               </button>
             </div>
           </div>
@@ -158,13 +160,13 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
             </div>
             <div>
               <p className="text-base font-semibold text-foreground">
-                اسحب وأفلت الصورة هنا
+                {t("avatarUpload.dragDrop")}
               </p>
               <p className="text-sm text-muted mt-1">
-                أو انقر للاختيار
+                {t("avatarUpload.orClickToSelect")}
               </p>
               <p className="text-xs text-muted mt-2">
-                JPG, PNG, WebP • حد أقصى 10MB
+                {t("avatarUpload.fileRestrictions")}
               </p>
             </div>
           </div>
@@ -183,24 +185,24 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
       <div className="space-y-4">
         <div>
           <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2">
-            الاسم (معرّف)
+            {t("avatarUpload.nameIdentifier")}
           </label>
           <input
             type="text"
             name="name"
-            placeholder="مثال: messi"
+            placeholder={t("avatarUpload.namePlaceholder")}
             required
             className="w-full px-4 py-3 rounded-xl bg-surface border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-foreground"
           />
         </div>
         <div>
           <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2">
-            الاسم المعروض
+            {t("avatarUpload.displayName")}
           </label>
           <input
             type="text"
             name="displayName"
-            placeholder="مثال: ليونيل ميسي"
+            placeholder={t("avatarUpload.displayNamePlaceholder")}
             required
             className="w-full px-4 py-3 rounded-xl bg-surface border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-foreground"
           />
@@ -210,7 +212,7 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
       {/* Category */}
       <div>
         <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-3">
-          الفئة
+          {t("avatarUpload.category")}
         </label>
         <div className="flex gap-4">
           <label className="flex-1 cursor-pointer">
@@ -222,7 +224,7 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
               className="peer sr-only"
             />
             <div className="px-4 py-3 rounded-xl border-2 border-border peer-checked:border-primary peer-checked:bg-primary/5 text-center transition-colors">
-              <span className="text-sm font-medium">لاعب حالي</span>
+              <span className="text-sm font-medium">{t("avatarUpload.currentPlayer")}</span>
             </div>
           </label>
           <label className="flex-1 cursor-pointer">
@@ -233,7 +235,7 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
               className="peer sr-only"
             />
             <div className="px-4 py-3 rounded-xl border-2 border-border peer-checked:border-primary peer-checked:bg-primary/5 text-center transition-colors">
-              <span className="text-sm font-medium">أسطورة</span>
+              <span className="text-sm font-medium">{t("avatarUpload.legend")}</span>
             </div>
           </label>
         </div>
@@ -255,7 +257,7 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
             disabled={isLoading}
             className="flex-1 px-4 py-3 rounded-xl border border-border text-muted font-medium hover:bg-surface transition-colors disabled:opacity-50"
           >
-            إلغاء
+            {t("matchEditor.cancel")}
           </button>
         )}
         <button
@@ -266,12 +268,12 @@ export default function UploadAvatarForm({ onSuccess, onCancel }: UploadAvatarFo
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              جاري الرفع...
+              {t("avatarUpload.uploading")}
             </>
           ) : (
             <>
               <Upload className="w-4 h-4" />
-              رفع الصورة
+              {t("avatarUpload.uploadImage")}
             </>
           )}
         </button>

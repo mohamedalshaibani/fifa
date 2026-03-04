@@ -5,6 +5,14 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useLanguage } from "@/lib/i18n";
 
+// Map server error messages to translation keys
+const errorKeyMap: Record<string, string> = {
+  "يجب تسجيل الدخول للتسجيل في البطولة": "registration.loginRequired",
+  "البطولة غير موجودة": "registration.tournamentNotFound",
+  "التسجيل مغلق حالياً": "registration.closed",
+  "حدث خطأ أثناء التسجيل": "registration.error",
+};
+
 interface RegisterButtonProps {
   tournamentId: string;
   tournamentSlug: string;
@@ -20,6 +28,12 @@ export default function RegisterButton({
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { t } = useLanguage();
+
+  // Translate server error or return as-is
+  const translateError = (err: string): string => {
+    const key = errorKeyMap[err];
+    return key ? t(key as any) : err;
+  };
 
   const handleSubmit = () => {
     setError(null);
@@ -39,7 +53,7 @@ export default function RegisterButton({
           // Already registered, just refresh
           router.refresh();
         } else if (result.error) {
-          setError(result.error);
+          setError(translateError(result.error));
         }
       } catch (err) {
         console.error("Registration error:", err);

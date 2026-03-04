@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 interface TournamentCountdownProps {
   startDate: string;
@@ -16,6 +17,7 @@ export default function TournamentCountdown({
   completedMatches,
   tournamentStatus,
 }: TournamentCountdownProps) {
+  const { t, language } = useLanguage();
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
     hours: number;
@@ -67,7 +69,7 @@ export default function TournamentCountdown({
   if (tournamentStatus === "finished") {
     return (
       <span className="inline-flex items-center gap-2 rounded-full border border-gray-400/40 bg-gray-100/80 text-gray-700 px-3 py-1 text-xs font-bold">
-        انتهت البطولة
+        {t("countdown.tournamentEnded")}
       </span>
     );
   }
@@ -77,14 +79,14 @@ export default function TournamentCountdown({
     if (matchesCount === 0) {
       return (
         <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 text-primary px-3 py-1 text-xs font-bold">
-          لم تبدأ المباريات
+          {t("countdown.matchesNotStarted")}
         </span>
       );
     }
 
     return (
       <span className="inline-flex items-center gap-2 rounded-full border border-accent/60 bg-accent/10 text-accent px-3 py-1 text-xs font-bold">
-        {completedMatches}/{matchesCount} مباراة
+        {completedMatches}/{matchesCount} {t("countdown.match")}
       </span>
     );
   }
@@ -94,28 +96,55 @@ export default function TournamentCountdown({
     return null;
   }
 
-  // Format countdown text
-  let countdownText = "";
-  if (timeLeft.days > 0) {
-    countdownText = `تبقى ${timeLeft.days} ${timeLeft.days === 1 ? "يوم" : "أيام"}`;
-    if (timeLeft.hours > 0) {
-      countdownText += ` و ${timeLeft.hours} ${timeLeft.hours === 1 ? "ساعة" : "ساعات"}`;
+  // Format countdown text based on language
+  const formatCountdown = () => {
+    const { days, hours, minutes, seconds } = timeLeft;
+    
+    if (language === "ar") {
+      // Arabic format: "تبقى X أيام و Y ساعات"
+      if (days > 0) {
+        let text = `${t("countdown.remaining")} ${days} ${days === 1 ? t("countdown.day") : t("countdown.days")}`;
+        if (hours > 0) {
+          text += ` ${t("countdown.and")} ${hours} ${hours === 1 ? t("countdown.hour") : t("countdown.hours")}`;
+        }
+        return text;
+      } else if (hours > 0) {
+        let text = `${t("countdown.remaining")} ${hours} ${hours === 1 ? t("countdown.hour") : t("countdown.hours")}`;
+        if (minutes > 0) {
+          text += ` ${t("countdown.and")} ${minutes} ${minutes === 1 ? t("countdown.minute") : t("countdown.minutes")}`;
+        }
+        return text;
+      } else if (minutes > 0) {
+        return `${t("countdown.remaining")} ${minutes} ${minutes === 1 ? t("countdown.minute") : t("countdown.minutes")}`;
+      } else {
+        return `${t("countdown.remaining")} ${seconds} ${seconds === 1 ? t("countdown.second") : t("countdown.seconds")}`;
+      }
+    } else {
+      // English format: "X days, Y hours remaining"
+      if (days > 0) {
+        let text = `${days} ${days === 1 ? t("countdown.day") : t("countdown.days")}`;
+        if (hours > 0) {
+          text += `, ${hours} ${hours === 1 ? t("countdown.hour") : t("countdown.hours")}`;
+        }
+        return `${text} ${t("countdown.remaining")}`;
+      } else if (hours > 0) {
+        let text = `${hours} ${hours === 1 ? t("countdown.hour") : t("countdown.hours")}`;
+        if (minutes > 0) {
+          text += `, ${minutes} ${minutes === 1 ? t("countdown.minute") : t("countdown.minutes")}`;
+        }
+        return `${text} ${t("countdown.remaining")}`;
+      } else if (minutes > 0) {
+        return `${minutes} ${minutes === 1 ? t("countdown.minute") : t("countdown.minutes")} ${t("countdown.remaining")}`;
+      } else {
+        return `${seconds} ${seconds === 1 ? t("countdown.second") : t("countdown.seconds")} ${t("countdown.remaining")}`;
+      }
     }
-  } else if (timeLeft.hours > 0) {
-    countdownText = `تبقى ${timeLeft.hours} ${timeLeft.hours === 1 ? "ساعة" : "ساعات"}`;
-    if (timeLeft.minutes > 0) {
-      countdownText += ` و ${timeLeft.minutes} ${timeLeft.minutes === 1 ? "دقيقة" : "دقائق"}`;
-    }
-  } else if (timeLeft.minutes > 0) {
-    countdownText = `تبقى ${timeLeft.minutes} ${timeLeft.minutes === 1 ? "دقيقة" : "دقائق"}`;
-  } else {
-    countdownText = `تبقى ${timeLeft.seconds} ${timeLeft.seconds === 1 ? "ثانية" : "ثواني"}`;
-  }
+  };
 
   return (
     <span className="inline-flex items-center gap-2 rounded-full border border-primary/50 bg-primary/10 text-primary px-3 py-1 text-xs font-bold">
       <Clock className="w-3 h-3" />
-      {countdownText}
+      {formatCountdown()}
     </span>
   );
 }

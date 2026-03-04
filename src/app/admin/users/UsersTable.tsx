@@ -383,13 +383,13 @@ export function UsersTable({ users, currentUserId }: UsersTableProps) {
 
               <p className="text-muted">
                 {confirmModal.action === "delete" && (
-                  <>{t("admin.users.confirmDeleteDesc")} <strong className="text-foreground">{confirmModal.userName}</strong>؟ {t("admin.users.confirmDeleteWarning")}</>
+                  <>{t("admin.users.confirmDeleteDesc")} <strong className="text-foreground">{confirmModal.userName}</strong>{language === "ar" ? "؟" : "?"} {t("admin.users.confirmDeleteWarning")}</>
                 )}
                 {confirmModal.action === "suspend" && (
-                  <>{t("admin.users.confirmSuspendDesc")} <strong className="text-foreground">{confirmModal.userName}</strong>؟ {t("admin.users.confirmSuspendWarning")}</>
+                  <>{t("admin.users.confirmSuspendDesc")} <strong className="text-foreground">{confirmModal.userName}</strong>{language === "ar" ? "؟" : "?"} {t("admin.users.confirmSuspendWarning")}</>
                 )}
                 {confirmModal.action === "demote" && (
-                  <>{t("admin.users.confirmDemoteDesc")} <strong className="text-foreground">{confirmModal.userName}</strong>؟</>
+                  <>{t("admin.users.confirmDemoteDesc")} <strong className="text-foreground">{confirmModal.userName}</strong>{language === "ar" ? "؟" : "?"}</>
                 )}
               </p>
 

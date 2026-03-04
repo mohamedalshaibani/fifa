@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Shuffle, CalendarDays, CheckCircle2, RotateCcw } from "lucide-react";
 import { Participant, Pairing } from "@/lib/types";
 import { generateKnockoutRoundOne, generateLeagueSchedule, shuffle } from "@/lib/tournament-utils";
+import { useLanguage } from "@/lib/i18n";
 
 type PreviewPairing = {
   homeParticipantId: string;
@@ -37,6 +38,7 @@ export default function DrawControls({
   onSaveSchedule,
   onResetDraw,
 }: DrawControlsProps) {
+  const { t } = useLanguage();
   const [pairingsPreview, setPairingsPreview] = useState<PreviewPairing[]>([]);
   const [schedulePreview, setSchedulePreview] = useState<PreviewMatch[]>([]);
 
@@ -117,7 +119,7 @@ export default function DrawControls({
           }`}
         >
           <Shuffle className="h-4 w-4" />
-          قرعة تشكيل المواجهات
+          {t("draw.generateMatchups")}
         </button>
 
         <button
@@ -131,7 +133,7 @@ export default function DrawControls({
           }`}
         >
           <CalendarDays className="h-4 w-4" />
-          قرعة إعداد جدول المباريات
+          {t("draw.generateSchedule")}
         </button>
 
         {(pairings.length > 0 || matchesCount > 0) && (
@@ -142,7 +144,7 @@ export default function DrawControls({
               className="inline-flex items-center gap-2 button-secondary px-5 py-2.5 text-sm font-semibold"
             >
               <RotateCcw className="h-4 w-4" />
-              إعادة ضبط القرعة
+              {t("draw.resetDraw")}
             </button>
           </form>
         )}
@@ -151,7 +153,7 @@ export default function DrawControls({
       {pairingsPreview.length > 0 && (
         <div className="card-surface p-5">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-foreground">معاينة المواجهات</h3>
+            <h3 className="text-sm font-bold text-foreground">{t("draw.previewMatchups")}</h3>
             <form action={onSavePairings}>
               <input type="hidden" name="tournamentId" value={tournamentId} />
               <input
@@ -164,7 +166,7 @@ export default function DrawControls({
                 className="inline-flex items-center gap-2 button-primary px-4 py-2 text-xs font-semibold"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                حفظ المواجهات
+                {t("draw.saveMatchups")}
               </button>
             </form>
           </div>
@@ -186,7 +188,7 @@ export default function DrawControls({
       {schedulePreview.length > 0 && (
         <div className="card-surface p-5">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-foreground">معاينة الجدول</h3>
+            <h3 className="text-sm font-bold text-foreground">{t("draw.previewSchedule")}</h3>
             <form action={onSaveSchedule}>
               <input type="hidden" name="tournamentId" value={tournamentId} />
               <input
@@ -199,7 +201,7 @@ export default function DrawControls({
                 className="inline-flex items-center gap-2 button-primary px-4 py-2 text-xs font-semibold"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                حفظ الجدول
+                {t("draw.saveSchedule")}
               </button>
             </form>
           </div>
@@ -209,7 +211,7 @@ export default function DrawControls({
                 key={`${match.round}-${match.homeParticipantId}-${match.awayParticipantId}-${index}`}
                 className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface-2 px-4 py-3"
               >
-                <span className="text-xs text-muted">جولة {match.round}</span>
+                <span className="text-xs text-muted">{t("draw.round")} {match.round}</span>
                 <span>{match.homeParticipantId ? nameMap.get(match.homeParticipantId) : "-"}</span>
                 <span className="text-muted">vs</span>
                 <span>{match.awayParticipantId ? nameMap.get(match.awayParticipantId) : "BYE"}</span>

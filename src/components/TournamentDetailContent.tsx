@@ -48,7 +48,7 @@ export function TournamentDetailContent({
   setupStatus,
   searchParams,
 }: TournamentDetailContentProps) {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
 
   const playersPerTeam = tournament.players_per_team ?? 1;
   const isTeamBased = playersPerTeam === 2;
@@ -187,7 +187,7 @@ export function TournamentDetailContent({
                         {t("tournamentDetail.champion")}
                       </p>
                       <h2 className="mt-2 text-3xl md:text-4xl font-black text-foreground">
-                        {championName ?? getEmptyStateText('champion')}
+                        {championName ?? getEmptyStateText('champion', language)}
                       </h2>
                       {isTeamBased && championMembers.length > 0 && (
                         <p className="mt-2 text-sm text-secondary font-medium">
@@ -206,7 +206,7 @@ export function TournamentDetailContent({
                         {t("tournamentDetail.runnerUp")}
                       </p>
                       <h2 className="mt-2 text-2xl md:text-3xl font-black text-muted-foreground">
-                        {runnerUpName ?? getEmptyStateText('champion')}
+                        {runnerUpName ?? getEmptyStateText('champion', language)}
                       </h2>
                       {isTeamBased && runnerUpMembers.length > 0 && (
                         <p className="mt-2 text-sm text-muted">
@@ -527,13 +527,13 @@ export function TournamentDetailContent({
         <div className="mb-8">
           <BackLink href="/tournaments" text={t("tournamentDetail.backToTournaments")} />
 
-          {setupStatus.isIncomplete && setupStatus.setupMessage && (
+          {setupStatus.isIncomplete && (
             <div className="mb-6">
               <SetupBanner
                 tournamentId={tournament.id}
                 tournamentSlug={tournament.slug}
                 isAdmin={isAdmin}
-                setupMessage={setupStatus.setupMessage}
+                setupMessage={t("tournamentDetail.setupMessage")}
               />
             </div>
           )}

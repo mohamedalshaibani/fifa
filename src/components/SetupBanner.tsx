@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { useLanguage } from "@/lib/i18n/context";
 
 interface SetupBannerProps {
   tournamentId: string;
@@ -19,6 +22,8 @@ export default function SetupBanner({
   isAdmin,
   setupMessage,
 }: SetupBannerProps) {
+  const { t } = useLanguage();
+  
   return (
     <div className="mb-6 rounded-2xl border-l-4 border-warning bg-warning/5 border border-warning/30 p-4 md:p-5">
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -26,7 +31,7 @@ export default function SetupBanner({
           <AlertCircle className="w-5 h-5 text-warning mt-0.5 flex-shrink-0" />
           <div>
             <p className="text-sm font-semibold text-warning mb-1">
-              قيد الإعداد
+              {t("setupBanner.inProgress")}
             </p>
             <p className="text-sm text-secondary">
               {setupMessage}
@@ -37,7 +42,7 @@ export default function SetupBanner({
         {isAdmin && (
           <Link href={`/admin/tournaments/${tournamentId}`} className="flex-shrink-0">
             <Button size="sm" variant="secondary">
-              إكمال الإعدادات
+              {t("setupBanner.completeSetup")}
             </Button>
           </Link>
         )}

@@ -5,12 +5,14 @@ import { Pencil, Trash2, X, Loader2, Save, Camera } from "lucide-react";
 import { updateAvatar, deleteAvatar } from "./actions";
 import ImageCropper from "./ImageCropper";
 import type { Avatar } from "@/lib/types";
+import { useLanguage } from "@/lib/i18n";
 
 interface AvatarCardActionsProps {
   avatar: Avatar;
 }
 
 export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
+  const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,11 +28,11 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
     if (file) {
       const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
       if (!allowedTypes.includes(file.type)) {
-        setError("نوع الملف غير مدعوم");
+        setError(t("avatarUpload.invalidType"));
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
-        setError("حجم الملف كبير جداً");
+        setError(t("avatarUpload.fileTooLarge"));
         return;
       }
       setError(null);
@@ -74,7 +76,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
         setCroppedFile(null);
       }
     } catch {
-      setError("حدث خطأ غير متوقع");
+      setError(t("avatarUpload.unexpectedError"));
     } finally {
       setIsLoading(false);
     }
@@ -91,7 +93,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
         setIsDeleting(false);
       }
     } catch {
-      setError("حدث خطأ غير متوقع");
+      setError(t("avatarUpload.unexpectedError"));
       setIsDeleting(false);
     } finally {
       setIsLoading(false);
@@ -127,7 +129,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-            <h3 className="text-lg font-bold text-foreground">تعديل الصورة الرمزية</h3>
+            <h3 className="text-lg font-bold text-foreground">{t("avatarUpload.editAvatar")}</h3>
             <button
               onClick={closeEdit}
               className="p-2 rounded-lg hover:bg-surface transition-colors"
@@ -164,13 +166,13 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
                 </label>
               </div>
             </div>
-            <p className="text-xs text-center text-muted">انقر على الصورة لتغييرها</p>
+            <p className="text-xs text-center text-muted">{t("avatarUpload.clickToChange")}</p>
 
             {/* Form Fields */}
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2">
-                  الاسم (معرّف)
+                  {t("avatarUpload.nameIdentifier")}
                 </label>
                 <input
                   type="text"
@@ -183,7 +185,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
 
               <div>
                 <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-2">
-                  الاسم المعروض
+                  {t("avatarUpload.displayName")}
                 </label>
                 <input
                   type="text"
@@ -196,7 +198,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
 
               <div>
                 <label className="block text-xs font-bold text-muted uppercase tracking-widest mb-3">
-                  الفئة
+                  {t("avatarUpload.category")}
                 </label>
                 <div className="flex gap-4">
                   <label className="flex-1 cursor-pointer">
@@ -208,7 +210,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
                       className="peer sr-only"
                     />
                     <div className="px-4 py-3 rounded-xl border-2 border-border peer-checked:border-primary peer-checked:bg-primary/5 text-center transition-colors">
-                      <span className="text-sm font-medium">لاعب حالي</span>
+                      <span className="text-sm font-medium">{t("avatarUpload.currentPlayer")}</span>
                     </div>
                   </label>
                   <label className="flex-1 cursor-pointer">
@@ -220,7 +222,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
                       className="peer sr-only"
                     />
                     <div className="px-4 py-3 rounded-xl border-2 border-border peer-checked:border-primary peer-checked:bg-primary/5 text-center transition-colors">
-                      <span className="text-sm font-medium">أسطورة</span>
+                      <span className="text-sm font-medium">{t("avatarUpload.legend")}</span>
                     </div>
                   </label>
                 </div>
@@ -248,7 +250,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
                   border: "1px solid #E5E7EB",
                 }}
               >
-                إلغاء
+                {t("matchEditor.cancel")}
               </button>
               <button
                 type="submit"
@@ -267,7 +269,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
                 ) : (
                   <>
                     <Save className="w-4 h-4" />
-                    حفظ التغييرات
+                    {t("avatarUpload.saveChanges")}
                   </>
                 )}
               </button>
@@ -287,9 +289,9 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
             <Trash2 className="w-8 h-8 text-red-600" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-foreground mb-2">حذف الصورة الرمزية؟</h3>
+            <h3 className="text-lg font-bold text-foreground mb-2">{t("avatarUpload.deleteAvatar")}</h3>
             <p className="text-sm text-muted">
-              سيتم حذف &quot;{avatar.display_name}&quot; نهائياً. هذا الإجراء لا يمكن التراجع عنه.
+              {t("avatarUpload.deleteWarning").replace("{name}", avatar.display_name)}
             </p>
           </div>
 
@@ -314,7 +316,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
                 border: "1px solid #E5E7EB",
               }}
             >
-              إلغاء
+              {t("matchEditor.cancel")}
             </button>
             <button
               onClick={handleDelete}
@@ -332,7 +334,7 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
               ) : (
                 <>
                   <Trash2 className="w-4 h-4" />
-                  حذف
+                  {t("deleteButton.confirm")}
                 </>
               )}
             </button>
@@ -350,14 +352,14 @@ export default function AvatarCardActions({ avatar }: AvatarCardActionsProps) {
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium transition-colors"
       >
         <Pencil className="w-3 h-3" />
-        تعديل
+        {t("matchEditor.edit")}
       </button>
       <button
         onClick={() => setIsDeleting(true)}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium transition-colors"
       >
         <Trash2 className="w-3 h-3" />
-        حذف
+        {t("deleteButton.confirm")}
       </button>
     </div>
   );

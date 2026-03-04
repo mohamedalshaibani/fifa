@@ -282,7 +282,7 @@ export default function AccountPage() {
                   <span className="text-4xl">{profile.avatar_url}</span>
                 ) : (
                   <div className="w-full h-full bg-primary flex items-center justify-center text-3xl text-white font-bold">
-                    {profile.first_name?.[0] || "؟"}
+                    {profile.first_name?.[0] || t("common.questionMark")}
                   </div>
                 )}
               </div>

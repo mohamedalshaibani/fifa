@@ -1,7 +1,10 @@
+"use client";
+
 import { EditTeamNameButton } from './EditTeamNameButton';
 import Card from "@/components/Card";
-import { User } from 'lucide-react';
+import { User, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
+import { useLanguage } from '@/lib/i18n/context';
 
 // Member can be a simple string (name) or an object with avatar info
 export interface TeamMemberInfo {
@@ -36,6 +39,8 @@ export function TeamCard({
   showEditButton = false,
   compact = false,
 }: TeamCardProps) {
+  const { t } = useLanguage();
+  
   if (compact) {
     // Compact format: "برشلونة (محمد + سلطان)"
     const memberNames = members.length > 0 
@@ -89,15 +94,13 @@ export function TeamCard({
         ) : (
           <p className="text-xs text-muted flex items-center gap-1">
              <AlertCircle className="w-3 h-3" />
-             لا يوجد أعضاء
+             {t("teamCard.noMembers")}
           </p>
         )}
       </div>
     </Card>
   );
 }
-
-import { AlertCircle } from 'lucide-react';
 
 // Match display component showing both teams with members
 interface MatchTeamsDisplayProps {
