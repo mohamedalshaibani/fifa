@@ -61,7 +61,17 @@ const config: Config = {
         navy: "#050816",
       },
       fontFamily: {
-        cairo: ["var(--font-cairo)", "system-ui", "sans-serif"],
+        cairo: [
+          "var(--font-cairo)", 
+          "system-ui", 
+          "-apple-system", 
+          "BlinkMacSystemFont", 
+          "Segoe UI", 
+          "Roboto", 
+          "Helvetica Neue", 
+          "Arial", 
+          "sans-serif"
+        ],
       },
       borderRadius: {
         xl: "var(--radius-xl)",

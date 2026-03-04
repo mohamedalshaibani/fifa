@@ -5,6 +5,33 @@
    ============================================ */
 
 /* 
+ * Cross-browser font rendering consistency
+ * Ensures Cairo font renders similarly across Safari, Chrome, Firefox
+ */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  body {
+    font-family: var(--font-cairo), system-ui, -apple-system, BlinkMacSystemFont, 
+                 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-optical-sizing: auto;
+    font-synthesis: none;
+  }
+
+  /* Normalize text size adjust across browsers */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+}
+
+/* 
  * Button/input reset - NO display override!
  * Let Tailwind handle display via utility classes.
  * Using @layer base ensures Tailwind utilities take precedence.
