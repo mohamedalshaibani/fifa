@@ -192,7 +192,7 @@ export default function MatchScoreEditor({
           type="button"
           onClick={handleSave}
           disabled={isPending}
-          className="flex items-center gap-1 px-4 py-2 bg-success text-white rounded-lg hover:bg-success/90 disabled:opacity-50 text-sm font-bold"
+          className="flex items-center gap-1.5 px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-dark disabled:opacity-50 text-sm font-bold shadow-md transition-all"
         >
           <Check className="w-4 h-4" />
           {isPending ? t('matchEditor.saving') : t('matchEditor.save')}
@@ -201,7 +201,7 @@ export default function MatchScoreEditor({
           type="button"
           onClick={handleCancel}
           disabled={isPending}
-          className="flex items-center gap-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-sm font-bold"
+          className="flex items-center gap-1.5 px-5 py-2.5 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 disabled:opacity-50 text-sm font-bold transition-all"
         >
           <X className="w-4 h-4" />
           {t('matchEditor.cancel')}
