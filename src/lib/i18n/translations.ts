@@ -1192,6 +1192,168 @@ export const translations = {
     en: "participant",
   },
 
+  // ============ SCHEDULE PAGE ============
+  "schedule.title": {
+    ar: "جدول المباريات",
+    en: "Match Schedule",
+  },
+  "schedule.noMatchesYet": {
+    ar: "لم يتم إنشاء مباريات بعد.",
+    en: "No matches created yet.",
+  },
+  "schedule.round": {
+    ar: "الجولة",
+    en: "Round",
+  },
+  "schedule.match": {
+    ar: "مباراة",
+    en: "match",
+  },
+  "schedule.participants": {
+    ar: "المشاركون",
+    en: "Participants",
+  },
+  "schedule.standings": {
+    ar: "الترتيب",
+    en: "Standings",
+  },
+  "schedule.bracket": {
+    ar: "الشجرة",
+    en: "Bracket",
+  },
+
+  // ============ STANDINGS PAGE ============
+  "standingsPage.title": {
+    ar: "ترتيب",
+    en: "Standings",
+  },
+  "standingsPage.teamsStandings": {
+    ar: "ترتيب الفرق",
+    en: "Teams Standings",
+  },
+  "standingsPage.playersStandings": {
+    ar: "ترتيب اللاعبين",
+    en: "Players Standings",
+  },
+  "standingsPage.backToTournament": {
+    ar: "العودة للبطولة",
+    en: "Back to Tournament",
+  },
+  "standingsPage.noDataYet": {
+    ar: "لا توجد بيانات ترتيب بعد.",
+    en: "No standings data yet.",
+  },
+  "standingsPage.leagueTable": {
+    ar: "جدول الدوري",
+    en: "League Table",
+  },
+  "standingsPage.team": {
+    ar: "الفريق",
+    en: "Team",
+  },
+  "standingsPage.player": {
+    ar: "اللاعب",
+    en: "Player",
+  },
+
+  // ============ BRACKET PAGE ============
+  "bracketPage.title": {
+    ar: "شجرة المنافسة",
+    en: "Competition Bracket",
+  },
+  "bracketPage.backToTournament": {
+    ar: "العودة للبطولة",
+    en: "Back to Tournament",
+  },
+  "bracketPage.noDrawYet": {
+    ar: "لم تتم القرعة بعد.",
+    en: "Draw not done yet.",
+  },
+  "bracketPage.final": {
+    ar: "النهائي",
+    en: "Final",
+  },
+  "bracketPage.finalMatch": {
+    ar: "المباراة النهائية",
+    en: "Final Match",
+  },
+  "bracketPage.completed": {
+    ar: "انتهت",
+    en: "Completed",
+  },
+  "bracketPage.winner": {
+    ar: "الفائز",
+    en: "Winner",
+  },
+
+  // ============ PARTICIPANTS PAGE ============
+  "participantsPage.title": {
+    ar: "المشاركون",
+    en: "Participants",
+  },
+  "participantsPage.list": {
+    ar: "قائمة المشاركين",
+    en: "Participants List",
+  },
+  "participantsPage.count": {
+    ar: "مشارك",
+    en: "participant",
+  },
+  "participantsPage.noParticipantsYet": {
+    ar: "لا يوجد مشاركون بعد.",
+    en: "No participants yet.",
+  },
+  "participantsPage.standings": {
+    ar: "الترتيب",
+    en: "Standings",
+  },
+  "participantsPage.bracket": {
+    ar: "الشجرة",
+    en: "Bracket",
+  },
+  "participantsPage.schedule": {
+    ar: "الجدول",
+    en: "Schedule",
+  },
+
+  // ============ CHAMPION PAGE ============
+  "championPage.title": {
+    ar: "بطل البطولة",
+    en: "Tournament Champion",
+  },
+  "championPage.champion": {
+    ar: "البطل",
+    en: "Champion",
+  },
+  "championPage.congratulations": {
+    ar: "تهانينا للبطل! إنجاز رائع في هذه البطولة المثيرة.",
+    en: "Congratulations to the champion! An amazing achievement in this exciting tournament.",
+  },
+  "championPage.backToTournament": {
+    ar: "العودة إلى البطولة",
+    en: "Back to Tournament",
+  },
+  "championPage.notDetermined": {
+    ar: "غير محدد",
+    en: "Not determined",
+  },
+  "championPage.league": {
+    ar: "دوري",
+    en: "League",
+  },
+  "championPage.knockout": {
+    ar: "خروج المغلوب",
+    en: "Knockout",
+  },
+  "championPage.teams": {
+    ar: "فرق",
+    en: "Teams",
+  },
+  "championPage.individual": {
+    ar: "فردي",
+    en: "Individual",
+  },
+
   // ============ LANGUAGE ============
   "language.toggle": {
     ar: "English",
