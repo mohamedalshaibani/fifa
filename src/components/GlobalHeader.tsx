@@ -132,11 +132,28 @@ export default function GlobalHeader({
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-gradient-to-b from-[#E8DDD2] via-[#FFFFFF]/90 to-[#FFFFFF]/80 backdrop-blur-md">
-        {/* dir="ltr" forces standard left-to-right flex behavior, then we position manually */}
-        <div dir="ltr" className="container-responsive h-16 flex items-center justify-between gap-4">
+        {/* Container: flex direction changes based on language */}
+        <div className={`container-responsive h-16 flex items-center justify-between gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
           
-          {/* LEFT ZONE: Actions (Desktop) / Hamburger (Mobile) */}
-          <div className="flex items-center gap-3">
+          {/* LOGO ZONE: Logo/Brand - Always visible */}
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 transition-opacity hover:opacity-90">
+            {/* Logo Icon */}
+            <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md flex-shrink-0">
+              <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
+            </div>
+            {/* Text - Responsive: smaller on mobile, full on desktop */}
+            <div className={`flex flex-col ${isRTL ? 'items-end' : 'items-start'}`}>
+              <h1 className="text-sm sm:text-lg font-black leading-none heading-tight text-foreground">
+                {t("header.platformName")}
+              </h1>
+              <span className="text-[8px] xs:text-[9px] sm:text-[11px] font-semibold text-muted mt-0.5 sm:mt-1">
+                {t("header.platformSubtitle")}
+              </span>
+            </div>
+          </Link>
+
+          {/* ACTIONS ZONE: Actions (Desktop) / Hamburger (Mobile) */}
+          <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
             {/* Mobile Menu Toggle - lg:hidden = visible on mobile/tablet, hidden on desktop */}
             <button 
               onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -148,7 +165,7 @@ export default function GlobalHeader({
             </button>
 
             {/* Desktop Navigation - hidden lg:flex = visible only on desktop */}
-            <nav className="hidden lg:flex items-center gap-3">
+            <nav className={`hidden lg:flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
               {/* Language Toggle */}
               <LanguageToggle />
               
@@ -172,7 +189,6 @@ export default function GlobalHeader({
             )}
             {user && (
               <>
-                {/* Logout first (leftmost in LTR container) */}
                 <HeaderButton
                   variant="danger"
                   icon={LogOut}
@@ -180,7 +196,6 @@ export default function GlobalHeader({
                 >
                   {t("header.logout")}
                 </HeaderButton>
-                {/* Admin Panel second */}
                 {isAdmin && (
                   <HeaderButton
                     href="/admin"
@@ -190,7 +205,6 @@ export default function GlobalHeader({
                     {t("header.adminPanel")}
                   </HeaderButton>
                 )}
-                {/* Account third (rightmost, closest to logo) */}
                 <HeaderButton
                   href="/account"
                   variant="ghost"
@@ -202,23 +216,6 @@ export default function GlobalHeader({
             )}
           </nav>
         </div>
-
-        {/* RIGHT ZONE: Logo/Brand - Always visible */}
-        <Link href="/" className={`flex items-center gap-2 sm:gap-3 transition-opacity hover:opacity-90 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
-          {/* Text - Responsive: smaller on mobile, full on desktop */}
-          <div className={`flex flex-col ${isRTL ? 'items-end' : 'items-start'}`}>
-            <h1 className="text-sm sm:text-lg font-black leading-none heading-tight text-foreground">
-              {t("header.platformName")}
-            </h1>
-            <span className="text-[8px] xs:text-[9px] sm:text-[11px] font-semibold text-muted mt-0.5 sm:mt-1">
-              {t("header.platformSubtitle")}
-            </span>
-          </div>
-          {/* Logo Icon */}
-          <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md flex-shrink-0">
-            <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
-          </div>
-        </Link>
       </div>
     </header>
 
