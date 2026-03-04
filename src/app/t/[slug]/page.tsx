@@ -724,13 +724,15 @@ export default async function TournamentHomePage(props: Props) {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href={`/t/${encodeSlug(tournament.slug)}/schedule`}>
-                <Button size="lg" icon={<CalendarDays className="w-5 h-5"/>}>
-                  جدول المباريات
-                </Button>
-              </Link>
-            </div>
+            {matches.length > 0 && (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link href={`/t/${encodeSlug(tournament.slug)}/schedule`}>
+                  <Button size="lg" icon={<CalendarDays className="w-5 h-5"/>}>
+                    جدول المباريات
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </Card>
       </div>
@@ -853,12 +855,14 @@ export default async function TournamentHomePage(props: Props) {
           icon={<Users className="w-6 h-6" />}
         />
         
-        <SectionAnchor 
-          href="#matches"
-          title="جدول المباريات"
-          description="تصفح المباريات القادمة والنتائج"
-          icon={<CalendarDays className="w-6 h-6" />}
-        />
+        {matches.length > 0 && (
+          <SectionAnchor 
+            href="#matches"
+            title="جدول المباريات"
+            description="تصفح المباريات القادمة والنتائج"
+            icon={<CalendarDays className="w-6 h-6" />}
+          />
+        )}
 
         {tournament.type === "league" && (
           <SectionAnchor 
@@ -927,19 +931,17 @@ export default async function TournamentHomePage(props: Props) {
         </Card>
       </section>
 
-      {/* Matches Section */}
-      <section id="matches" className="mb-10 scroll-mt-8">
-        <Card>
-          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <CalendarDays className="w-5 h-5 text-primary" />
-              جدول المباريات
-            </h2>
-            <span className="text-xs text-muted">{matches.length} مباراة</span>
-          </div>
-          {matches.length === 0 ? (
-            <p className="text-sm text-muted">لم يتم إنشاء مباريات بعد.</p>
-          ) : (
+      {/* Matches Section - Only show when matches exist */}
+      {matches.length > 0 && (
+        <section id="matches" className="mb-10 scroll-mt-8">
+          <Card>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <CalendarDays className="w-5 h-5 text-primary" />
+                جدول المباريات
+              </h2>
+              <span className="text-xs text-muted">{matches.length} مباراة</span>
+            </div>
             <div className="space-y-6">
               {Object.entries(groupByRound(matches))
                 .sort(([a], [b]) => Number(a) - Number(b))
@@ -1004,9 +1006,9 @@ export default async function TournamentHomePage(props: Props) {
                   </div>
                 ))}
             </div>
-          )}
-        </Card>
-      </section>
+          </Card>
+        </section>
+      )}
 
       {/* Standings Section - League only */}
       {tournament.type === "league" && (
