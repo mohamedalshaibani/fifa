@@ -8,6 +8,74 @@ import { encodeSlug } from "@/lib/slug";
 
 /**
  * Register the logged-in user for a tournament.
+ * Returns a result object instead of redirecting (for client-side handling).
+ */
+export async function registerUserForTournament(formData: FormData): Promise<{
+  success: boolean;
+  error?: string;
+  alreadyRegistered?: boolean;
+}> {
+  const tournamentId = String(formData.get("tournamentId") ?? "").trim();
+  const tournamentSlug = String(formData.get("tournamentSlug") ?? "").trim();
+
+  // Get authenticated user
+  const user = await getCurrentUser();
+  
+  if (!user) {
+    return { success: false, error: "يجب تسجيل الدخول للتسجيل في البطولة" };
+  }
+
+  const supabase = createAdminClient();
+
+  // Check tournament exists and is open
+  const { data: tournament, error: tournamentError } = await supabase
+    .from("tournaments")
+    .select("id, status")
+    .eq("id", tournamentId)
+    .single();
+
+  if (tournamentError || !tournament) {
+    return { success: false, error: "البطولة غير موجودة" };
+  }
+
+  if (tournament.status !== "registration_open") {
+    return { success: false, error: "التسجيل مغلق حالياً" };
+  }
+
+  // Check if already registered
+  const { data: existing } = await supabase
+    .from("participants")
+    .select("id")
+    .eq("tournament_id", tournamentId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (existing) {
+    return { success: true, alreadyRegistered: true };
+  }
+
+  // Insert participant linked to user
+  const { error: insertError } = await supabase
+    .from("participants")
+    .insert({
+      tournament_id: tournamentId,
+      user_id: user.id,
+      name: user.displayName,
+      email: user.email,
+      registration_status: "approved",
+    });
+
+  if (insertError) {
+    console.error("[registerUserForTournament] Insert error:", insertError);
+    return { success: false, error: "حدث خطأ أثناء التسجيل" };
+  }
+
+  revalidatePath(`/t/${tournamentSlug}`);
+  return { success: true };
+}
+
+/**
+ * Register the logged-in user for a tournament (with redirect).
  * No guest registration allowed - user must be authenticated.
  */
 export async function registerAuthenticatedUser(formData: FormData) {

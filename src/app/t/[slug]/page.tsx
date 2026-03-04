@@ -10,6 +10,7 @@ import StatusBadge from "@/components/StatusBadge";
 import TournamentCountdown from "@/components/TournamentCountdown";
 import SetupBanner from "@/components/SetupBanner";
 import { TeamCard } from "@/components/TeamCard";
+import RegisterButton from "@/components/RegisterButton";
 import {
   getTournamentById,
   getTournamentBySlug,
@@ -23,7 +24,7 @@ import type { TeamMemberInfo } from "@/components/TeamCard";
 import { computeStandings, computeTeamStandings } from "@/lib/tournament-utils";
 import { isUuid, encodeSlug } from "@/lib/slug";
 import { Match } from "@/lib/types";
-import { registerAuthenticatedUser } from "@/app/public/actions";
+import { registerUserForTournament } from "@/app/public/actions";
 import { checkTournamentSetupStatus, getEmptyStateText, formatValue, formatNumber } from "@/lib/empty-state";
 import { requireAdmin, getCurrentUser } from "@/lib/auth";
 
@@ -803,13 +804,11 @@ export default async function TournamentHomePage(props: Props) {
                 </div>
               ) : (
                 // Logged in - show register button
-                <form action={registerAuthenticatedUser}>
-                  <input type="hidden" name="tournamentId" value={tournament.id} />
-                  <input type="hidden" name="tournamentSlug" value={tournament.slug} />
-                  <Button type="submit" size="lg">
-                    سجّلني في البطولة 🎮
-                  </Button>
-                </form>
+                <RegisterButton
+                  tournamentId={tournament.id}
+                  tournamentSlug={tournament.slug}
+                  registerAction={registerUserForTournament}
+                />
               )}
             </div>
           </div>
