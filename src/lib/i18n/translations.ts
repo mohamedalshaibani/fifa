@@ -1003,6 +1003,18 @@ export const translations = {
     ar: "لا توجد فرق بعد.",
     en: "No teams yet.",
   },
+  "tournamentDetail.teamsNotFormed": {
+    ar: "لم يتم تشكيل الفرق بعد. هؤلاء هم المشاركون المسجلون:",
+    en: "Teams have not been formed yet. These are the registered participants:",
+  },
+  "tournamentDetail.unnamedTeam": {
+    ar: "فريق بدون اسم",
+    en: "Unnamed Team",
+  },
+  "tournamentDetail.noMembers": {
+    ar: "لا يوجد أعضاء",
+    en: "No members",
+  },
   "tournamentDetail.resultsSchedule": {
     ar: "النتائج / الجدول",
     en: "Results / Schedule",
