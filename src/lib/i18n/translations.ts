@@ -315,6 +315,22 @@ export const translations = {
     ar: "العودة للبطولات",
     en: "Back to Tournaments",
   },
+  "tournaments.allTournaments": {
+    ar: "كل البطولات",
+    en: "All Tournaments",
+  },
+  "tournaments.discoverLive": {
+    ar: "اكتشف البطولات الحية",
+    en: "Discover Live Tournaments",
+  },
+  "tournaments.chooseAndCompete": {
+    ar: "اختر بطولتك المفضلة وابدأ المنافسة الآن",
+    en: "Choose your favorite tournament and start competing now",
+  },
+  "tournaments.format": {
+    ar: "التنسيق",
+    en: "Format",
+  },
   "tournament.participants": {
     ar: "المشاركون",
     en: "Participants",
