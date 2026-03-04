@@ -2263,6 +2263,14 @@ export const translations = {
     ar: "قادمة",
     en: "Pending",
   },
+  "matchEditor.bye": {
+    ar: "تأهل تلقائي",
+    en: "Bye",
+  },
+  "matchEditor.byeAdvance": {
+    ar: "تأهل مباشر",
+    en: "Auto Advance",
+  },
   "matchEditor.edit": {
     ar: "تعديل",
     en: "Edit",

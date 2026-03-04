@@ -86,7 +86,33 @@ export default function MatchScoreEditor({
     setError(null);
   };
 
+  // Check if this is a bye match (no opponent)
+  const isByeMatch = !awayName && status === "completed";
+
   if (!isEditing) {
+    // Special display for bye matches
+    if (isByeMatch) {
+      return (
+        <div className="p-4 rounded-lg bg-success/5 border border-success/20">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <div className="font-bold text-foreground">{homeName || "TBD"}</div>
+              {isTeamMatch && homeMembers.length > 0 && (
+                <div className="text-xs text-muted mt-1">
+                  {homeMembers.join(" • ")}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs px-3 py-1.5 rounded-full bg-success/20 text-success font-semibold">
+                ✓ {t('matchEditor.byeAdvance')}
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="p-4 rounded-lg bg-surface hover:bg-surface-alt transition-colors group">
         <div className="flex items-center justify-between">

@@ -291,16 +291,23 @@ export async function generateMatchesAction(formData: FormData) {
       sampleMatch: teamMatches[0]
     });
     
-    // Insert team matches - EXPLICITLY set participant IDs to NULL
-    const matchInserts = teamMatches.map((match) => ({
-      tournament_id: tournamentId,
-      home_team_id: match.homeTeamId,
-      away_team_id: match.awayTeamId,
-      home_participant_id: null,
-      away_participant_id: null,
-      round: match.round || 1,
-      status: "scheduled",
-    }));
+    // Insert team matches - handle bye matches (null opponent) as auto-completed
+    const matchInserts = teamMatches.map((match) => {
+      const isByeMatch = match.awayTeamId === null;
+      return {
+        tournament_id: tournamentId,
+        home_team_id: match.homeTeamId,
+        away_team_id: match.awayTeamId,
+        home_participant_id: null,
+        away_participant_id: null,
+        round: match.round || 1,
+        // Bye matches are auto-completed with home team as winner
+        status: isByeMatch ? "completed" : "scheduled",
+        home_score: isByeMatch ? 1 : null,
+        away_score: isByeMatch ? 0 : null,
+        winner_team_id: isByeMatch ? match.homeTeamId : null,
+      };
+    });
     
     console.log("[generateMatchesAction] Inserting team matches:", {
       count: matchInserts.length,
@@ -336,16 +343,23 @@ export async function generateMatchesAction(formData: FormData) {
       matches = generateLeagueSchedule(participants);
     }
     
-    // Insert matches
-    const matchInserts = matches.map((match) => ({
-      tournament_id: tournamentId,
-      home_participant_id: match.homeParticipantId,
-      away_participant_id: match.awayParticipantId,
-      home_team_id: null,
-      away_team_id: null,
-      round: match.round || 1,
-      status: "scheduled",
-    }));
+    // Insert matches - handle bye matches (null opponent) as auto-completed
+    const matchInserts = matches.map((match) => {
+      const isByeMatch = match.awayParticipantId === null;
+      return {
+        tournament_id: tournamentId,
+        home_participant_id: match.homeParticipantId,
+        away_participant_id: match.awayParticipantId,
+        home_team_id: null,
+        away_team_id: null,
+        round: match.round || 1,
+        // Bye matches are auto-completed with home player as winner
+        status: isByeMatch ? "completed" : "scheduled",
+        home_score: isByeMatch ? 1 : null,
+        away_score: isByeMatch ? 0 : null,
+        winner_participant_id: isByeMatch ? match.homeParticipantId : null,
+      };
+    });
     
     const { error } = await supabase.from("matches").insert(matchInserts);
     if (error) throw error;
@@ -1008,14 +1022,19 @@ export async function saveSchedule(formData: FormData) {
 
   if (!Array.isArray(schedule) || schedule.length === 0) return;
 
-  const inserts = schedule.map((match) => ({
-    tournament_id: tournamentId,
-    round: match.round,
-    home_participant_id: match.homeParticipantId,
-    away_participant_id: match.awayParticipantId,
-    status: match.awayParticipantId ? "scheduled" : "completed",
-    winner_participant_id: match.awayParticipantId ? null : match.homeParticipantId,
-  }));
+  const inserts = schedule.map((match) => {
+    const isByeMatch = match.awayParticipantId === null;
+    return {
+      tournament_id: tournamentId,
+      round: match.round,
+      home_participant_id: match.homeParticipantId,
+      away_participant_id: match.awayParticipantId,
+      status: isByeMatch ? "completed" : "scheduled",
+      home_score: isByeMatch ? 1 : null,
+      away_score: isByeMatch ? 0 : null,
+      winner_participant_id: isByeMatch ? match.homeParticipantId : null,
+    };
+  });
 
   const { error } = await supabase.from("matches").insert(inserts);
   if (error) throw error;
@@ -1111,14 +1130,19 @@ export async function generateDraw(formData: FormData) {
 
     if (type === "knockout") {
       const roundOne = generateKnockoutRoundOneTeams(teams);
-      const inserts = roundOne.map((match) => ({
-        tournament_id: tournamentId,
-        round: 1,
-        home_team_id: match.homeTeamId,
-        away_team_id: match.awayTeamId,
-        status: match.awayTeamId ? "scheduled" : "completed",
-        winner_team_id: match.awayTeamId ? null : match.homeTeamId,
-      }));
+      const inserts = roundOne.map((match) => {
+        const isByeMatch = match.awayTeamId === null;
+        return {
+          tournament_id: tournamentId,
+          round: 1,
+          home_team_id: match.homeTeamId,
+          away_team_id: match.awayTeamId,
+          status: isByeMatch ? "completed" : "scheduled",
+          home_score: isByeMatch ? 1 : null,
+          away_score: isByeMatch ? 0 : null,
+          winner_team_id: isByeMatch ? match.homeTeamId : null,
+        };
+      });
       if (inserts.length > 0) {
         const { error } = await supabase.from("matches").insert(inserts);
         if (error) throw error;
@@ -1152,14 +1176,19 @@ export async function generateDraw(formData: FormData) {
 
     if (type === "knockout") {
       const roundOne = generateKnockoutRoundOne(participants);
-      const inserts = roundOne.map((match) => ({
-        tournament_id: tournamentId,
-        round: 1,
-        home_participant_id: match.homeParticipantId,
-        away_participant_id: match.awayParticipantId,
-        status: match.awayParticipantId ? "scheduled" : "completed",
-        winner_participant_id: match.awayParticipantId ? null : match.homeParticipantId,
-      }));
+      const inserts = roundOne.map((match) => {
+        const isByeMatch = match.awayParticipantId === null;
+        return {
+          tournament_id: tournamentId,
+          round: 1,
+          home_participant_id: match.homeParticipantId,
+          away_participant_id: match.awayParticipantId,
+          status: isByeMatch ? "completed" : "scheduled",
+          home_score: isByeMatch ? 1 : null,
+          away_score: isByeMatch ? 0 : null,
+          winner_participant_id: isByeMatch ? match.homeParticipantId : null,
+        };
+      });
       if (inserts.length > 0) {
         const { error } = await supabase.from("matches").insert(inserts);
         if (error) throw error;
@@ -1558,6 +1587,7 @@ async function handleKnockoutAdvancement(tournamentId: string, round: number, is
   for (let i = 0; i < winners.length; i += 2) {
     const home = winners[i];
     const away = winners[i + 1] ?? null;
+    const isByeMatch = away === null;
     
     if (isTeamBased) {
       // 2v2: use team IDs
@@ -1568,8 +1598,10 @@ async function handleKnockoutAdvancement(tournamentId: string, round: number, is
         away_team_id: away,
         home_participant_id: null,
         away_participant_id: null,
-        status: away ? "scheduled" : "completed",
-        winner_team_id: away ? null : home,
+        status: isByeMatch ? "completed" : "scheduled",
+        home_score: isByeMatch ? 1 : null,
+        away_score: isByeMatch ? 0 : null,
+        winner_team_id: isByeMatch ? home : null,
         winner_participant_id: null,
       });
     } else {
@@ -1581,8 +1613,10 @@ async function handleKnockoutAdvancement(tournamentId: string, round: number, is
         away_participant_id: away,
         home_team_id: null,
         away_team_id: null,
-        status: away ? "scheduled" : "completed",
-        winner_participant_id: away ? null : home,
+        status: isByeMatch ? "completed" : "scheduled",
+        home_score: isByeMatch ? 1 : null,
+        away_score: isByeMatch ? 0 : null,
+        winner_participant_id: isByeMatch ? home : null,
         winner_team_id: null,
       });
     }
