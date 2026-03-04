@@ -17,66 +17,56 @@ export async function registerAuthenticatedUser(formData: FormData) {
   const user = await getCurrentUser();
   
   if (!user) {
-    if (tournamentSlug) redirect(`/t/${tournamentSlug}?error=auth`);
-    return;
+    redirect(`/t/${tournamentSlug}?error=auth`);
   }
 
   const supabase = createAdminClient();
 
-  try {
-    // Check tournament exists and is open
-    const { data: tournament, error: tournamentError } = await supabase
-      .from("tournaments")
-      .select("id, status")
-      .eq("id", tournamentId)
-      .single();
+  // Check tournament exists and is open
+  const { data: tournament, error: tournamentError } = await supabase
+    .from("tournaments")
+    .select("id, status")
+    .eq("id", tournamentId)
+    .single();
 
-    if (tournamentError || !tournament) {
-      if (tournamentSlug) redirect(`/t/${tournamentSlug}?error=notfound`);
-      return;
-    }
-
-    if (tournament.status !== "registration_open") {
-      if (tournamentSlug) redirect(`/t/${tournamentSlug}?error=closed`);
-      return;
-    }
-
-    // Check if already registered
-    const { data: existing } = await supabase
-      .from("participants")
-      .select("id")
-      .eq("tournament_id", tournamentId)
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    if (existing) {
-      if (tournamentSlug) redirect(`/t/${tournamentSlug}?registered=already`);
-      return;
-    }
-
-    // Insert participant linked to user
-    const { error: insertError } = await supabase
-      .from("participants")
-      .insert({
-        tournament_id: tournamentId,
-        user_id: user.id,
-        name: user.displayName,
-        email: user.email,
-        registration_status: "approved", // Auto-approve authenticated users
-      });
-
-    if (insertError) {
-      console.error("[registerAuthenticatedUser] Insert error:", insertError);
-      if (tournamentSlug) redirect(`/t/${tournamentSlug}?error=server`);
-      return;
-    }
-
-    revalidatePath(`/t/${tournamentSlug}`);
-    redirect(`/t/${tournamentSlug}?registered=success`);
-  } catch (err) {
-    console.error("[registerAuthenticatedUser] Exception:", err);
-    if (tournamentSlug) redirect(`/t/${tournamentSlug}?error=server`);
+  if (tournamentError || !tournament) {
+    redirect(`/t/${tournamentSlug}?error=notfound`);
   }
+
+  if (tournament.status !== "registration_open") {
+    redirect(`/t/${tournamentSlug}?error=closed`);
+  }
+
+  // Check if already registered
+  const { data: existing } = await supabase
+    .from("participants")
+    .select("id")
+    .eq("tournament_id", tournamentId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (existing) {
+    redirect(`/t/${tournamentSlug}?registered=already`);
+  }
+
+  // Insert participant linked to user
+  const { error: insertError } = await supabase
+    .from("participants")
+    .insert({
+      tournament_id: tournamentId,
+      user_id: user.id,
+      name: user.displayName,
+      email: user.email,
+      registration_status: "approved", // Auto-approve authenticated users
+    });
+
+  if (insertError) {
+    console.error("[registerAuthenticatedUser] Insert error:", insertError);
+    redirect(`/t/${tournamentSlug}?error=server`);
+  }
+
+  revalidatePath(`/t/${tournamentSlug}`);
+  redirect(`/t/${tournamentSlug}?registered=success`);
 }
 
 export async function registerForTournament(formData: FormData) {
