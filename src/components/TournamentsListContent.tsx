@@ -6,7 +6,7 @@ import SportBadge from "@/components/ui/SportBadge";
 import SportButton from "@/components/ui/SportButton";
 import SportCard from "@/components/ui/SportCard";
 import { useLanguage } from "@/lib/i18n";
-import { Users, Trophy, Flame, Filter } from "lucide-react";
+import { Users, Trophy, Flame, Filter, CheckCircle, Zap, Award } from "lucide-react";
 
 interface Tournament {
   id: string;
@@ -15,13 +15,16 @@ interface Tournament {
   type: string | null;
   status: string;
   players_per_team: number;
+  isUserRegistered: boolean;
+  participantCount: number;
 }
 
 interface TournamentsListContentProps {
   tournaments: Tournament[];
+  isLoggedIn: boolean;
 }
 
-export function TournamentsListContent({ tournaments }: TournamentsListContentProps) {
+export function TournamentsListContent({ tournaments, isLoggedIn }: TournamentsListContentProps) {
   const { t } = useLanguage();
 
   const getStatusInfo = (status: string) => {
@@ -73,74 +76,100 @@ export function TournamentsListContent({ tournaments }: TournamentsListContentPr
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 pb-16">
             {tournaments.map((tournament) => {
               const statusInfo = getStatusInfo(tournament.status);
+              const isRegistrationOpen = tournament.status === "registration_open";
+              const isRunning = tournament.status === "running";
 
               return (
-                <SportCard
+                <Link
                   key={tournament.id}
-                  padding="base"
-                  hoverable
-                  variant={tournament.status === "running" ? "highlighted" : "default"}
-                  className="h-full flex flex-col"
+                  href={`/t/${tournament.slug}`}
+                  className="group"
                 >
-                  <div className="space-y-4 flex-1 flex flex-col">
-                    {/* Header with Title and Status */}
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-lg font-extrabold text-foreground flex-1 group-hover:text-primary">
-                        {tournament.name}
-                      </h3>
-                    </div>
+                  <SportCard
+                    padding="base"
+                    hoverable
+                    variant={isRunning ? "highlighted" : "default"}
+                    className={`h-full flex flex-col relative ${isRegistrationOpen ? "animate-attention-shake" : ""}`}
+                  >
+                    <div className="space-y-4 flex-1 flex flex-col">
+                      {/* Header with Title and Status */}
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="text-lg font-extrabold text-foreground flex-1 group-hover:text-primary transition-colors">
+                          {tournament.name}
+                        </h3>
+                      </div>
 
-                    {/* Status Badge */}
-                    <SportBadge variant={statusInfo.variant}>
-                      {statusInfo.label}
-                    </SportBadge>
+                      {/* Status Badge */}
+                      <SportBadge variant={statusInfo.variant}>
+                        {statusInfo.label}
+                      </SportBadge>
 
-                    {/* Details Grid */}
-                    <div className="space-y-3 py-2">
-                      <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
-                        <Trophy className="w-4 h-4 text-primary flex-shrink-0" />
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-xs text-muted">{t("home.typeLabel")}</span>
-                          <span className="text-sm font-bold text-primary">
-                            {tournament.type === "league" ? `🏆 ${t("tournament.league")}` : `⚡ ${t("tournament.knockout")}`}
-                          </span>
+                      {/* Stats Grid */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Participants */}
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
+                          <Users className="w-4 h-4 text-primary flex-shrink-0" />
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-xs text-muted">{t("home.participantsLabel")}</span>
+                            <span className="text-lg font-bold text-primary">{tournament.participantCount}</span>
+                          </div>
+                        </div>
+
+                        {/* Format */}
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/10 border border-secondary/20">
+                          <Trophy className="w-4 h-4 text-secondary flex-shrink-0" />
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-xs text-muted">{t("home.typeLabel")}</span>
+                            <span className="text-lg font-bold text-secondary">
+                              {tournament.players_per_team === 1 ? "1v1" : `${tournament.players_per_team}v${tournament.players_per_team}`}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary/10 border border-secondary/20">
-                        <Users className="w-4 h-4 text-secondary flex-shrink-0" />
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-xs text-muted">{t("tournaments.format")}</span>
-                          <span className="text-sm font-bold text-secondary">
-                            {tournament.players_per_team === 1 ? "1v1" : `${tournament.players_per_team}v${tournament.players_per_team}`}
-                          </span>
-                        </div>
+                      {/* Tournament Type Badge */}
+                      <div className="flex items-center gap-2">
+                        <SportBadge variant="info" icon={tournament.type === "league" ? "🏆" : "⚡"}>
+                          {tournament.type === "league" ? t("tournament.league") : t("tournament.knockout")}
+                        </SportBadge>
                       </div>
-                    </div>
 
-                    {/* Action Button */}
-                    <div className="pt-2 mt-auto">
-                      <Link href={`/t/${tournament.slug}`} className="block">
-                        {tournament.status === "registration_open" ? (
+                      {/* CTA Button */}
+                      <div className="pt-2 mt-auto">
+                        {tournament.isUserRegistered ? (
+                          <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-green-500/20 border border-green-500/40 text-green-500 font-bold text-sm">
+                            <CheckCircle className="w-4 h-4" />
+                            {t("home.youAreRegistered")} ✅
+                          </div>
+                        ) : isRegistrationOpen ? (
                           <SportButton variant="primary" size="sm" className="w-full font-bold">
-                            <Flame className="w-4 h-4" />
+                            <Zap className="w-4 h-4" />
                             {t("home.registerNow")}
                           </SportButton>
-                        ) : tournament.status === "running" ? (
+                        ) : isRunning ? (
                           <SportButton variant="secondary" size="sm" className="w-full font-bold">
-                            <Trophy className="w-4 h-4" />
+                            <Flame className="w-4 h-4" />
                             {t("home.watchNow")}
                           </SportButton>
                         ) : (
                           <SportButton variant="ghost" size="sm" className="w-full font-bold">
-                            <Trophy className="w-4 h-4" />
+                            <Award className="w-4 h-4" />
                             {t("home.viewDetails")}
                           </SportButton>
                         )}
-                      </Link>
+                      </div>
                     </div>
-                  </div>
-                </SportCard>
+
+                    {/* Closing Soon Badge */}
+                    {isRegistrationOpen && tournament.participantCount >= 12 && (
+                      <div className="absolute top-2 right-2 z-20">
+                        <div className="px-3 py-1 rounded-full bg-gradient-to-r from-secondary to-danger text-white text-xs font-extrabold shadow-lg animate-pulse">
+                          🔥 {t("home.closingSoon")}
+                        </div>
+                      </div>
+                    )}
+                  </SportCard>
+                </Link>
               );
             })}
           </div>
