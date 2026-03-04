@@ -98,7 +98,7 @@ async function getAdminCount(): Promise<number> {
  * Promote a user to admin
  */
 export async function promoteToAdmin(formData: FormData): Promise<{ success: boolean; error?: string }> {
-  const currentUserId = await assertAdmin();
+  await assertAdmin();
   const targetUserId = String(formData.get("userId") ?? "").trim();
   
   if (!targetUserId) {

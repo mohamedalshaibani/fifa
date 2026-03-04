@@ -31,7 +31,7 @@ interface LeaderboardEntry {
 }
 
 export default function LeaderboardContent() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 

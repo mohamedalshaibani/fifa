@@ -110,6 +110,7 @@ export default function RegisterPage() {
     }
 
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   const handleRegister = async () => {
@@ -276,6 +277,7 @@ export default function RegisterPage() {
           style={{ background: 'var(--card-bg-secondary)' }}
         >
           {profile?.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img 
               src={profile.avatar_url} 
               alt="" 

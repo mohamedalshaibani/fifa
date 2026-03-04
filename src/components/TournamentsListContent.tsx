@@ -25,7 +25,7 @@ interface TournamentsListContentProps {
   isLoggedIn: boolean;
 }
 
-export function TournamentsListContent({ activeTournaments, finishedTournaments, isLoggedIn }: TournamentsListContentProps) {
+export function TournamentsListContent({ activeTournaments, finishedTournaments }: TournamentsListContentProps) {
   const { t } = useLanguage();
 
   const getStatusInfo = (status: string) => {

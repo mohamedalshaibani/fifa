@@ -6,7 +6,7 @@ import Container from "@/components/Container";
 import BackLink from "@/components/BackLink";
 import StatusBadge from "@/components/StatusBadge";
 import { encodeSlug } from "@/lib/slug";
-import { Tournament, Match } from "@/lib/types";
+import { Tournament } from "@/lib/types";
 import { useLanguage } from "@/lib/i18n";
 
 interface ChampionContentProps {

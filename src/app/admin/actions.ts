@@ -20,21 +20,6 @@ async function assertAdmin() {
   }
 }
 
-/**
- * Revalidates common tournament-related paths.
- * Call after any tournament data mutation.
- */
-function revalidateTournamentPaths(tournamentId?: string) {
-  revalidatePath("/admin");
-  revalidatePath("/admin/tournaments");
-  revalidatePath("/tournaments");
-  revalidatePath("/t");
-  revalidatePath("/");
-  if (tournamentId) {
-    revalidatePath(`/admin/tournaments/${tournamentId}`);
-  }
-}
-
 function slugifyTournamentName(name: string) {
   const base = name
     .trim()

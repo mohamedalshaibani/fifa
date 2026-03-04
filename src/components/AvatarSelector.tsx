@@ -118,6 +118,7 @@ export default function AvatarSelector({
                       transition: "all 0.2s",
                     }}
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={avatar.image_url}
                       alt={avatar.display_name || avatar.name}

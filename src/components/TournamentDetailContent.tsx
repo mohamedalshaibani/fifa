@@ -10,7 +10,6 @@ import Container from "@/components/Container";
 import StatusBadge from "@/components/StatusBadge";
 import TournamentCountdown from "@/components/TournamentCountdown";
 import SetupBanner from "@/components/SetupBanner";
-import { TeamCard } from "@/components/TeamCard";
 import RegisterButton from "@/components/RegisterButton";
 import type { TeamMemberInfo } from "@/components/TeamCard";
 import type { UserProfile } from "@/lib/types";
@@ -299,6 +298,7 @@ export function TournamentDetailContent({
                                 return (
                                   <li key={idx} className="flex items-center gap-2 text-sm text-secondary">
                                     {memberAvatar ? (
+                                      // eslint-disable-next-line @next/next/no-img-element
                                       <img 
                                         src={memberAvatar} 
                                         alt={memberName}
@@ -346,6 +346,7 @@ export function TournamentDetailContent({
                               {index + 1}
                             </span>
                             {avatarUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
                               <img
                                 src={avatarUrl}
                                 alt={participant.name}
@@ -854,6 +855,7 @@ export function TournamentDetailContent({
                           {members.map((member, idx) => (
                             <li key={idx} className="flex items-center gap-2 text-sm text-secondary">
                               {member.avatarUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
                                 <img 
                                   src={member.avatarUrl} 
                                   alt={member.name}
@@ -900,6 +902,7 @@ export function TournamentDetailContent({
                           {index + 1}
                         </span>
                         {avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={avatarUrl}
                             alt={participant.name}

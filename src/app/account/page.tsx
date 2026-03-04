@@ -9,7 +9,7 @@ import SportCard from "@/components/ui/SportCard";
 import SportButton from "@/components/ui/SportButton";
 import AvatarSelector from "@/components/AvatarSelector";
 import { useLanguage } from "@/lib/i18n";
-import { User, Palette, BarChart3, Lock, Check } from "lucide-react";
+import { User, Palette, BarChart3, Lock } from "lucide-react";
 import { Avatar as AvatarType } from "@/lib/types";
 
 type Tab = "profile" | "avatar" | "stats" | "password";

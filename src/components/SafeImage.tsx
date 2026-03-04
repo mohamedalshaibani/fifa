@@ -21,6 +21,7 @@ export default function SafeImage({ src, alt, fallbackSeed, className }: SafeIma
   };
 
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={imgSrc}
       alt={alt}

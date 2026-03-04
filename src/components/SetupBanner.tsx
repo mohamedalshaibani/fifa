@@ -18,7 +18,6 @@ interface SetupBannerProps {
  */
 export default function SetupBanner({
   tournamentId,
-  tournamentSlug,
   isAdmin,
   setupMessage,
 }: SetupBannerProps) {

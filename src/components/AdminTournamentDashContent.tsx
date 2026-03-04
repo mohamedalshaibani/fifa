@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Container from "@/components/Container";
 import AdminLayout from "@/components/AdminLayout";
 import SportCard from "@/components/ui/SportCard";
