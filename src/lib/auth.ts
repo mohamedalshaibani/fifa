@@ -23,6 +23,7 @@ export async function getCurrentUser() {
       .maybeSingle();
     
     // Construct display name from first_name + last_name
+    const firstName = profile?.first_name || user.email?.split("@")[0] || "لاعب";
     const displayName = profile 
       ? `${profile.first_name || ''} ${profile.last_name || ''}`.trim() 
       : user.email?.split("@")[0] || "لاعب";
@@ -30,6 +31,7 @@ export async function getCurrentUser() {
     return {
       id: user.id,
       email: user.email,
+      firstName,
       displayName,
       avatarUrl: profile?.avatar_url || null,
     };

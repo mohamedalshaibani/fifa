@@ -76,11 +76,11 @@ export default async function Home() {
         <Container className="relative z-10">
           {/* Personalized Greeting for Logged-in Users */}
           {currentUser ? (
-            <div className="text-center space-y-4 mb-10">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground leading-tight tracking-tight">
-                أهلاً {currentUser.displayName} 👋
+            <div className="text-center space-y-3 mb-10">
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight tracking-tight">
+                أهلاً {currentUser.firstName} 👋
               </h1>
-              <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto font-medium">
+              <p className="text-base md:text-lg text-muted max-w-2xl mx-auto font-medium">
                 جاهز للبطولات؟ خلّ نرجّع الحماس! 🔥
               </p>
             </div>
@@ -216,11 +216,14 @@ export default async function Home() {
               {/* My Activity Section */}
               {userActivities.length > 0 && (
                 <div className="mb-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                      <BarChart3 className="w-4 h-4 text-primary" />
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Trophy className="w-5 h-5 text-primary" />
                     </div>
-                    <h2 className="text-lg font-bold text-foreground">نشاطي في البطولات</h2>
+                    <div>
+                      <h2 className="text-xl font-bold text-foreground">نشاطي في البطولات</h2>
+                      <p className="text-sm text-muted">ملخص مشاركاتك في البطولات المختلفة</p>
+                    </div>
                   </div>
                   
                   <div className="space-y-3">
