@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
+import { useLanguage } from "@/lib/i18n";
 
 interface PageHeaderProps {
   /** Page title */
@@ -29,7 +32,7 @@ interface PageHeaderProps {
  * Back Link Standards:
  * - Font: text-sm font-semibold
  * - Color: text-primary hover:text-primary-hover
- * - Icon: ArrowRight w-4 h-4
+ * - Icon: ArrowRight for RTL, ArrowLeft for LTR
  * - Spacing: mb-4 (space between back link and title)
  */
 export default function PageHeader({
@@ -43,13 +46,16 @@ export default function PageHeader({
   liveIndicator,
   scoreboard = false,
 }: PageHeaderProps) {
+  const { isRTL } = useLanguage();
+  const ArrowIcon = isRTL ? ArrowRight : ArrowLeft;
+  
   // Unified back link component used in both variants
   const BackLinkElement = backHref ? (
     <Link
       href={backHref}
       className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-hover transition-colors"
     >
-      <ArrowRight className="w-4 h-4" />
+      <ArrowIcon className="w-4 h-4" />
       <span>{backText}</span>
     </Link>
   ) : null;

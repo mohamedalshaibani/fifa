@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 interface BackLinkProps {
   /** The URL to navigate back to */
@@ -18,16 +21,19 @@ interface BackLinkProps {
  * Styling:
  * - Font: text-sm font-semibold
  * - Color: text-primary with hover effect
- * - Icon: ArrowRight (RTL-aware, points right in RTL)
+ * - Icon: ArrowRight for RTL (Arabic), ArrowLeft for LTR (English)
  * - Gap: gap-2 between icon and text
  */
 export default function BackLink({ href, text }: BackLinkProps) {
+  const { isRTL } = useLanguage();
+  const ArrowIcon = isRTL ? ArrowRight : ArrowLeft;
+  
   return (
     <Link
       href={href}
       className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-hover transition-colors mb-6"
     >
-      <ArrowRight className="w-4 h-4" />
+      <ArrowIcon className="w-4 h-4" />
       <span>{text}</span>
     </Link>
   );
