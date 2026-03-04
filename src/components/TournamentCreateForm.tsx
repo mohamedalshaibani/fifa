@@ -64,12 +64,12 @@ export default function TournamentCreateForm() {
             <div className={`
               relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
               ${tournamentType === "league" 
-                ? "bg-primary text-white border-primary shadow-lg shadow-primary/30" 
-                : "bg-white text-foreground border-border hover:border-primary/40 hover:bg-primary/5"
+                ? "bg-primary text-white border-primary shadow-lg shadow-primary/40 scale-[1.02]" 
+                : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
               }
             `}>
               {tournamentType === "league" && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-primary flex items-center justify-center">
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-primary shadow-md flex items-center justify-center">
                   <Check className="w-3 h-3 text-primary" strokeWidth={3} />
                 </div>
               )}
@@ -92,12 +92,12 @@ export default function TournamentCreateForm() {
             <div className={`
               relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
               ${tournamentType === "knockout" 
-                ? "bg-primary text-white border-primary shadow-lg shadow-primary/30" 
-                : "bg-white text-foreground border-border hover:border-primary/40 hover:bg-primary/5"
+                ? "bg-primary text-white border-primary shadow-lg shadow-primary/40 scale-[1.02]" 
+                : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
               }
             `}>
               {tournamentType === "knockout" && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-primary flex items-center justify-center">
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-primary shadow-md flex items-center justify-center">
                   <Check className="w-3 h-3 text-primary" strokeWidth={3} />
                 </div>
               )}
@@ -131,12 +131,12 @@ export default function TournamentCreateForm() {
             <div className={`
               relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
               ${playersPerTeam === "1" 
-                ? "bg-secondary text-white border-secondary shadow-lg shadow-secondary/30" 
-                : "bg-white text-foreground border-border hover:border-secondary/40 hover:bg-secondary/5"
+                ? "bg-secondary text-white border-secondary shadow-lg shadow-secondary/40 scale-[1.02]" 
+                : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
               }
             `}>
               {playersPerTeam === "1" && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-secondary flex items-center justify-center">
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-secondary shadow-md flex items-center justify-center">
                   <Check className="w-3 h-3 text-secondary" strokeWidth={3} />
                 </div>
               )}
@@ -160,12 +160,12 @@ export default function TournamentCreateForm() {
             <div className={`
               relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
               ${playersPerTeam === "2" 
-                ? "bg-secondary text-white border-secondary shadow-lg shadow-secondary/30" 
-                : "bg-white text-foreground border-border hover:border-secondary/40 hover:bg-secondary/5"
+                ? "bg-secondary text-white border-secondary shadow-lg shadow-secondary/40 scale-[1.02]" 
+                : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
               }
             `}>
               {playersPerTeam === "2" && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-secondary flex items-center justify-center">
+                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-secondary shadow-md flex items-center justify-center">
                   <Check className="w-3 h-3 text-secondary" strokeWidth={3} />
                 </div>
               )}
@@ -198,12 +198,12 @@ export default function TournamentCreateForm() {
               <div className={`
                 relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
                 ${teamFormationMode === "preformed" 
-                  ? "bg-accent text-white border-accent shadow-lg shadow-accent/30" 
-                  : "bg-white text-foreground border-border hover:border-accent/40 hover:bg-accent/5"
+                  ? "bg-accent text-foreground border-accent shadow-lg shadow-accent/40 scale-[1.02]" 
+                  : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
                 }
               `}>
                 {teamFormationMode === "preformed" && (
-                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-accent flex items-center justify-center">
+                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-accent shadow-md flex items-center justify-center">
                     <Check className="w-3 h-3 text-accent" strokeWidth={3} />
                   </div>
                 )}
@@ -226,12 +226,12 @@ export default function TournamentCreateForm() {
               <div className={`
                 relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
                 ${teamFormationMode === "random_draw" 
-                  ? "bg-accent text-white border-accent shadow-lg shadow-accent/30" 
-                  : "bg-white text-foreground border-border hover:border-accent/40 hover:bg-accent/5"
+                  ? "bg-accent text-foreground border-accent shadow-lg shadow-accent/40 scale-[1.02]" 
+                  : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
                 }
               `}>
                 {teamFormationMode === "random_draw" && (
-                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-accent flex items-center justify-center">
+                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-accent shadow-md flex items-center justify-center">
                     <Check className="w-3 h-3 text-accent" strokeWidth={3} />
                   </div>
                 )}
