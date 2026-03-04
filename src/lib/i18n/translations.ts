@@ -483,6 +483,14 @@ export const translations = {
     ar: "دخول",
     en: "Login",
   },
+  "auth.loggingIn": {
+    ar: "جاري الدخول...",
+    en: "Logging in...",
+  },
+  "auth.loginFailed": {
+    ar: "تعذر تسجيل الدخول. حاول مرة أخرى.",
+    en: "Login failed. Please try again.",
+  },
   "auth.registerButton": {
     ar: "إنشاء حساب",
     en: "Create Account",
@@ -502,6 +510,94 @@ export const translations = {
   "auth.loginHere": {
     ar: "سجل دخولك",
     en: "Login here",
+  },
+  "auth.createPlayerAccount": {
+    ar: "إنشاء حساب لاعب",
+    en: "Create Player Account",
+  },
+  "auth.joinTournaments": {
+    ar: "انضم إلى البطولات وابنِ ملفك التنافسي",
+    en: "Join tournaments and build your competitive profile",
+  },
+  "auth.personalInfo": {
+    ar: "المعلومات الشخصية",
+    en: "Personal Information",
+  },
+  "auth.enterFirstName": {
+    ar: "أدخل اسمك الأول",
+    en: "Enter your first name",
+  },
+  "auth.enterLastName": {
+    ar: "أدخل اسم العائلة",
+    en: "Enter your last name",
+  },
+  "auth.whatsappNumber": {
+    ar: "رقم الواتساب",
+    en: "WhatsApp Number",
+  },
+  "auth.minPassword": {
+    ar: "8 أحرف على الأقل",
+    en: "At least 8 characters",
+  },
+  "auth.reenterPassword": {
+    ar: "أعد إدخال كلمة المرور",
+    en: "Re-enter password",
+  },
+  "auth.chooseAvatar": {
+    ar: "اختر صورتك الرمزية",
+    en: "Choose Your Avatar",
+  },
+  "auth.creatingAccount": {
+    ar: "جارٍ إنشاء الحساب...",
+    en: "Creating account...",
+  },
+  "auth.createAndRegister": {
+    ar: "إنشاء الحساب والتسجيل",
+    en: "Create Account & Register",
+  },
+  "auth.alreadyHaveAccount": {
+    ar: "لديك حساب بالفعل؟",
+    en: "Already have an account?",
+  },
+  "auth.loginFromHere": {
+    ar: "سجل الدخول من هنا",
+    en: "Login here",
+  },
+  "auth.loadingAvatars": {
+    ar: "جارٍ تحميل الصور الرمزية...",
+    en: "Loading avatars...",
+  },
+  "auth.firstNameRequired": {
+    ar: "الاسم الأول مطلوب",
+    en: "First name is required",
+  },
+  "auth.lastNameRequired": {
+    ar: "اسم العائلة مطلوب",
+    en: "Last name is required",
+  },
+  "auth.whatsappRequired": {
+    ar: "رقم الواتساب مطلوب",
+    en: "WhatsApp number is required",
+  },
+  "auth.invalidEmail": {
+    ar: "البريد الإلكتروني غير صحيح",
+    en: "Invalid email address",
+  },
+  "auth.passwordMinLength": {
+    ar: "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
+    en: "Password must be at least 8 characters",
+  },
+  "auth.passwordsNotMatch": {
+    ar: "كلمتا المرور غير متطابقتين",
+    en: "Passwords do not match",
+  },
+  "auth.selectAvatar": {
+    ar: "يرجى اختيار صورة رمزية",
+    en: "Please select an avatar",
+  },
+  "auth.registrationFailed": {
+    ar: "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+    en: "Registration failed. Please try again.",
   },
 
   // ============ ACCOUNT ============

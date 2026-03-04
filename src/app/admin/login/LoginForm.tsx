@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import SportInput from "@/components/ui/SportInput";
 import SportButton from "@/components/ui/SportButton";
+import { useLanguage } from "@/lib/i18n";
 import { Mail, Lock } from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +29,7 @@ export default function LoginForm() {
     });
 
     if (signInError) {
-      setError(signInError.message || "تعذر تسجيل الدخول. حاول مرة أخرى.");
+      setError(signInError.message || t("auth.loginFailed"));
       setLoading(false);
       return;
     }
@@ -56,7 +58,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <SportInput
-        label="البريد الإلكتروني"
+        label={t("auth.email")}
         type="email"
         value={email}
         onChange={(event) => setEmail(event.target.value)}
@@ -66,7 +68,7 @@ export default function LoginForm() {
         autoComplete="email"
       />
       <SportInput
-        label="كلمة المرور"
+        label={t("auth.password")}
         type="password"
         value={password}
         onChange={(event) => setPassword(event.target.value)}
@@ -90,7 +92,7 @@ export default function LoginForm() {
         isLoading={loading}
         className="w-full font-bold"
       >
-        {loading ? "جاري الدخول..." : "تسجيل الدخول"}
+        {loading ? t("auth.loggingIn") : t("auth.loginButton")}
       </SportButton>
     </form>
   );

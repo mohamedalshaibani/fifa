@@ -9,10 +9,12 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Container from "@/components/Container";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n";
 
 export default function RegisterPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { t, isRTL } = useLanguage();
 
   const getFallbackAvatars = (): Avatar[] => [];
 
@@ -63,31 +65,31 @@ export default function RegisterPage() {
   // Form validation
   const validateForm = (): boolean => {
     if (!firstName.trim()) {
-      setError("الاسم الأول مطلوب");
+      setError(t("auth.firstNameRequired"));
       return false;
     }
     if (!lastName.trim()) {
-      setError("اسم العائلة مطلوب");
+      setError(t("auth.lastNameRequired"));
       return false;
     }
     if (!whatsapp.trim()) {
-      setError("رقم الواتساب مطلوب");
+      setError(t("auth.whatsappRequired"));
       return false;
     }
     if (!email.includes("@")) {
-      setError("البريد الإلكتروني غير صحيح");
+      setError(t("auth.invalidEmail"));
       return false;
     }
     if (password.length < 8) {
-      setError("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+      setError(t("auth.passwordMinLength"));
       return false;
     }
     if (password !== confirmPassword) {
-      setError("كلمتا المرور غير متطابقتين");
+      setError(t("auth.passwordsNotMatch"));
       return false;
     }
     if (!selectedAvatarId) {
-      setError("يرجى اختيار صورة رمزية");
+      setError(t("auth.selectAvatar"));
       return false;
     }
     return true;
@@ -118,7 +120,7 @@ export default function RegisterPage() {
       });
 
       if (authError) throw authError;
-      if (!authData.user) throw new Error("فشل التسجيل");
+      if (!authData.user) throw new Error(t("auth.registrationFailed"));
 
       // 2. Create user profile
       const { error: profileError } = await supabase
@@ -145,7 +147,7 @@ export default function RegisterPage() {
       router.push("/");
       router.refresh();
     } catch (err: any) {
-      setError(err.message || "فشل التسجيل. يرجى المحاولة مرة أخرى.");
+      setError(err.message || t("auth.registrationFailed"));
     } finally {
       setLoading(false);
     }
@@ -156,7 +158,7 @@ export default function RegisterPage() {
       <div className="min-h-screen bg-background">
         <Container>
           <div className="flex items-center justify-center min-h-screen">
-            <p className="text-sm text-muted">جارٍ تحميل الصور الرمزية...</p>
+            <p className="text-sm text-muted">{t("auth.loadingAvatars")}</p>
           </div>
         </Container>
       </div>
@@ -166,14 +168,14 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-background">
       <Container>
-        <div className="max-w-3xl mx-auto py-12" dir="rtl">
+        <div className="max-w-3xl mx-auto py-12" dir={isRTL ? "rtl" : "ltr"}>
           {/* Header */}
           <header className="mb-8 space-y-2 text-center">
             <h1 className="text-2xl md:text-3xl font-extrabold text-foreground">
-              إنشاء حساب لاعب
+              {t("auth.createPlayerAccount")}
             </h1>
             <p className="text-sm text-muted">
-              انضم إلى البطولات وابنِ ملفك التنافسي
+              {t("auth.joinTournaments")}
             </p>
           </header>
 
@@ -189,24 +191,24 @@ export default function RegisterPage() {
             {/* Personal Information */}
             <div className="bg-surface-2/80 backdrop-blur-md border border-border p-6 rounded-2xl shadow-[0_8px_30px_rgba(5,8,22,0.08)]">
               <h2 className="text-lg font-bold text-foreground mb-4">
-                المعلومات الشخصية
+                {t("auth.personalInfo")}
               </h2>
 
               <div className="space-y-4">
                 {/* First & Last Name - RTL: First name on right */}
                 <div className="grid grid-cols-2 gap-4">
                   <Input
-                    label="الاسم الأول"
+                    label={t("auth.firstName")}
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="أدخل اسمك الأول"
+                    placeholder={t("auth.enterFirstName")}
                     disabled={loading}
                   />
                   <Input
-                    label="اسم العائلة"
+                    label={t("auth.lastName")}
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="أدخل اسم العائلة"
+                    placeholder={t("auth.enterLastName")}
                     disabled={loading}
                   />
                 </div>
@@ -214,7 +216,7 @@ export default function RegisterPage() {
                 {/* Email & WhatsApp */}
                 <div className="grid grid-cols-2 gap-4">
                   <Input
-                    label="البريد الإلكتروني"
+                    label={t("auth.email")}
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -222,7 +224,7 @@ export default function RegisterPage() {
                     disabled={loading}
                   />
                   <Input
-                    label="رقم الواتساب"
+                    label={t("auth.whatsappNumber")}
                     value={whatsapp}
                     onChange={(e) => setWhatsapp(e.target.value)}
                     placeholder="+971 XX XXX XXXX"
@@ -233,19 +235,19 @@ export default function RegisterPage() {
                 {/* Password & Confirm */}
                 <div className="grid grid-cols-2 gap-4">
                   <Input
-                    label="كلمة المرور"
+                    label={t("auth.password")}
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="8 أحرف على الأقل"
+                    placeholder={t("auth.minPassword")}
                     disabled={loading}
                   />
                   <Input
-                    label="تأكيد كلمة المرور"
+                    label={t("auth.confirmPassword")}
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="أعد إدخال كلمة المرور"
+                    placeholder={t("auth.reenterPassword")}
                     disabled={loading}
                   />
                 </div>
@@ -255,7 +257,7 @@ export default function RegisterPage() {
             {/* Avatar Selection */}
             <div className="bg-surface-2/80 backdrop-blur-md border border-border p-6 rounded-2xl shadow-[0_8px_30px_rgba(5,8,22,0.08)]">
               <h2 className="text-lg font-bold text-foreground mb-4">
-                اختر صورتك الرمزية
+                {t("auth.chooseAvatar")}
               </h2>
               <AvatarSelector
                 avatars={avatars}
@@ -272,17 +274,17 @@ export default function RegisterPage() {
               isLoading={loading}
               className="w-full"
             >
-              {loading ? "جارٍ إنشاء الحساب..." : "إنشاء الحساب والتسجيل"}
+              {loading ? t("auth.creatingAccount") : t("auth.createAndRegister")}
             </Button>
 
             {/* Login link */}
             <p className="text-center text-sm text-muted">
-              لديك حساب بالفعل؟{" "}
+              {t("auth.alreadyHaveAccount")}{" "}
               <Link
                 href="/auth/login"
                 className="text-secondary font-bold hover:text-secondary-dark hover:underline"
               >
-                سجل الدخول من هنا
+                {t("auth.loginFromHere")}
               </Link>
             </p>
           </form>
