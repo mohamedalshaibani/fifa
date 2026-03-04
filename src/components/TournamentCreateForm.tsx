@@ -62,16 +62,14 @@ export default function TournamentCreateForm() {
               onChange={() => setTournamentType("league")}
             />
             <div className={`
-              relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
+              relative flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-bold text-sm transition-all duration-150
               ${tournamentType === "league" 
-                ? "bg-primary text-white border-primary shadow-lg shadow-primary/40 scale-[1.02]" 
-                : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
+                ? "bg-primary/10 text-primary border-primary shadow-[0_4px_12px_rgba(0,92,255,0.25)]" 
+                : "bg-white text-foreground border-foreground/80 hover:border-foreground"
               }
             `}>
               {tournamentType === "league" && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-primary shadow-md flex items-center justify-center">
-                  <Check className="w-3 h-3 text-primary" strokeWidth={3} />
-                </div>
+                <Check className="w-4 h-4 text-primary" strokeWidth={3} />
               )}
               <span>🏆</span>
               <span>دوري</span>
@@ -90,16 +88,14 @@ export default function TournamentCreateForm() {
               onChange={() => setTournamentType("knockout")}
             />
             <div className={`
-              relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
+              relative flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-bold text-sm transition-all duration-150
               ${tournamentType === "knockout" 
-                ? "bg-primary text-white border-primary shadow-lg shadow-primary/40 scale-[1.02]" 
-                : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
+                ? "bg-primary/10 text-primary border-primary shadow-[0_4px_12px_rgba(0,92,255,0.25)]" 
+                : "bg-white text-foreground border-foreground/80 hover:border-foreground"
               }
             `}>
               {tournamentType === "knockout" && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-primary shadow-md flex items-center justify-center">
-                  <Check className="w-3 h-3 text-primary" strokeWidth={3} />
-                </div>
+                <Check className="w-4 h-4 text-primary" strokeWidth={3} />
               )}
               <span>⚡</span>
               <span>خروج مباشر</span>
@@ -129,16 +125,14 @@ export default function TournamentCreateForm() {
               }}
             />
             <div className={`
-              relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
+              relative flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-bold text-sm transition-all duration-150
               ${playersPerTeam === "1" 
-                ? "bg-secondary text-white border-secondary shadow-lg shadow-secondary/40 scale-[1.02]" 
-                : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
+                ? "bg-secondary/10 text-secondary border-secondary shadow-[0_4px_12px_rgba(255,138,0,0.25)]" 
+                : "bg-white text-foreground border-foreground/80 hover:border-foreground"
               }
             `}>
               {playersPerTeam === "1" && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-secondary shadow-md flex items-center justify-center">
-                  <Check className="w-3 h-3 text-secondary" strokeWidth={3} />
-                </div>
+                <Check className="w-4 h-4 text-secondary" strokeWidth={3} />
               )}
               <User className="w-4 h-4" />
               <span>فردي</span>
@@ -158,16 +152,14 @@ export default function TournamentCreateForm() {
               onChange={() => setPlayersPerTeam("2")}
             />
             <div className={`
-              relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
+              relative flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-bold text-sm transition-all duration-150
               ${playersPerTeam === "2" 
-                ? "bg-secondary text-white border-secondary shadow-lg shadow-secondary/40 scale-[1.02]" 
-                : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
+                ? "bg-secondary/10 text-secondary border-secondary shadow-[0_4px_12px_rgba(255,138,0,0.25)]" 
+                : "bg-white text-foreground border-foreground/80 hover:border-foreground"
               }
             `}>
               {playersPerTeam === "2" && (
-                <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-secondary shadow-md flex items-center justify-center">
-                  <Check className="w-3 h-3 text-secondary" strokeWidth={3} />
-                </div>
+                <Check className="w-4 h-4 text-secondary" strokeWidth={3} />
               )}
               <Users className="w-4 h-4" />
               <span>فرق</span>
@@ -196,16 +188,14 @@ export default function TournamentCreateForm() {
                 onChange={() => setTeamFormationMode("preformed")}
               />
               <div className={`
-                relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
+                relative flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-bold text-sm transition-all duration-150
                 ${teamFormationMode === "preformed" 
-                  ? "bg-accent text-foreground border-accent shadow-lg shadow-accent/40 scale-[1.02]" 
-                  : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
+                  ? "bg-accent/10 text-accent border-accent shadow-[0_4px_12px_rgba(0,230,118,0.25)]" 
+                  : "bg-white text-foreground border-foreground/80 hover:border-foreground"
                 }
               `}>
                 {teamFormationMode === "preformed" && (
-                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-accent shadow-md flex items-center justify-center">
-                    <Check className="w-3 h-3 text-accent" strokeWidth={3} />
-                  </div>
+                  <Check className="w-4 h-4 text-accent" strokeWidth={3} />
                 )}
                 <UserCheck className="w-4 h-4" />
                 <span>فرق جاهزة</span>
@@ -224,16 +214,14 @@ export default function TournamentCreateForm() {
                 onChange={() => setTeamFormationMode("random_draw")}
               />
               <div className={`
-                relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all duration-150
+                relative flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-bold text-sm transition-all duration-150
                 ${teamFormationMode === "random_draw" 
-                  ? "bg-accent text-foreground border-accent shadow-lg shadow-accent/40 scale-[1.02]" 
-                  : "bg-surface-2 text-muted border-transparent hover:border-border hover:text-foreground"
+                  ? "bg-accent/10 text-accent border-accent shadow-[0_4px_12px_rgba(0,230,118,0.25)]" 
+                  : "bg-white text-foreground border-foreground/80 hover:border-foreground"
                 }
               `}>
                 {teamFormationMode === "random_draw" && (
-                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white border-2 border-accent shadow-md flex items-center justify-center">
-                    <Check className="w-3 h-3 text-accent" strokeWidth={3} />
-                  </div>
+                  <Check className="w-4 h-4 text-accent" strokeWidth={3} />
                 )}
                 <Shuffle className="w-4 h-4" />
                 <span>قرعة عشوائية</span>
