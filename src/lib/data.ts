@@ -147,34 +147,24 @@ export async function getTournamentBySlug(slug: string) {
 export async function getParticipants(tournamentId: string) {
   try {
     const supabase = createAdminClient();
-    // Changed to include all registration statuses, not just 'approved'
-    // Participants can be pending, approved, or rejected
+    // Get all participants - filter includes approved, pending, and null (legacy)
     const { data, error } = await supabase
       .from("participants")
       .select("*")
       .eq("tournament_id", tournamentId)
-      .in("registration_status", ["pending", "approved"])
       .order("created_at", { ascending: true });
 
     if (error) {
-      if (error.code === "42703" || error.code === "PGRST204") {
-        const fallback = await supabase
-          .from("participants")
-          .select("*")
-          .eq("tournament_id", tournamentId)
-          .in("status", ["pending", "approved"])
-          .order("created_at", { ascending: true });
-        if (fallback.error) {
-          console.error("[getParticipants] Fallback error:", fallback.error);
-          return [];
-        }
-        return (fallback.data ?? []) as Participant[];
-      }
       console.error("[getParticipants] Error:", error);
       return [];
     }
 
-    return (data ?? []) as Participant[];
+    // Filter out only explicitly rejected participants
+    const filtered = (data ?? []).filter(p => 
+      p.registration_status !== "rejected"
+    );
+
+    return filtered as Participant[];
   } catch (err) {
     console.error("[getParticipants] Exception:", err);
     return [];
