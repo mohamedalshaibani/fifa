@@ -4,9 +4,9 @@ import SportPageLayout from "@/components/SportPageLayout";
 import SportButton from "@/components/ui/SportButton";
 import SportCard from "@/components/ui/SportCard";
 import SportBadge from "@/components/ui/SportBadge";
-import { getAllTournaments, getParticipants, getMatches, computeUserStatsFromMatches, getUserTournamentActivities } from "@/lib/data";
+import { getAllTournaments, getParticipants, getMatches, computeUserStatsFromMatches, getUserTournamentPlacementStats } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
-import { Users, Trophy, Flame, Target, Award, Zap, CheckCircle, Calendar, BarChart3, Swords, TrendingUp, Minus, X as XIcon, CircleDot } from "lucide-react";
+import { Users, Trophy, Flame, Target, Award, Zap, CheckCircle, Calendar, BarChart3, Swords, TrendingUp, Minus, X as XIcon, CircleDot, Medal, Crown, Star } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -14,9 +14,9 @@ export default async function Home() {
   const tournaments = await getAllTournaments();
   const currentUser = await getCurrentUser();
   
-  // Fetch user stats and activities if logged in
+  // Fetch user stats and placement stats if logged in
   const userStats = currentUser ? await computeUserStatsFromMatches(currentUser.id) : null;
-  const userActivities = currentUser ? await getUserTournamentActivities(currentUser.id) : [];
+  const placementStats = currentUser ? await getUserTournamentPlacementStats(currentUser.id) : null;
   
   // Get participant and match counts for all tournaments
   const tournamentData = await Promise.all(
@@ -67,7 +67,7 @@ export default async function Home() {
 
   const hasTournaments = activeTournaments.length > 0 || finishedTournaments.length > 0;
   const hasPlayedMatches = userStats && userStats.matchesPlayed > 0;
-  const hasParticipations = userActivities.length > 0;
+  const hasPlacementStats = placementStats && placementStats.tournamentsParticipated > 0;
 
   return (
     <SportPageLayout>
@@ -193,17 +193,8 @@ export default async function Home() {
                     </div>
                   </SportCard>
                 </div>
-              ) : hasParticipations ? (
-                /* User is registered but no matches played yet */
-                <SportCard padding="base" variant="default" className="text-center mb-8">
-                  <div className="py-4 space-y-3">
-                    <div className="text-4xl">⏳</div>
-                    <p className="text-foreground font-bold">بانتظار المباريات</p>
-                    <p className="text-sm text-muted">أنت مسجل في البطولات! إحصائياتك ستظهر بعد أول مباراة.</p>
-                  </div>
-                </SportCard>
               ) : (
-                /* No Matches and No Participations */
+                /* No Matches Yet */
                 <SportCard padding="base" variant="default" className="text-center mb-8">
                   <div className="py-4 space-y-3">
                     <div className="text-4xl">⚽</div>
@@ -213,8 +204,8 @@ export default async function Home() {
                 </SportCard>
               )}
 
-              {/* My Activity Section */}
-              {userActivities.length > 0 && (
+              {/* Tournament Placement Stats Section */}
+              {hasPlacementStats && placementStats && (
                 <div className="mb-8">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
@@ -222,51 +213,77 @@ export default async function Home() {
                     </div>
                     <div>
                       <h2 className="text-xl font-bold text-foreground">نشاطي في البطولات</h2>
-                      <p className="text-sm text-muted">ملخص مشاركاتك في البطولات المختلفة</p>
+                      <p className="text-sm text-muted">ملخص إنجازاتك في البطولات المنتهية</p>
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
-                    {userActivities.slice(0, 5).map((activity) => (
-                      <Link key={activity.tournamentId} href={`/t/${activity.tournamentSlug}`}>
-                        <SportCard padding="sm" hoverable variant="default" className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                          {/* Tournament Name & Status */}
-                          <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                              <Trophy className="w-5 h-5 text-primary" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <h3 className="font-bold text-foreground truncate">{activity.tournamentName}</h3>
-                              {activity.teamName && (
-                                <p className="text-xs text-muted truncate">فريقي: {activity.teamName}</p>
-                              )}
-                            </div>
-                          </div>
+                  {/* Placement Stats Cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {/* Total Tournaments */}
+                    <SportCard padding="sm" variant="default" className="text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center mb-1">
+                          <Trophy className="w-5 h-5 text-primary" />
+                        </div>
+                        <span className="text-2xl font-black text-foreground">{placementStats.tournamentsParticipated}</span>
+                        <span className="text-xs text-muted font-medium">بطولات</span>
+                      </div>
+                    </SportCard>
 
-                          {/* Status Badge */}
-                          <div className="flex items-center gap-3 flex-shrink-0">
-                            <SportBadge 
-                              variant={activity.status === "finished" ? "success" : activity.status === "running" ? "primary" : "warning"}
-                            >
-                              {activity.status === "finished" ? "منتهية" : 
-                               activity.status === "running" ? "جارية" : 
-                               "التسجيل"}
-                            </SportBadge>
+                    {/* 1st Place */}
+                    <SportCard padding="sm" variant="default" className="text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="w-10 h-10 rounded-xl bg-yellow-500/15 flex items-center justify-center mb-1">
+                          <Crown className="w-5 h-5 text-yellow-500" />
+                        </div>
+                        <span className="text-2xl font-black text-yellow-500">{placementStats.firstPlaceFinishes}</span>
+                        <span className="text-xs text-muted font-medium">المركز الأول</span>
+                      </div>
+                    </SportCard>
 
-                            {/* W/D/L Summary */}
-                            {(activity.wins + activity.draws + activity.losses) > 0 && (
-                              <div className="flex items-center gap-2 text-xs font-bold">
-                                <span className="text-green-500">{activity.wins}ف</span>
-                                <span className="text-muted">-</span>
-                                <span className="text-yellow-600">{activity.draws}ت</span>
-                                <span className="text-muted">-</span>
-                                <span className="text-red-500">{activity.losses}خ</span>
-                              </div>
-                            )}
-                          </div>
-                        </SportCard>
-                      </Link>
-                    ))}
+                    {/* 2nd Place */}
+                    <SportCard padding="sm" variant="default" className="text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="w-10 h-10 rounded-xl bg-slate-400/15 flex items-center justify-center mb-1">
+                          <Medal className="w-5 h-5 text-slate-400" />
+                        </div>
+                        <span className="text-2xl font-black text-slate-400">{placementStats.secondPlaceFinishes}</span>
+                        <span className="text-xs text-muted font-medium">المركز الثاني</span>
+                      </div>
+                    </SportCard>
+
+                    {/* 3rd Place */}
+                    <SportCard padding="sm" variant="default" className="text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="w-10 h-10 rounded-xl bg-amber-700/15 flex items-center justify-center mb-1">
+                          <Medal className="w-5 h-5 text-amber-700" />
+                        </div>
+                        <span className="text-2xl font-black text-amber-700">{placementStats.thirdPlaceFinishes}</span>
+                        <span className="text-xs text-muted font-medium">المركز الثالث</span>
+                      </div>
+                    </SportCard>
+
+                    {/* Final Appearances */}
+                    <SportCard padding="sm" variant="default" className="text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="w-10 h-10 rounded-xl bg-secondary/15 flex items-center justify-center mb-1">
+                          <Star className="w-5 h-5 text-secondary" />
+                        </div>
+                        <span className="text-2xl font-black text-secondary">{placementStats.finalAppearances}</span>
+                        <span className="text-xs text-muted font-medium">وصول للنهائي</span>
+                      </div>
+                    </SportCard>
+
+                    {/* Podium Finishes */}
+                    <SportCard padding="sm" variant="default" className="text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="w-10 h-10 rounded-xl bg-green-500/15 flex items-center justify-center mb-1">
+                          <Award className="w-5 h-5 text-green-500" />
+                        </div>
+                        <span className="text-2xl font-black text-green-500">{placementStats.podiumFinishes}</span>
+                        <span className="text-xs text-muted font-medium">منصة التتويج</span>
+                      </div>
+                    </SportCard>
                   </div>
                 </div>
               )}

@@ -614,6 +614,209 @@ export interface TournamentActivity {
   rank: number | null;
 }
 
+export interface TournamentPlacementStats {
+  tournamentsParticipated: number;
+  firstPlaceFinishes: number;
+  secondPlaceFinishes: number;
+  thirdPlaceFinishes: number;
+  finalAppearances: number;
+  podiumFinishes: number;
+}
+
+export async function getUserTournamentPlacementStats(userId: string): Promise<TournamentPlacementStats> {
+  try {
+    const supabase = createAdminClient();
+    
+    let tournamentsParticipated = 0;
+    let firstPlaceFinishes = 0;
+    let secondPlaceFinishes = 0;
+    let thirdPlaceFinishes = 0;
+    let finalAppearances = 0;
+
+    // Get all finished tournaments where user participated
+    const { data: participations, error: partError } = await supabase
+      .from("participants")
+      .select(`
+        id,
+        tournament_id,
+        team_id,
+        user_id,
+        tournaments (
+          id,
+          name,
+          type,
+          status
+        )
+      `)
+      .eq("user_id", userId);
+
+    if (partError || !participations) {
+      console.error("[getUserTournamentPlacementStats] Error:", partError);
+      return { tournamentsParticipated: 0, firstPlaceFinishes: 0, secondPlaceFinishes: 0, thirdPlaceFinishes: 0, finalAppearances: 0, podiumFinishes: 0 };
+    }
+
+    // Filter to finished tournaments only
+    const finishedParticipations = participations.filter(p => {
+      const tournament = Array.isArray(p.tournaments) ? p.tournaments[0] : p.tournaments;
+      return tournament?.status === "finished";
+    });
+
+    tournamentsParticipated = finishedParticipations.length;
+
+    for (const participation of finishedParticipations) {
+      const tournament = Array.isArray(participation.tournaments) 
+        ? participation.tournaments[0] 
+        : participation.tournaments;
+      
+      if (!tournament) continue;
+
+      // Get all matches for this tournament
+      const { data: matches } = await supabase
+        .from("matches")
+        .select("*")
+        .eq("tournament_id", tournament.id)
+        .eq("status", "completed")
+        .order("round", { ascending: false });
+
+      if (!matches || matches.length === 0) continue;
+
+      const isKnockout = tournament.type === "knockout";
+
+      if (isKnockout) {
+        // For knockout: find the final match (highest round)
+        const maxRound = Math.max(...matches.map(m => m.round));
+        const finalMatch = matches.find(m => m.round === maxRound);
+        
+        if (finalMatch) {
+          // Check if user was in the final
+          const isInFinal = 
+            finalMatch.home_participant_id === participation.id ||
+            finalMatch.away_participant_id === participation.id ||
+            (participation.team_id && (finalMatch.home_team_id === participation.team_id || finalMatch.away_team_id === participation.team_id)) ||
+            finalMatch.home_user_id === userId ||
+            finalMatch.away_user_id === userId;
+
+          if (isInFinal) {
+            finalAppearances++;
+            
+            // Check if winner
+            const isWinner = 
+              finalMatch.winner_participant_id === participation.id ||
+              (participation.team_id && finalMatch.winner_team_id === participation.team_id) ||
+              finalMatch.winner_user_id === userId;
+
+            if (isWinner) {
+              firstPlaceFinishes++;
+            } else {
+              secondPlaceFinishes++;
+            }
+          } else {
+            // Check semi-final (second highest round)
+            const semiFinalRound = maxRound - 1;
+            const semiFinals = matches.filter(m => m.round === semiFinalRound);
+            
+            for (const semi of semiFinals) {
+              const wasInSemi = 
+                semi.home_participant_id === participation.id ||
+                semi.away_participant_id === participation.id ||
+                (participation.team_id && (semi.home_team_id === participation.team_id || semi.away_team_id === participation.team_id)) ||
+                semi.home_user_id === userId ||
+                semi.away_user_id === userId;
+              
+              if (wasInSemi) {
+                // Lost in semi = 3rd/4th place (count as 3rd)
+                const lostSemi = 
+                  semi.winner_participant_id !== participation.id &&
+                  (!participation.team_id || semi.winner_team_id !== participation.team_id) &&
+                  semi.winner_user_id !== userId;
+                
+                if (lostSemi) {
+                  thirdPlaceFinishes++;
+                }
+                break;
+              }
+            }
+          }
+        }
+      } else {
+        // For league: calculate standings based on points
+        const standings: Map<string, { points: number; goalDiff: number; participantId: string; teamId: string | null }> = new Map();
+        
+        for (const match of matches) {
+          const homeId = match.home_team_id || match.home_participant_id || match.home_user_id;
+          const awayId = match.away_team_id || match.away_participant_id || match.away_user_id;
+          
+          if (!homeId || !awayId) continue;
+          
+          if (!standings.has(homeId)) {
+            standings.set(homeId, { points: 0, goalDiff: 0, participantId: match.home_participant_id, teamId: match.home_team_id });
+          }
+          if (!standings.has(awayId)) {
+            standings.set(awayId, { points: 0, goalDiff: 0, participantId: match.away_participant_id, teamId: match.away_team_id });
+          }
+          
+          const homeScore = match.home_score ?? 0;
+          const awayScore = match.away_score ?? 0;
+          
+          const homeStats = standings.get(homeId)!;
+          const awayStats = standings.get(awayId)!;
+          
+          homeStats.goalDiff += homeScore - awayScore;
+          awayStats.goalDiff += awayScore - homeScore;
+          
+          if (homeScore > awayScore) {
+            homeStats.points += 3;
+          } else if (awayScore > homeScore) {
+            awayStats.points += 3;
+          } else {
+            homeStats.points += 1;
+            awayStats.points += 1;
+          }
+        }
+        
+        // Sort by points, then goal difference
+        const sortedStandings = Array.from(standings.entries())
+          .sort((a, b) => {
+            if (b[1].points !== a[1].points) return b[1].points - a[1].points;
+            return b[1].goalDiff - a[1].goalDiff;
+          });
+        
+        // Find user's position
+        const userKey = participation.team_id || participation.id;
+        const userPosition = sortedStandings.findIndex(([key, stats]) => 
+          key === userKey || 
+          stats.participantId === participation.id || 
+          stats.teamId === participation.team_id
+        );
+        
+        if (userPosition === 0) {
+          firstPlaceFinishes++;
+          finalAppearances++; // 1st place counts as reaching final in league
+        } else if (userPosition === 1) {
+          secondPlaceFinishes++;
+          finalAppearances++; // 2nd place also counts as reaching final
+        } else if (userPosition === 2) {
+          thirdPlaceFinishes++;
+        }
+      }
+    }
+
+    const podiumFinishes = firstPlaceFinishes + secondPlaceFinishes + thirdPlaceFinishes;
+
+    return {
+      tournamentsParticipated,
+      firstPlaceFinishes,
+      secondPlaceFinishes,
+      thirdPlaceFinishes,
+      finalAppearances,
+      podiumFinishes
+    };
+  } catch (err) {
+    console.error("[getUserTournamentPlacementStats] Exception:", err);
+    return { tournamentsParticipated: 0, firstPlaceFinishes: 0, secondPlaceFinishes: 0, thirdPlaceFinishes: 0, finalAppearances: 0, podiumFinishes: 0 };
+  }
+}
+
 export async function computeUserStatsFromMatches(userId: string): Promise<ComputedUserStats> {
   try {
     const supabase = createAdminClient();
