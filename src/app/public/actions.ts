@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentUser } from "@/lib/auth";
+import { encodeSlug } from "@/lib/slug";
 
 /**
  * Register the logged-in user for a tournament.
@@ -12,12 +13,13 @@ import { getCurrentUser } from "@/lib/auth";
 export async function registerAuthenticatedUser(formData: FormData) {
   const tournamentId = String(formData.get("tournamentId") ?? "").trim();
   const tournamentSlug = String(formData.get("tournamentSlug") ?? "").trim();
+  const encodedSlug = encodeSlug(tournamentSlug);
 
   // Get authenticated user
   const user = await getCurrentUser();
   
   if (!user) {
-    redirect(`/t/${tournamentSlug}?error=auth`);
+    redirect(`/t/${encodedSlug}?error=auth`);
   }
 
   const supabase = createAdminClient();
@@ -30,11 +32,11 @@ export async function registerAuthenticatedUser(formData: FormData) {
     .single();
 
   if (tournamentError || !tournament) {
-    redirect(`/t/${tournamentSlug}?error=notfound`);
+    redirect(`/t/${encodedSlug}?error=notfound`);
   }
 
   if (tournament.status !== "registration_open") {
-    redirect(`/t/${tournamentSlug}?error=closed`);
+    redirect(`/t/${encodedSlug}?error=closed`);
   }
 
   // Check if already registered
@@ -46,7 +48,7 @@ export async function registerAuthenticatedUser(formData: FormData) {
     .maybeSingle();
 
   if (existing) {
-    redirect(`/t/${tournamentSlug}?registered=already`);
+    redirect(`/t/${encodedSlug}?registered=already`);
   }
 
   // Insert participant linked to user
@@ -62,11 +64,11 @@ export async function registerAuthenticatedUser(formData: FormData) {
 
   if (insertError) {
     console.error("[registerAuthenticatedUser] Insert error:", insertError);
-    redirect(`/t/${tournamentSlug}?error=server`);
+    redirect(`/t/${encodedSlug}?error=server`);
   }
 
   revalidatePath(`/t/${tournamentSlug}`);
-  redirect(`/t/${tournamentSlug}?registered=success`);
+  redirect(`/t/${encodedSlug}?registered=success`);
 }
 
 export async function registerForTournament(formData: FormData) {

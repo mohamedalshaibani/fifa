@@ -83,7 +83,7 @@ export default function TournamentCountdown({
     }
 
     return (
-      <span className="inline-flex items-center gap-2 rounded-full border border-accent/60 bg-accent/bg text-accent px-3 py-1 text-xs font-bold">
+      <span className="inline-flex items-center gap-2 rounded-full border border-accent/60 bg-accent/10 text-accent px-3 py-1 text-xs font-bold">
         {completedMatches}/{matchesCount} مباراة
       </span>
     );

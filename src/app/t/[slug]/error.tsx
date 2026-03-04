@@ -1,0 +1,62 @@
+"use client";
+
+import { useEffect } from "react";
+import Link from "next/link";
+import Button from "@/components/ui/Button";
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    // Log the error to console for debugging
+    console.error("[Tournament Page Error]", error);
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    console.error("Error digest:", error.digest);
+  }, [error]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <div className="max-w-md w-full text-center space-y-6">
+        <div className="text-6xl">⚠️</div>
+        <h1 className="text-2xl font-bold text-foreground">حدث خطأ</h1>
+        <p className="text-secondary">
+          نعتذر، حدث خطأ أثناء تحميل الصفحة.
+        </p>
+        
+        {/* Show error details in development */}
+        {process.env.NODE_ENV === "development" && (
+          <div className="text-left p-4 bg-danger/10 rounded-lg border border-danger/30 overflow-auto">
+            <p className="text-xs font-mono text-danger mb-2">
+              <strong>Error:</strong> {error.name}
+            </p>
+            <p className="text-xs font-mono text-danger mb-2">
+              <strong>Message:</strong> {error.message}
+            </p>
+            {error.digest && (
+              <p className="text-xs font-mono text-danger">
+                <strong>Digest:</strong> {error.digest}
+              </p>
+            )}
+          </div>
+        )}
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button onClick={reset}>
+            حاول مرة أخرى
+          </Button>
+          <Link href="/tournaments">
+            <Button variant="secondary">
+              العودة للبطولات
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
