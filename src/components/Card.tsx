@@ -22,7 +22,7 @@ export default function Card({
     <div 
       className={`
         ${baseClass}
-        ${noPadding ? "" : "p-6"} 
+        ${noPadding ? "" : "p-4 sm:p-6"} 
         ${className}
       `}
     >

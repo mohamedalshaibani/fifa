@@ -127,7 +127,7 @@ export function TournamentsListContent({ activeTournaments, finishedTournaments 
                             </div>
 
                             {/* Tournament Name */}
-                            <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors">
+                            <h3 className="text-base sm:text-lg font-extrabold text-foreground group-hover:text-primary transition-colors break-words hyphens-auto leading-snug">
                               {tournament.name}
                             </h3>
 
@@ -259,7 +259,7 @@ export function TournamentsListContent({ activeTournaments, finishedTournaments 
                             </div>
 
                             {/* Tournament Name */}
-                            <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors">
+                            <h3 className="text-base sm:text-lg font-extrabold text-foreground group-hover:text-primary transition-colors break-words hyphens-auto leading-snug">
                               {tournament.name}
                             </h3>
 

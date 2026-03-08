@@ -130,10 +130,10 @@ export default function AdminTournamentsContent({
                     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                     .map((tournament) => (
                       <SportCard key={tournament.id} padding="base" hoverable variant={tournament.status === "running" ? "highlighted" : "default"}>
-                        <div className="flex items-center justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-lg font-extrabold text-foreground truncate">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+                              <h3 className="text-base sm:text-lg font-extrabold text-foreground break-words hyphens-auto leading-snug">
                                 {tournament.name}
                               </h3>
                               <SportBadge 
@@ -159,7 +159,7 @@ export default function AdminTournamentsContent({
                             <Link href={`/admin/tournaments/${tournament.id}`}>
                               <SportButton variant="secondary" size="sm" className="font-bold">
                                 <Settings className="w-4 h-4" />
-                                {t("admin.manage")}
+                                <span className="sr-only sm:not-sr-only">{t("admin.manage")}</span>
                               </SportButton>
                             </Link>
 
@@ -167,10 +167,10 @@ export default function AdminTournamentsContent({
                               <input type="hidden" name="tournamentId" value={tournament.id} />
                               <DeleteButton
                                 confirmMessage={t("admin.tournaments.deleteConfirm")}
-                                className="px-3 py-2 h-9 rounded-lg border border-danger/30 text-danger hover:bg-danger/10 hover:border-danger transition-all font-bold text-sm flex items-center gap-2"
+                                className="px-2 sm:px-3 py-2 h-9 rounded-lg border border-danger/30 text-danger hover:bg-danger/10 hover:border-danger transition-all font-bold text-sm flex items-center gap-1 sm:gap-2"
                               >
                                 <Trash2 className="w-4 h-4" />
-                                {t("admin.tournaments.delete")}
+                                <span className="sr-only sm:not-sr-only">{t("admin.tournaments.delete")}</span>
                               </DeleteButton>
                             </form>
                           </div>

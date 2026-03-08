@@ -138,8 +138,8 @@ export default function AdminTournamentDashContent({
 
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl font-black text-primary">
+            <div className="space-y-2 min-w-0">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-primary break-words hyphens-auto leading-tight">
                 {tournament.name}
               </h1>
               <div className="flex items-center gap-3 flex-wrap">

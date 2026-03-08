@@ -142,7 +142,7 @@ export function TournamentDetailContent({
           <div className="mb-8">
             <BackLink fallbackHref="/tournaments" />
 
-            <Card className="p-8 md:p-10 bg-surface border-border relative overflow-hidden">
+            <Card className="p-4 sm:p-6 md:p-8 lg:p-10 bg-surface border-border relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
                 <Trophy className="absolute -top-10 -left-10 w-64 h-64 text-gold" />
               </div>
@@ -164,10 +164,10 @@ export function TournamentDetailContent({
                         {isTeamBased ? t("tournamentDetail.teams") : t("tournamentDetail.individual")}
                       </span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black text-foreground">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-foreground break-words hyphens-auto leading-tight">
                       {tournament.name}
                     </h1>
-                    <p className="mt-2 text-secondary text-lg max-w-2xl">
+                    <p className="mt-2 text-secondary text-base sm:text-lg max-w-2xl">
                       {tournament.type === "league" && t("tournamentDetail.leagueCompleted")}
                       {tournament.type === "knockout" && t("tournamentDetail.knockoutCompleted")}
                       {!tournament.type && t("tournamentDetail.tournamentFinished")}
@@ -630,8 +630,8 @@ export function TournamentDetailContent({
             </div>
           )}
 
-          <Card className="p-8 md:p-10 bg-surface border-primary/10">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <Card className="p-4 sm:p-6 md:p-8 lg:p-10 bg-surface border-primary/10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <StatusBadge status={tournament.status} />
@@ -652,11 +652,11 @@ export function TournamentDetailContent({
                   </span>
                 </div>
                 
-                <div>
-                  <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight">
+                <div className="min-w-0 w-full">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tight break-words hyphens-auto leading-tight">
                     {tournament.name}
                   </h1>
-                  <p className="mt-2 text-secondary text-lg">
+                  <p className="mt-2 text-secondary text-base sm:text-lg">
                     {tournament.type === "league" && t("tournament.leagueFormat")}
                     {tournament.type === "knockout" && t("tournament.knockoutFormat")}
                     {!tournament.type && t("tournamentDetail.formatNotSet")}

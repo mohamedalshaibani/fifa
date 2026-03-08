@@ -331,19 +331,25 @@
 
 /* --- Component Utilities --- */
 
-/* 1. Layout Container */
+/* 1. Layout Container - Optimized for mobile (320px-414px) */
 .container-responsive {
   width: 100%;
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+@media (min-width: 375px) {
+  .container-responsive {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 @media (min-width: 640px) {
   .container-responsive {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 }
 @media (min-width: 1024px) {

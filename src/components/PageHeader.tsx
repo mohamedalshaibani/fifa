@@ -80,17 +80,17 @@ export default function PageHeader({
 
         {/* Scoreboard Style Header */}
         <div className="scoreboard">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="flex items-start sm:items-center gap-3 sm:gap-4 min-w-0 flex-1">
               {liveIndicator && (
-                <div className="live-indicator">
+                <div className="live-indicator flex-shrink-0">
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                   {liveIndicator}
                 </div>
               )}
-              <h1 className="text-xl sm:text-2xl font-black text-foreground heading-tight flex items-center gap-2">
-                {icon}
-                {title}
+              <h1 className="text-lg sm:text-xl md:text-2xl font-black text-foreground heading-tight flex items-start sm:items-center gap-2 break-words hyphens-auto leading-tight min-w-0">
+                {icon && <span className="flex-shrink-0 mt-0.5 sm:mt-0">{icon}</span>}
+                <span className="break-words">{title}</span>
               </h1>
             </div>
             {badge && <div className="shrink-0">{badge}</div>}
@@ -117,10 +117,10 @@ export default function PageHeader({
 
       {/* Title Row */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-black text-foreground flex items-center gap-3">
-            {icon}
-            <span>{title}</span>
+        <div className="space-y-1 min-w-0 flex-1">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-foreground flex items-start sm:items-center gap-2 sm:gap-3 break-words hyphens-auto leading-tight">
+            {icon && <span className="flex-shrink-0 mt-1 sm:mt-0">{icon}</span>}
+            <span className="break-words">{title}</span>
           </h1>
           {subtitle && (
             <p className="text-muted text-sm">{subtitle}</p>
