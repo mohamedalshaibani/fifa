@@ -15,7 +15,7 @@ import { Avatar as AvatarType } from "@/lib/types";
 type Tab = "profile" | "avatar" | "stats" | "password";
 
 export default function AccountPage() {
-  const { t, dir, isRTL } = useLanguage();
+  const { t, dir } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
