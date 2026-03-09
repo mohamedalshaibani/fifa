@@ -11,6 +11,76 @@ import Link from "next/link";
 import TournamentCreateForm from "@/components/TournamentCreateForm";
 import { useLanguage } from "@/lib/i18n";
 import type { Tournament } from "@/lib/types";
+import type { TranslationKey } from "@/lib/i18n";
+
+// Tournament Card Component
+interface TournamentCardProps {
+  tournament: Tournament;
+  getStatusBadge: (status: string) => string;
+  deleteTournament: (formData: FormData) => Promise<void>;
+  t: (key: TranslationKey) => string;
+  language: string;
+}
+
+function TournamentCard({ tournament, getStatusBadge, deleteTournament, t, language }: TournamentCardProps) {
+  return (
+    <SportCard 
+      padding="base" 
+      hoverable 
+      variant={tournament.status === "running" ? "highlighted" : tournament.status === "finished" ? "default" : "elevated"}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
+            <h3 className="text-base sm:text-lg font-extrabold text-foreground break-words hyphens-auto leading-snug">
+              {tournament.name}
+            </h3>
+            <SportBadge 
+              variant={
+                tournament.status === "running" ? "primary" : 
+                tournament.status === "finished" ? "info" : 
+                "warning"
+              }
+            >
+              {getStatusBadge(tournament.status)}
+            </SportBadge>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted flex-wrap">
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-primary" />
+              {new Date(tournament.created_at).toLocaleDateString(language === "ar" ? "ar-SA" : "en-US")}
+            </span>
+            {tournament.type && (
+              <span className="px-2 py-1 rounded-full bg-secondary/15 text-secondary font-bold">
+                {tournament.type === "league" ? t("admin.tournaments.typeLeague") : t("admin.tournaments.typeKnockout")}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Link href={`/admin/tournaments/${tournament.id}`}>
+            <SportButton variant="secondary" size="sm" className="font-bold">
+              <Settings className="w-4 h-4" />
+              <span className="sr-only sm:not-sr-only">{t("admin.manage")}</span>
+            </SportButton>
+          </Link>
+
+          <form action={deleteTournament} className="flex-shrink-0">
+            <input type="hidden" name="tournamentId" value={tournament.id} />
+            <DeleteButton
+              confirmMessage={t("admin.tournaments.deleteConfirm")}
+              className="px-2 sm:px-3 py-2 h-9 rounded-lg border border-danger/30 text-danger hover:bg-danger/10 hover:border-danger transition-all font-bold text-sm flex items-center gap-1 sm:gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="sr-only sm:not-sr-only">{t("admin.tournaments.delete")}</span>
+            </DeleteButton>
+          </form>
+        </div>
+      </div>
+    </SportCard>
+  );
+}
 
 interface AdminTournamentsContentProps {
   tournaments: Tournament[];
@@ -115,71 +185,104 @@ export default function AdminTournamentsContent({
             <TournamentCreateForm />
           </SportCard>
 
-          {/* Tournament List */}
-          <div className="space-y-3">
-              {tournaments.length === 0 ? (
-                <SportCard padding="lg" variant="elevated" className="text-center">
-                  <p className="text-lg text-muted">{t("admin.tournaments.noTournamentsYet")}</p>
-                </SportCard>
-              ) : (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-extrabold text-foreground mb-4">
-                    {t("admin.tournaments.tournamentsList")} ({tournaments.length})
-                  </h3>
-                  {tournaments
-                    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                    .map((tournament) => (
-                      <SportCard key={tournament.id} padding="base" hoverable variant={tournament.status === "running" ? "highlighted" : "default"}>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 mb-2">
-                              <h3 className="text-base sm:text-lg font-extrabold text-foreground break-words hyphens-auto leading-snug">
-                                {tournament.name}
-                              </h3>
-                              <SportBadge 
-                                variant={tournament.status === "running" ? "primary" : "info"}
-                              >
-                                {getStatusBadge(tournament.status)}
-                              </SportBadge>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs text-muted flex-wrap">
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-3 h-3 text-primary" />
-                                {new Date(tournament.created_at).toLocaleDateString(language === "ar" ? "ar-SA" : "en-US")}
-                              </span>
-                              {tournament.type && (
-                                <span className="px-2 py-1 rounded-full bg-secondary/15 text-secondary font-bold">
-                                  {tournament.type === "league" ? t("admin.tournaments.typeLeague") : t("admin.tournaments.typeKnockout")}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <Link href={`/admin/tournaments/${tournament.id}`}>
-                              <SportButton variant="secondary" size="sm" className="font-bold">
-                                <Settings className="w-4 h-4" />
-                                <span className="sr-only sm:not-sr-only">{t("admin.manage")}</span>
-                              </SportButton>
-                            </Link>
-
-                            <form action={deleteTournament} className="flex-shrink-0">
-                              <input type="hidden" name="tournamentId" value={tournament.id} />
-                              <DeleteButton
-                                confirmMessage={t("admin.tournaments.deleteConfirm")}
-                                className="px-2 sm:px-3 py-2 h-9 rounded-lg border border-danger/30 text-danger hover:bg-danger/10 hover:border-danger transition-all font-bold text-sm flex items-center gap-1 sm:gap-2"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                <span className="sr-only sm:not-sr-only">{t("admin.tournaments.delete")}</span>
-                              </DeleteButton>
-                            </form>
-                          </div>
-                        </div>
-                      </SportCard>
+          {/* Tournament List - Grouped by Status */}
+          {tournaments.length === 0 ? (
+            <SportCard padding="lg" variant="elevated" className="text-center">
+              <p className="text-lg text-muted">{t("admin.tournaments.noTournamentsYet")}</p>
+            </SportCard>
+          ) : (
+            <div className="space-y-8">
+              {/* Running Tournaments */}
+              {(() => {
+                const runningTournaments = tournaments
+                  .filter(t => t.status === "running")
+                  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                
+                return runningTournaments.length > 0 ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 pb-2 border-b-2 border-accent/30">
+                      <h3 className="text-xl font-black text-accent">
+                        {t("admin.tournaments.sectionRunning")}
+                      </h3>
+                      <SportBadge variant="primary" className="text-xs">
+                        {runningTournaments.length}
+                      </SportBadge>
+                    </div>
+                    {runningTournaments.map((tournament) => (
+                      <TournamentCard
+                        key={tournament.id}
+                        tournament={tournament}
+                        getStatusBadge={getStatusBadge}
+                        deleteTournament={deleteTournament}
+                        t={t}
+                        language={language}
+                      />
                     ))}
-                </div>
-              )}
-          </div>
+                  </div>
+                ) : null;
+              })()}
+
+              {/* Upcoming Tournaments */}
+              {(() => {
+                const upcomingTournaments = tournaments
+                  .filter(t => t.status === "registration_open" || t.status === "registration_closed" || t.status === "pending")
+                  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                
+                return upcomingTournaments.length > 0 ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 pb-2 border-b-2 border-secondary/30">
+                      <h3 className="text-xl font-black text-secondary">
+                        {t("admin.tournaments.sectionUpcoming")}
+                      </h3>
+                      <SportBadge variant="warning" className="text-xs">
+                        {upcomingTournaments.length}
+                      </SportBadge>
+                    </div>
+                    {upcomingTournaments.map((tournament) => (
+                      <TournamentCard
+                        key={tournament.id}
+                        tournament={tournament}
+                        getStatusBadge={getStatusBadge}
+                        deleteTournament={deleteTournament}
+                        t={t}
+                        language={language}
+                      />
+                    ))}
+                  </div>
+                ) : null;
+              })()}
+
+              {/* Finished Tournaments */}
+              {(() => {
+                const finishedTournaments = tournaments
+                  .filter(t => t.status === "finished")
+                  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                
+                return finishedTournaments.length > 0 ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 pb-2 border-b-2 border-muted/30">
+                      <h3 className="text-xl font-black text-muted">
+                        {t("admin.tournaments.sectionFinished")}
+                      </h3>
+                      <SportBadge variant="info" className="text-xs">
+                        {finishedTournaments.length}
+                      </SportBadge>
+                    </div>
+                    {finishedTournaments.map((tournament) => (
+                      <TournamentCard
+                        key={tournament.id}
+                        tournament={tournament}
+                        getStatusBadge={getStatusBadge}
+                        deleteTournament={deleteTournament}
+                        t={t}
+                        language={language}
+                      />
+                    ))}
+                  </div>
+                ) : null;
+              })()}
+            </div>
+          )}
         </div>
       </Container>
     </AdminLayout>

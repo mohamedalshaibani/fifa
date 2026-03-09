@@ -1529,6 +1529,22 @@ export const translations = {
     ar: "⚡ خروج مباشر",
     en: "⚡ Knockout",
   },
+  "admin.tournaments.sectionRunning": {
+    ar: "🏃 البطولات الجارية",
+    en: "🏃 Running Tournaments",
+  },
+  "admin.tournaments.sectionUpcoming": {
+    ar: "📅 البطولات القادمة",
+    en: "📅 Upcoming Tournaments",
+  },
+  "admin.tournaments.sectionFinished": {
+    ar: "🏁 البطولات المنتهية",
+    en: "🏁 Finished Tournaments",
+  },
+  "admin.tournaments.noTournamentsInSection": {
+    ar: "لا توجد بطولات في هذا القسم",
+    en: "No tournaments in this section",
+  },
 
   // ============ CREATE TOURNAMENT FORM ============
   "admin.createForm.tournamentName": {
