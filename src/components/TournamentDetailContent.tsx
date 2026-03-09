@@ -50,7 +50,10 @@ export function TournamentDetailContent({
   setupStatus,
   searchParams,
 }: TournamentDetailContentProps) {
-  const { t, isRTL, language } = useLanguage();
+  const { t, isRTL, dir, language } = useLanguage();
+  
+  // Text alignment class for name columns based on language direction
+  const nameAlignClass = isRTL ? 'text-right' : 'text-left';
 
   const playersPerTeam = tournament.players_per_team ?? 1;
   const isTeamBased = playersPerTeam === 2;
@@ -475,7 +478,7 @@ export function TournamentDetailContent({
             </section>
 
             {/* Final Standings Section */}
-            <section id="final">
+            <section id="final" dir={dir}>
               <Card>
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                   <h2 className="text-lg font-bold text-foreground">
@@ -491,8 +494,8 @@ export function TournamentDetailContent({
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border text-foreground bg-surface-2">
-                            <th className="px-4 py-3 text-right text-xs font-bold">#</th>
-                            <th className="px-4 py-3 text-right text-xs font-bold">
+                            <th className="px-4 py-3 text-center text-xs font-bold">#</th>
+                            <th className={`px-4 py-3 ${nameAlignClass} text-xs font-bold`}>
                               {isTeamBased ? t("tournamentDetail.team") : t("tournamentDetail.player")}
                             </th>
                             <th className="px-4 py-3 text-center text-xs font-bold">{t("tournamentDetail.played")}</th>
@@ -519,7 +522,7 @@ export function TournamentDetailContent({
                                     key={standing.team.id}
                                     className={`border-b border-border ${highlight}`}
                                   >
-                                    <td className="px-4 py-3 text-right font-bold text-foreground">
+                                    <td className="px-4 py-3 text-center font-bold text-foreground">
                                       {index === 0
                                         ? "🥇"
                                         : index === 1
@@ -528,7 +531,7 @@ export function TournamentDetailContent({
                                         ? "🥉"
                                         : index + 1}
                                     </td>
-                                    <td className="px-4 py-3 text-right">
+                                    <td className={`px-4 py-3 ${nameAlignClass}`}>
                                       <p className="font-semibold text-foreground">{standing.team.name}</p>
                                       {members.length > 0 && (
                                         <p className="text-xs text-muted mt-0.5">{members.map(m => m.name).join(" • ")}</p>
@@ -561,7 +564,7 @@ export function TournamentDetailContent({
                                     key={standing.participant.id}
                                     className={`border-b border-border ${highlight}`}
                                   >
-                                    <td className="px-4 py-3 text-right font-bold text-foreground">
+                                    <td className="px-4 py-3 text-center font-bold text-foreground">
                                       {index === 0
                                         ? "🥇"
                                         : index === 1
@@ -570,7 +573,7 @@ export function TournamentDetailContent({
                                         ? "🥉"
                                         : index + 1}
                                     </td>
-                                    <td className="px-4 py-3 text-right font-semibold text-foreground">
+                                    <td className={`px-4 py-3 ${nameAlignClass} font-semibold text-foreground`}>
                                       {standing.participant.name}
                                     </td>
                                     <td className="px-4 py-3 text-center text-secondary">{standing.played}</td>
