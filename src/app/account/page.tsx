@@ -91,13 +91,24 @@ export default function AccountPage() {
         }
         setUser({ id: currentUser.id, email: currentUser.email || "" });
 
-        const { data: profileData } = await supabase
-          .from("user_profiles")
-          .select("first_name, last_name, whatsapp_number, avatar_url, avatar_id")
-          .eq("id", currentUser.id)
-          .single();
+        // Parallelize data fetches for faster loading
+        const [profileResult, avatarsResult, statsResult] = await Promise.allSettled([
+          supabase
+            .from("user_profiles")
+            .select("first_name, last_name, whatsapp_number, avatar_url, avatar_id")
+            .eq("id", currentUser.id)
+            .single(),
+          supabase
+            .from("avatars")
+            .select("*")
+            .order("category")
+            .order("name"),
+          fetch("/api/user/stats")
+        ]);
         
-        if (profileData) {
+        // Handle profile data
+        if (profileResult.status === "fulfilled" && profileResult.value.data) {
+          const profileData = profileResult.value.data;
           setProfile({
             first_name: profileData.first_name || "",
             last_name: profileData.last_name || "",
@@ -108,34 +119,28 @@ export default function AccountPage() {
           setSelectedAvatarId(profileData.avatar_id || null);
         }
 
-        // Try to load avatars from DB
-        const { data: avatarsData, error: avatarsError } = await supabase
-          .from("avatars")
-          .select("*")
-          .order("category")
-          .order("name");
-        
-        console.log("Avatars from DB:", avatarsData, "Error:", avatarsError);
-        
-        if (avatarsData && avatarsData.length > 0) {
-          setAvatars(avatarsData as AvatarType[]);
+        // Handle avatars data
+        if (avatarsResult.status === "fulfilled" && avatarsResult.value.data) {
+          const avatarsData = avatarsResult.value.data;
+          if (avatarsData.length > 0) {
+            setAvatars(avatarsData as AvatarType[]);
+          } else {
+            setAvatars([]);
+          }
         } else {
-          console.log("No avatars found in DB");
           setAvatars([]);
         }
         
-        // Fetch user stats
-        try {
-          const statsResponse = await fetch("/api/user/stats");
-          if (statsResponse.ok) {
-            const statsData = await statsResponse.json();
+        // Handle stats data
+        if (statsResult.status === "fulfilled" && statsResult.value.ok) {
+          try {
+            const statsData = await statsResult.value.json();
             setStats(statsData);
+          } catch {
+            console.error("Error parsing stats response");
           }
-        } catch (statsError) {
-          console.error("Error loading stats:", statsError);
-        } finally {
-          setStatsLoading(false);
         }
+        setStatsLoading(false);
       } catch (error) {
         console.error("Error loading data:", error);
         // On error, set empty avatars array
@@ -251,8 +256,41 @@ export default function AccountPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-xl text-foreground font-bold">{t("common.loading")}</div>
+      <div className="min-h-screen bg-background py-8">
+        <Container>
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Back Link Skeleton */}
+            <div className="h-5 w-16 bg-primary/10 rounded animate-pulse mb-6"></div>
+            
+            {/* Header Card Skeleton */}
+            <div className="bg-white/80 rounded-2xl shadow-sm p-6 border border-primary/10">
+              <div className="flex items-center gap-6">
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/10 animate-pulse"></div>
+                <div className="flex-1 space-y-3">
+                  <div className="h-6 w-40 bg-primary/10 rounded animate-pulse"></div>
+                  <div className="h-4 w-32 bg-primary/5 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Tabs Skeleton */}
+            <div className="flex gap-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-10 w-24 bg-primary/10 rounded-lg animate-pulse"></div>
+              ))}
+            </div>
+            
+            {/* Content Skeleton */}
+            <div className="bg-white/80 rounded-2xl shadow-sm p-6 border border-primary/10">
+              <div className="space-y-4">
+                <div className="h-5 w-24 bg-primary/10 rounded animate-pulse"></div>
+                <div className="h-12 w-full bg-primary/5 rounded-lg animate-pulse"></div>
+                <div className="h-5 w-24 bg-primary/10 rounded animate-pulse"></div>
+                <div className="h-12 w-full bg-primary/5 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </Container>
       </div>
     );
   }

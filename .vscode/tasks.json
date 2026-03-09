@@ -210,6 +210,18 @@
 			"type": "shell",
 			"command": "pnpm build && git add src/components/TournamentsListContent.tsx && git commit --no-verify -m 'feat: group tournaments by status on /tournaments page' && git push origin main",
 			"isBackground": false
+		},
+		{
+			"label": "Check Commits",
+			"type": "shell",
+			"command": "git log --oneline -3",
+			"isBackground": false
+		},
+		{
+			"label": "Verify Commit",
+			"type": "shell",
+			"command": "git show --name-only HEAD | head -15",
+			"isBackground": false
 		}
 	]
 }

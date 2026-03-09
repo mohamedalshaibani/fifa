@@ -663,16 +663,6 @@ export function TournamentDetailContent({
                   </p>
                 </div>
               </div>
-
-              {matches.length > 0 && (
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Link href={`/t/${encodeSlug(tournament.slug)}/schedule`}>
-                    <Button size="lg" icon={<CalendarDays className="w-5 h-5"/>}>
-                      {t("tournamentDetail.matchSchedule")}
-                    </Button>
-                  </Link>
-                </div>
-              )}
             </div>
           </Card>
         </div>
