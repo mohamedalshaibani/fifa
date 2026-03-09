@@ -1150,22 +1150,25 @@ function StandingsTable({
   teamMembersMap: Map<string, TeamMemberInfo[]>;
   participantUserIdMap: Map<string, string>;
 }) {
-  const { t } = useLanguage();
+  const { t, isRTL, dir } = useLanguage();
   const participantStandings = !isTeamBased ? computeStandings(participants, matches) : [];
   const teamStandings = isTeamBased ? computeTeamStandings(teams, matches) : [];
   const hasStandings = isTeamBased ? teamStandings.length > 0 : participantStandings.length > 0;
+  
+  // Text alignment class for name columns based on language direction
+  const nameAlignClass = isRTL ? 'text-right' : 'text-left';
   
   if (!hasStandings) {
     return <p className="text-sm text-muted">{t("tournamentDetail.noStandingsDataYet")}</p>;
   }
   
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto" dir={dir}>
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border text-foreground bg-surface-2">
-            <th className="px-3 py-3 text-right text-xs font-bold">#</th>
-            <th className="px-3 py-3 text-right text-xs font-bold">{isTeamBased ? t("tournamentDetail.team") : t("tournamentDetail.player")}</th>
+            <th className="px-3 py-3 text-center text-xs font-bold">#</th>
+            <th className={`px-3 py-3 ${nameAlignClass} text-xs font-bold`}>{isTeamBased ? t("tournamentDetail.team") : t("tournamentDetail.player")}</th>
             <th className="px-3 py-3 text-center text-xs font-bold">{t("tournamentDetail.played")}</th>
             <th className="px-3 py-3 text-center text-xs font-bold text-success">{t("tournamentDetail.won")}</th>
             <th className="px-3 py-3 text-center text-xs font-bold">{t("tournamentDetail.draw")}</th>
@@ -1181,10 +1184,10 @@ function StandingsTable({
                 const members = teamMembersMap.get(standing.team.id) || [];
                 return (
                   <tr key={standing.team.id} className={`border-b border-border ${highlight}`}>
-                    <td className="px-3 py-3 text-right font-bold text-foreground">
+                    <td className="px-3 py-3 text-center font-bold text-foreground">
                       {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
                     </td>
-                    <td className="px-3 py-3 text-right">
+                    <td className={`px-3 py-3 ${nameAlignClass}`}>
                       <p className="font-semibold text-foreground">{standing.team.name}</p>
                       {members.length > 0 && <p className="text-xs text-muted">{members.map(m => m.name).join(" • ")}</p>}
                     </td>
@@ -1204,10 +1207,10 @@ function StandingsTable({
                 const userId = participantUserIdMap.get(standing.participant.id);
                 return (
                   <tr key={standing.participant.id} className={`border-b border-border ${highlight}`}>
-                    <td className="px-3 py-3 text-right font-bold text-foreground">
+                    <td className="px-3 py-3 text-center font-bold text-foreground">
                       {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
                     </td>
-                    <td className="px-3 py-3 text-right font-semibold text-foreground">
+                    <td className={`px-3 py-3 ${nameAlignClass} font-semibold text-foreground`}>
                       {userId ? (
                         <Link href={`/player/${userId}`} className="hover:text-primary transition-colors">
                           {standing.participant.name}
