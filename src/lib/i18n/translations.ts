@@ -3045,6 +3045,22 @@ export const translations = {
     ar: "لا توجد إنجازات بعد",
     en: "No achievements yet",
   },
+  "player.goalDifference": {
+    ar: "فارق الأهداف",
+    en: "Goal Difference",
+  },
+  "player.totalTournaments": {
+    ar: "إجمالي البطولات",
+    en: "Total Tournaments",
+  },
+  "player.cardsRecord": {
+    ar: "سجل البطاقات",
+    en: "Cards Record",
+  },
+  "player.performance": {
+    ar: "الأداء",
+    en: "Performance",
+  },
   "player.viewTournament": {
     ar: "عرض البطولة",
     en: "View Tournament",
