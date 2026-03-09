@@ -166,28 +166,28 @@ export default function PlayerProfilePage({
             </div>
 
             {/* Player Info */}
-            <div className="flex-1 text-center sm:text-start text-white">
-              <h1 className="text-2xl sm:text-4xl font-bold drop-shadow-lg">
+            <div className="flex-1 text-center sm:text-start">
+              <h1 className="text-2xl sm:text-4xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]">
                 {displayName}
               </h1>
-              <div className="flex items-center justify-center sm:justify-start gap-2 mt-2 text-white/80">
+              <div className="flex items-center justify-center sm:justify-start gap-2 mt-2 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">
                 <Calendar className="w-4 h-4" />
-                <span className="text-sm">{t("player.joinedOn")} {joinDate}</span>
+                <span className="text-sm font-medium">{t("player.joinedOn")} {joinDate}</span>
               </div>
 
               {/* Hero Stats Row */}
               <div className="flex flex-wrap justify-center sm:justify-start gap-6 mt-5">
                 <div className="text-center">
-                  <div className="text-3xl sm:text-4xl font-black">{player.stats.matchesPlayed}</div>
-                  <div className="text-xs uppercase tracking-wider text-white/70">{t("player.matches")}</div>
+                  <div className="text-3xl sm:text-4xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{player.stats.matchesPlayed}</div>
+                  <div className="text-xs uppercase tracking-wider text-white/90 font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">{t("player.matches")}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl sm:text-4xl font-black text-green-300">{player.stats.wins}</div>
-                  <div className="text-xs uppercase tracking-wider text-white/70">{t("player.wins")}</div>
+                  <div className="text-3xl sm:text-4xl font-black text-green-300 drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{player.stats.wins}</div>
+                  <div className="text-xs uppercase tracking-wider text-white/90 font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">{t("player.wins")}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl sm:text-4xl font-black">{player.placements.podiumFinishes}</div>
-                  <div className="text-xs uppercase tracking-wider text-white/70">🏆 {t("player.achievements")}</div>
+                  <div className="text-3xl sm:text-4xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{player.placements.podiumFinishes}</div>
+                  <div className="text-xs uppercase tracking-wider text-white/90 font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">🏆 {t("player.achievements")}</div>
                 </div>
               </div>
             </div>
