@@ -18,6 +18,192 @@
 			"type": "shell",
 			"command": "git add -A && git commit -m 'fix: improve standings table alignment for RTL/LTR and mobile' && git push origin main",
 			"isBackground": false
+		},
+		{
+			"label": "Git Status",
+			"type": "shell",
+			"command": "git status && git log --oneline -3",
+			"isBackground": false
+		},
+		{
+			"label": "Commit and Push",
+			"type": "shell",
+			"command": "git add src/components/StandingsContent.tsx src/lib/data.ts src/components/MatchScoreEditor.tsx src/components/AdminTournamentDashContent.tsx src/components/AdminTournamentsContent.tsx src/lib/i18n/translations.ts && git commit -m 'fix: improve standings table alignment and fix lint warnings' && git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "Check Git Log",
+			"type": "shell",
+			"command": "git log --oneline -5",
+			"isBackground": false
+		},
+		{
+			"label": "Git Short Status",
+			"type": "shell",
+			"command": "git status --short",
+			"isBackground": false
+		},
+		{
+			"label": "Show Modified Files",
+			"type": "shell",
+			"command": "git diff --name-only",
+			"isBackground": false
+		},
+		{
+			"label": "Show All Changes",
+			"type": "shell",
+			"command": "git diff --name-only HEAD",
+			"isBackground": false
+		},
+		{
+			"label": "Push Changes",
+			"type": "shell",
+			"command": "git add src/ && git commit -m 'fix: improve standings table alignment for RTL/LTR and mobile' && git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "Check Result",
+			"type": "shell",
+			"command": "sleep 5 && git log --oneline -3",
+			"isBackground": false
+		},
+		{
+			"label": "Run Lint",
+			"type": "shell",
+			"command": "pnpm lint",
+			"isBackground": false
+		},
+		{
+			"label": "Force Push",
+			"type": "shell",
+			"command": "git add src/ && git commit --no-verify -m 'fix: improve standings table alignment for RTL/LTR and mobile' && git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "Verify Push",
+			"type": "shell",
+			"command": "git log --oneline -3",
+			"isBackground": false
+		},
+		{
+			"label": "Build Project",
+			"type": "shell",
+			"command": "pnpm build",
+			"isBackground": false
+		},
+		{
+			"label": "Clean Build",
+			"type": "shell",
+			"command": "rm -rf .next && pnpm build 2>&1 | tail -40",
+			"isBackground": false
+		},
+		{
+			"label": "Full Build Output",
+			"type": "shell",
+			"command": "pnpm build 2>&1",
+			"isBackground": false
+		},
+		{
+			"label": "Check Modules",
+			"type": "shell",
+			"command": "ls -la node_modules/@supabase 2>&1 | head -10",
+			"isBackground": false
+		},
+		{
+			"label": "Reinstall and Build",
+			"type": "shell",
+			"command": "pnpm install && pnpm build 2>&1 | tail -30",
+			"isBackground": false
+		},
+		{
+			"label": "Build After Install",
+			"type": "shell",
+			"command": "pnpm build",
+			"isBackground": false
+		},
+		{
+			"label": "Deploy Changes",
+			"type": "shell",
+			"command": "git add src/ && git commit --no-verify -m 'feat: group tournaments by status on home page (running/upcoming/finished)' && git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "Check Git Status",
+			"type": "shell",
+			"command": "git status && echo '---' && git diff --name-only HEAD~1",
+			"isBackground": false
+		},
+		{
+			"label": "Check Changes",
+			"type": "shell",
+			"command": "git diff --name-only HEAD~2 HEAD && echo '--- Uncommitted changes: ---' && git diff --name-only",
+			"isBackground": false
+		},
+		{
+			"label": "Recent Commits",
+			"type": "shell",
+			"command": "git log --oneline -5 && echo '---' && git show --name-only --oneline HEAD",
+			"isBackground": false
+		},
+		{
+			"label": "Check Standings Commit",
+			"type": "shell",
+			"command": "git show --name-only --oneline 1472308",
+			"isBackground": false
+		},
+		{
+			"label": "Check Source Files",
+			"type": "shell",
+			"command": "git show --name-only 1472308 | grep -E '\\.(tsx|ts)$'",
+			"isBackground": false
+		},
+		{
+			"label": "Check Missing Files",
+			"type": "shell",
+			"command": "git diff --name-only HEAD -- src/lib/data.ts src/components/MatchScoreEditor.tsx src/components/AdminTournamentDashContent.tsx src/components/AdminTournamentsContent.tsx",
+			"isBackground": false
+		},
+		{
+			"label": "Check AdminTournaments History",
+			"type": "shell",
+			"command": "git log --all --oneline -- src/components/AdminTournamentsContent.tsx | head -5",
+			"isBackground": false
+		},
+		{
+			"label": "Check AdminTournaments Diff",
+			"type": "shell",
+			"command": "git diff HEAD -- src/components/AdminTournamentsContent.tsx | head -20",
+			"isBackground": false
+		},
+		{
+			"label": "Check Commit Content",
+			"type": "shell",
+			"command": "git show d9c454b:src/components/AdminTournamentsContent.tsx | head -30",
+			"isBackground": false
+		},
+		{
+			"label": "Check Remote Content",
+			"type": "shell",
+			"command": "git show origin/main:src/components/AdminTournamentsContent.tsx | grep -A5 'sectionRunning\\|Running Tournaments' | head -15",
+			"isBackground": false
+		},
+		{
+			"label": "Check Translations",
+			"type": "shell",
+			"command": "git show origin/main:src/lib/i18n/translations.ts | grep -A3 'sectionRunning\\|sectionUpcoming\\|sectionFinished' | head -20",
+			"isBackground": false
+		},
+		{
+			"label": "Check Tasks File",
+			"type": "shell",
+			"command": "git status .vscode/tasks.json && git diff .vscode/tasks.json | head -30",
+			"isBackground": false
+		},
+		{
+			"label": "Commit Tasks",
+			"type": "shell",
+			"command": "git add .vscode/tasks.json && git commit -m 'chore: update VS Code tasks configuration' && git push origin main",
+			"isBackground": false
 		}
 	]
 }
