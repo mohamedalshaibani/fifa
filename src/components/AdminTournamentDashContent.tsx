@@ -140,7 +140,6 @@ function KnockoutMatchesDisplay({
                     onUpdateScore={updateMatchScore}
                     homeMembers={homeTeamMembers}
                     awayMembers={awayTeamMembers}
-                    hideRound
                   />
                 );
               })}

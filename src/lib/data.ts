@@ -1196,10 +1196,10 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
     // OPTIMIZED: Fetch all data in parallel with single bulk queries
     const [
       { data: profiles, error: profilesError },
-      { data: allParticipants, error: participantsError },
-      { data: allTeamMembers, error: teamMembersError },
-      { data: allCompletedMatches, error: matchesError },
-      { data: allTournaments, error: tournamentsError }
+      { data: allParticipants },
+      { data: allTeamMembers },
+      { data: allCompletedMatches },
+      { data: allTournaments }
     ] = await Promise.all([
       supabase.from("user_profiles").select("id, first_name, last_name, avatar_url"),
       supabase.from("participants").select("id, user_id, tournament_id, team_id"),
@@ -1373,7 +1373,6 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
       const tInfo = tournamentInfo.get(tournamentId);
       if (!tInfo || tInfo.status !== "finished") return -1;
       
-      const isTeamBased = tInfo.playersPerTeam > 1;
       const isKnockout = tInfo.type === "knockout";
       
       if (isKnockout) {
@@ -1428,8 +1427,6 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
       let losses = 0;
       let goalsScored = 0;
       let goalsConceded = 0;
-      let yellowCards = 0;
-      let redCards = 0;
       const processedMatchIds = new Set<string>();
       
       // Process matches in memory
@@ -1455,16 +1452,12 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
           if (isHomeTeam) {
             goalsScored += homeScore;
             goalsConceded += awayScore;
-            yellowCards += match.home_yellow_cards ?? 0;
-            redCards += match.home_red_cards ?? 0;
             if (homeScore > awayScore) wins++;
             else if (homeScore < awayScore) losses++;
             else draws++;
           } else {
             goalsScored += awayScore;
             goalsConceded += homeScore;
-            yellowCards += match.away_yellow_cards ?? 0;
-            redCards += match.away_red_cards ?? 0;
             if (awayScore > homeScore) wins++;
             else if (awayScore < homeScore) losses++;
             else draws++;
@@ -1484,16 +1477,12 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
           if (isHome) {
             goalsScored += homeScore;
             goalsConceded += awayScore;
-            yellowCards += match.home_yellow_cards ?? 0;
-            redCards += match.home_red_cards ?? 0;
             if (homeScore > awayScore) wins++;
             else if (homeScore < awayScore) losses++;
             else draws++;
           } else {
             goalsScored += awayScore;
             goalsConceded += homeScore;
-            yellowCards += match.away_yellow_cards ?? 0;
-            redCards += match.away_red_cards ?? 0;
             if (awayScore > homeScore) wins++;
             else if (awayScore < homeScore) losses++;
             else draws++;

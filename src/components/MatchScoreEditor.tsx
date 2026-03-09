@@ -23,8 +23,6 @@ interface MatchScoreEditorProps {
   homeMembers?: string[];
   /** Team members for away team (for 2v2 display) */
   awayMembers?: string[];
-  /** Hide the round label (used when grouping by knockout stages) */
-  hideRound?: boolean;
 }
 
 export default function MatchScoreEditor({
@@ -43,7 +41,6 @@ export default function MatchScoreEditor({
   onUpdateScore,
   homeMembers = [],
   awayMembers = [],
-  hideRound = false,
 }: MatchScoreEditorProps) {
   const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
