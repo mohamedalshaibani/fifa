@@ -5,7 +5,7 @@ import Container from "@/components/Container";
 import SportButton from "@/components/ui/SportButton";
 import SportCard from "@/components/ui/SportCard";
 import SportBadge from "@/components/ui/SportBadge";
-import { useLanguage } from "@/lib/i18n";
+import { useLanguage, TranslationKey } from "@/lib/i18n";
 import { Tournament } from "@/lib/types";
 import { Users, Trophy, Flame, Target, Award, Zap, CheckCircle, Calendar, BarChart3, Swords, TrendingUp, Minus, X as XIcon, CircleDot, Medal, Crown, Star, Lock } from "lucide-react";
 
@@ -32,6 +32,118 @@ interface PlacementStats {
   thirdPlaceFinishes: number;
   finalAppearances: number;
   podiumFinishes: number;
+}
+
+// Tournament Card Component for reuse
+interface TournamentCardProps {
+  tournament: Tournament;
+  participantCount: number;
+  isUserRegistered: boolean;
+  t: (key: TranslationKey) => string;
+}
+
+function TournamentCard({ tournament, participantCount, isUserRegistered, t }: TournamentCardProps) {
+  const isRegistrationOpen = tournament.status === "registration_open";
+  const isRunning = tournament.status === "running";
+
+  return (
+    <Link href={`/t/${tournament.slug}`} className="group">
+      <SportCard
+        padding="base"
+        hoverable
+        variant={isRunning ? "highlighted" : "default"}
+        className={`h-full flex flex-col relative ${isRegistrationOpen ? "animate-attention-shake" : ""}`}
+      >
+        <div className="space-y-4 flex-1 flex flex-col">
+          {/* Top badges bar */}
+          <div className="flex items-center justify-between gap-2">
+            <SportBadge 
+              variant={isRunning ? "primary" : isRegistrationOpen ? "warning" : "info"}
+              icon={isRunning ? <Zap className="w-3 h-3" /> : <Trophy className="w-3 h-3" />}
+            >
+              {tournament.status === "running" ? `🔴 ${t("home.statusRunning")}` : 
+               tournament.status === "registration_open" ? `🟡 ${t("home.statusRegOpen")}` : 
+               tournament.status === "registration_closed" ? `🟠 ${t("home.statusClosed")}` : `🟤 ${t("home.statusUpcoming")}`}
+            </SportBadge>
+          </div>
+
+          {/* Tournament Name */}
+          <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors">
+            {tournament.name}
+          </h3>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Participants */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
+              <Users className="w-4 h-4 text-primary flex-shrink-0" />
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs text-muted">{t("home.participantsLabel")}</span>
+                <span className="text-lg font-bold text-primary">{participantCount}</span>
+              </div>
+            </div>
+
+            {/* Format */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/10 border border-secondary/20">
+              <Trophy className="w-4 h-4 text-secondary flex-shrink-0" />
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs text-muted">{t("home.typeLabel")}</span>
+                <span className="text-lg font-bold text-secondary">
+                  {tournament.players_per_team === 1 ? "1v1" : "2v2"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Tournament Type Badge */}
+          <div className="flex items-center gap-2">
+            <SportBadge variant="info" icon={tournament.type === "league" ? "🏆" : "⚡"}>
+              {tournament.type === "league" ? t("tournament.league") : t("tournament.knockout")}
+            </SportBadge>
+          </div>
+
+          {/* CTA Button */}
+          <div className="pt-2 mt-auto">
+            {tournament.status === "registration_closed" ? (
+              <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-muted/10 border border-muted/30 text-muted font-bold text-sm">
+                <Lock className="w-4 h-4" />
+                {t("tournament.registrationClosed")}
+              </div>
+            ) : isUserRegistered ? (
+              <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-green-500/20 border border-green-500/40 text-green-500 font-bold text-sm">
+                <CheckCircle className="w-4 h-4" />
+                {t("home.youAreRegistered")} ✅
+              </div>
+            ) : isRegistrationOpen ? (
+              <SportButton variant="primary" size="sm" fullWidth className="font-bold">
+                <Zap className="w-4 h-4" />
+                {t("home.registerNow")}
+              </SportButton>
+            ) : isRunning ? (
+              <SportButton variant="secondary" size="sm" fullWidth className="font-bold">
+                <Flame className="w-4 h-4" />
+                {t("home.watchNow")}
+              </SportButton>
+            ) : (
+              <SportButton variant="ghost" size="sm" fullWidth className="font-bold">
+                <Award className="w-4 h-4" />
+                {t("home.viewDetails")}
+              </SportButton>
+            )}
+          </div>
+        </div>
+
+        {/* Closing Soon Badge */}
+        {isRegistrationOpen && participantCount >= 12 && (
+          <div className="absolute top-2 end-2 z-20">
+            <div className="px-3 py-1 rounded-full bg-gradient-to-r from-secondary to-danger text-white text-xs font-extrabold shadow-lg animate-pulse">
+              🔥 {t("home.closingSoon")}
+            </div>
+          </div>
+        )}
+      </SportCard>
+    </Link>
+  );
 }
 
 interface HomePageContentProps {
@@ -292,173 +404,97 @@ export function HomePageContent({
           </div>
         )}
 
-        {/* Active/Current Tournaments Section */}
+        {/* Tournaments Sections - Grouped by Status */}
         {hasTournaments && (
           <div className="space-y-12 pb-16">
-            {/* Active Tournaments */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Flame className="w-5 h-5 text-primary" />
-                </div>
+            {/* Running Tournaments Section */}
+            {(() => {
+              const runningTournaments = activeTournaments.filter(
+                ({ tournament }) => tournament.status === "running"
+              );
+              
+              return runningTournaments.length > 0 ? (
                 <div>
-                  <h2 className="text-xl font-bold text-foreground">{t("home.currentTournaments")}</h2>
-                  <p className="text-sm text-muted">{t("home.currentTournamentsSubtitle")}</p>
-                </div>
-              </div>
-
-              {activeTournaments.length === 0 ? (
-                <SportCard padding="base" variant="default" className="text-center">
-                  <div className="py-6 space-y-2">
-                    <div className="text-4xl">🎯</div>
-                    <p className="text-muted font-medium">{t("home.noActiveTournaments")}</p>
-                    <p className="text-sm text-muted">{t("home.stayTuned")}</p>
+                  <div className="flex items-center gap-3 mb-6 pb-3 border-b-2 border-accent/30">
+                    <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                      <Flame className="w-5 h-5 text-accent" />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="text-xl font-bold text-accent">{t("home.runningTournaments")}</h2>
+                      <p className="text-sm text-muted">{t("home.runningTournamentsSubtitle")}</p>
+                    </div>
+                    <SportBadge variant="primary" className="text-sm font-bold">
+                      {runningTournaments.length}
+                    </SportBadge>
                   </div>
-                </SportCard>
-              ) : (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {activeTournaments.map(({ tournament, participantCount, isUserRegistered }) => {
-                    const isRegistrationOpen = tournament.status === "registration_open";
-                    const isRunning = tournament.status === "running";
 
-                    return (
-                      <Link
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {runningTournaments.map(({ tournament, participantCount, isUserRegistered }) => (
+                      <TournamentCard
                         key={tournament.id}
-                        href={`/t/${tournament.slug}`}
-                        className="group"
-                      >
-                        <SportCard
-                          padding="base"
-                          hoverable
-                          variant={isRunning ? "highlighted" : "default"}
-                          className={`h-full flex flex-col relative ${isRegistrationOpen ? "animate-attention-shake" : ""}`}
-                        >
-                          <div className="space-y-4 flex-1 flex flex-col">
-                            {/* Top badges bar */}
-                            <div className="flex items-center justify-between gap-2">
-                              <SportBadge 
-                                variant={isRunning ? "primary" : isRegistrationOpen ? "warning" : "info"}
-                                icon={isRunning ? <Zap className="w-3 h-3" /> : <Trophy className="w-3 h-3" />}
-                              >
-                                {tournament.status === "running" ? `🔴 ${t("home.statusRunning")}` : 
-                                 tournament.status === "registration_open" ? `🟡 ${t("home.statusRegOpen")}` : 
-                                 tournament.status === "registration_closed" ? `🟠 ${t("home.statusClosed")}` : `🟤 ${t("home.statusUpcoming")}`}
-                              </SportBadge>
-                            </div>
-
-                            {/* Tournament Name */}
-                            <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors">
-                              {tournament.name}
-                            </h3>
-
-                            {/* Stats Grid */}
-                            <div className="grid grid-cols-2 gap-3">
-                              {/* Participants */}
-                              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/20">
-                                <Users className="w-4 h-4 text-primary flex-shrink-0" />
-                                <div className="flex flex-col min-w-0">
-                                  <span className="text-xs text-muted">{t("home.participantsLabel")}</span>
-                                  <span className="text-lg font-bold text-primary">{participantCount}</span>
-                                </div>
-                              </div>
-
-                              {/* Format */}
-                              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/10 border border-secondary/20">
-                                <Trophy className="w-4 h-4 text-secondary flex-shrink-0" />
-                                <div className="flex flex-col min-w-0">
-                                  <span className="text-xs text-muted">{t("home.typeLabel")}</span>
-                                  <span className="text-lg font-bold text-secondary">
-                                    {tournament.players_per_team === 1 ? "1v1" : "2v2"}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Tournament Type Badge */}
-                            <div className="flex items-center gap-2">
-                              <SportBadge variant="info" icon={tournament.type === "league" ? "🏆" : "⚡"}>
-                                {tournament.type === "league" ? t("tournament.league") : t("tournament.knockout")}
-                              </SportBadge>
-                            </div>
-
-                            {/* CTA Button */}
-                            <div className="pt-2 mt-auto">
-                              {tournament.status === "registration_closed" ? (
-                                /* Registration closed: show indicator */
-                                <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-muted/10 border border-muted/30 text-muted font-bold text-sm">
-                                  <Lock className="w-4 h-4" />
-                                  {t("tournament.registrationClosed")}
-                                </div>
-                              ) : isUserRegistered ? (
-                                <div className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-green-500/20 border border-green-500/40 text-green-500 font-bold text-sm">
-                                  <CheckCircle className="w-4 h-4" />
-                                  {t("home.youAreRegistered")} ✅
-                                </div>
-                              ) : isRegistrationOpen ? (
-                                <SportButton variant="primary" size="sm" fullWidth className="font-bold">
-                                  <Zap className="w-4 h-4" />
-                                  {t("home.registerNow")}
-                                </SportButton>
-                              ) : isRunning ? (
-                                <SportButton
-                                  variant="secondary"
-                                  size="sm"
-                                  fullWidth
-                                  className="font-bold"
-                                >
-                                  <Flame className="w-4 h-4" />
-                                  {t("home.watchNow")}
-                                </SportButton>
-                              ) : (
-                                <SportButton
-                                  variant="ghost"
-                                  size="sm"
-                                  fullWidth
-                                  className="font-bold"
-                                >
-                                  <Award className="w-4 h-4" />
-                                  {t("home.viewDetails")}
-                                </SportButton>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Closing Soon Badge */}
-                          {isRegistrationOpen && participantCount >= 12 && (
-                            <div className="absolute top-2 right-2 z-20">
-                              <div className="px-3 py-1 rounded-full bg-gradient-to-r from-secondary to-danger text-white text-xs font-extrabold shadow-lg animate-pulse">
-                                🔥 {t("home.closingSoon")}
-                              </div>
-                            </div>
-                          )}
-                        </SportCard>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* Finished Tournaments */}
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center">
-                  <Trophy className="w-5 h-5 text-gold" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-foreground">{t("home.previousTournaments")}</h2>
-                  <p className="text-sm text-muted">{t("home.previousTournamentsSubtitle")}</p>
-                </div>
-              </div>
-
-              {finishedTournaments.length === 0 ? (
-                <SportCard padding="base" variant="default" className="text-center">
-                  <div className="py-6 space-y-2">
-                    <div className="text-4xl">📋</div>
-                    <p className="text-muted font-medium">{t("home.noFinishedTournaments")}</p>
+                        tournament={tournament}
+                        participantCount={participantCount}
+                        isUserRegistered={isUserRegistered}
+                        t={t}
+                      />
+                    ))}
                   </div>
-                </SportCard>
-              ) : (
+                </div>
+              ) : null;
+            })()}
+
+            {/* Upcoming Tournaments Section */}
+            {(() => {
+              const upcomingTournaments = activeTournaments.filter(
+                ({ tournament }) => tournament.status !== "running"
+              );
+              
+              return upcomingTournaments.length > 0 ? (
+                <div>
+                  <div className="flex items-center gap-3 mb-6 pb-3 border-b-2 border-secondary/30">
+                    <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-secondary" />
+                    </div>
+                    <div className="flex-1">
+                      <h2 className="text-xl font-bold text-secondary">{t("home.upcomingTournaments")}</h2>
+                      <p className="text-sm text-muted">{t("home.upcomingTournamentsSubtitle")}</p>
+                    </div>
+                    <SportBadge variant="warning" className="text-sm font-bold">
+                      {upcomingTournaments.length}
+                    </SportBadge>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {upcomingTournaments.map(({ tournament, participantCount, isUserRegistered }) => (
+                      <TournamentCard
+                        key={tournament.id}
+                        tournament={tournament}
+                        participantCount={participantCount}
+                        isUserRegistered={isUserRegistered}
+                        t={t}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : null;
+            })()}
+
+            {/* Finished Tournaments Section */}
+            {finishedTournaments.length > 0 && (
+              <div>
+                <div className="flex items-center gap-3 mb-6 pb-3 border-b-2 border-muted/30">
+                  <div className="w-10 h-10 rounded-xl bg-muted/20 flex items-center justify-center">
+                    <Trophy className="w-5 h-5 text-muted" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold text-muted">{t("home.finishedTournaments")}</h2>
+                    <p className="text-sm text-muted">{t("home.finishedTournamentsSubtitle")}</p>
+                  </div>
+                  <SportBadge variant="info" className="text-sm font-bold">
+                    {finishedTournaments.length}
+                  </SportBadge>
+                </div>
+
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {finishedTournaments.map(({ tournament, participantCount, matches }) => {
                     const completedMatches = matches.filter((m) => m.status === "completed").length;
@@ -482,7 +518,7 @@ export function HomePageContent({
                             {/* Finished Badge */}
                             <div className="flex items-center justify-between gap-2">
                               <SportBadge variant="danger" icon={<CheckCircle className="w-3 h-3" />}>
-                                🔴 {t("home.statusFinished")}
+                                🏁 {t("home.statusFinished")}
                               </SportBadge>
                               <SportBadge variant="info" icon={tournament.type === "league" ? "🏆" : "⚡"}>
                                 {tournament.type === "league" ? t("tournament.league") : t("tournament.knockout")}
@@ -531,8 +567,8 @@ export function HomePageContent({
                     );
                   })}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         )}
 

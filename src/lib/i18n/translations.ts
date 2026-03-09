@@ -197,6 +197,30 @@ export const translations = {
     ar: "منصة التتويج",
     en: "Podium Finish",
   },
+  "home.runningTournaments": {
+    ar: "🏃 البطولات الجارية",
+    en: "🏃 Running Tournaments",
+  },
+  "home.runningTournamentsSubtitle": {
+    ar: "بطولات قيد التنفيذ الآن",
+    en: "Tournaments in progress now",
+  },
+  "home.upcomingTournaments": {
+    ar: "📅 البطولات القادمة",
+    en: "📅 Upcoming Tournaments",
+  },
+  "home.upcomingTournamentsSubtitle": {
+    ar: "بطولات مفتوحة للتسجيل أو قادمة",
+    en: "Open for registration or coming soon",
+  },
+  "home.finishedTournaments": {
+    ar: "🏁 البطولات المنتهية",
+    en: "🏁 Finished Tournaments",
+  },
+  "home.finishedTournamentsSubtitle": {
+    ar: "سجل البطولات السابقة",
+    en: "History of past tournaments",
+  },
   "home.currentTournaments": {
     ar: "البطولات الحالية",
     en: "Current Tournaments",
