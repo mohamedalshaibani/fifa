@@ -62,18 +62,20 @@ export function StandingsContent({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-white/70 border-b border-slate-200">
-                    <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-wider text-primary">#</th>
-                    <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-wider text-primary">
+                    <th className="px-2 sm:px-4 py-4 text-right text-xs font-black uppercase tracking-wider text-primary">#</th>
+                    <th className="px-2 sm:px-4 py-4 text-right text-xs font-black uppercase tracking-wider text-primary">
                       {isTeamBased ? t("standingsPage.team").toUpperCase() : t("standingsPage.player").toUpperCase()}
                     </th>
-                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">P</th>
-                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">W</th>
-                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">D</th>
-                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">L</th>
-                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">GF</th>
-                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">GA</th>
-                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">GD</th>
-                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">PTS</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">P</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">W</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden sm:table-cell">D</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden sm:table-cell">L</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden md:table-cell">GF</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden md:table-cell">GA</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">GD</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden lg:table-cell">{t("standingsPage.yellowCards")}</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden lg:table-cell">{t("standingsPage.redCards")}</th>
+                    <th className="px-2 sm:px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">PTS</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -121,31 +123,37 @@ export function StandingsContent({
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center">
                             <span className="font-black text-foreground text-lg">{standing.played}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center">
                             <span className="font-black text-primary text-lg">{standing.wins}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center hidden sm:table-cell">
                             <span className="font-bold text-muted text-lg">{standing.draws}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center hidden sm:table-cell">
                             <span className="font-black text-muted text-lg">{standing.losses}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center hidden md:table-cell">
                             <span className="font-bold text-foreground text-lg">{standing.goalsFor}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center hidden md:table-cell">
                             <span className="font-bold text-muted text-lg">{standing.goalsAgainst}</span>
                           </td>
-                          <td className={`px-4 py-4 text-center font-black text-lg ${
+                          <td className={`px-2 sm:px-4 py-4 text-center font-black text-lg ${
                             standing.goalDiff > 0 ? 'text-primary' : standing.goalDiff < 0 ? 'text-muted' : 'text-muted'
                           }`}>
                             {standing.goalDiff >= 0 ? "+" : ""}{standing.goalDiff}
                           </td>
-                          <td className="px-4 py-4 text-center">
-                            <div className={`inline-flex items-center justify-center w-14 h-14 rounded-lg font-black text-xl border-2 ${
+                          <td className="px-2 sm:px-4 py-4 text-center hidden lg:table-cell">
+                            <span className="font-bold text-yellow-600 text-lg">{standing.yellowCards}</span>
+                          </td>
+                          <td className="px-2 sm:px-4 py-4 text-center hidden lg:table-cell">
+                            <span className="font-bold text-red-600 text-lg">{standing.redCards}</span>
+                          </td>
+                          <td className="px-2 sm:px-4 py-4 text-center">
+                            <div className={`inline-flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 rounded-lg font-black text-lg sm:text-xl border-2 ${
                               isChampion 
                                 ? 'bg-primary/15 text-foreground border-primary/30 shadow-lg animate-pulse' 
                                 : 'bg-white/70 text-primary border-primary/30'
@@ -183,36 +191,42 @@ export function StandingsContent({
                               </span>
                             </div>
                           </td>
-                          <td className="px-4 py-4 text-right">
-                            <span className={`font-black text-lg ${isChampion ? 'text-primary animate-pulse' : 'text-foreground'}`}>
+                          <td className="px-2 sm:px-4 py-4 text-right">
+                            <span className={`font-black text-base sm:text-lg ${isChampion ? 'text-primary animate-pulse' : 'text-foreground'}`}>
                               {standing.participant.name}
                             </span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center">
                             <span className="font-black text-foreground text-lg">{standing.played}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center">
                             <span className="font-black text-primary text-lg">{standing.wins}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center hidden sm:table-cell">
                             <span className="font-bold text-muted text-lg">{standing.draws}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center hidden sm:table-cell">
                             <span className="font-black text-muted text-lg">{standing.losses}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center hidden md:table-cell">
                             <span className="font-bold text-foreground text-lg">{standing.goalsFor}</span>
                           </td>
-                          <td className="px-4 py-4 text-center">
+                          <td className="px-2 sm:px-4 py-4 text-center hidden md:table-cell">
                             <span className="font-bold text-muted text-lg">{standing.goalsAgainst}</span>
                           </td>
-                          <td className={`px-4 py-4 text-center font-black text-lg ${
+                          <td className={`px-2 sm:px-4 py-4 text-center font-black text-lg ${
                             standing.goalDiff > 0 ? 'text-primary' : standing.goalDiff < 0 ? 'text-muted' : 'text-muted'
                           }`}>
                             {standing.goalDiff >= 0 ? "+" : ""}{standing.goalDiff}
                           </td>
-                          <td className="px-4 py-4 text-center">
-                            <div className={`inline-flex items-center justify-center w-14 h-14 rounded-lg font-black text-xl border-2 ${
+                          <td className="px-2 sm:px-4 py-4 text-center hidden lg:table-cell">
+                            <span className="font-bold text-yellow-600 text-lg">{standing.yellowCards}</span>
+                          </td>
+                          <td className="px-2 sm:px-4 py-4 text-center hidden lg:table-cell">
+                            <span className="font-bold text-red-600 text-lg">{standing.redCards}</span>
+                          </td>
+                          <td className="px-2 sm:px-4 py-4 text-center">
+                            <div className={`inline-flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 rounded-lg font-black text-lg sm:text-xl border-2 ${
                               isChampion 
                                 ? 'bg-primary/15 text-foreground border-primary/30 shadow-lg animate-pulse' 
                                 : 'bg-white/70 text-primary border-primary/30'

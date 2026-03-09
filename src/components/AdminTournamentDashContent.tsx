@@ -544,6 +544,10 @@ export default function AdminTournamentDashContent({
                       awayName={match.away_name}
                       homeScore={match.home_score}
                       awayScore={match.away_score}
+                      homeYellowCards={match.home_yellow_cards ?? 0}
+                      homeRedCards={match.home_red_cards ?? 0}
+                      awayYellowCards={match.away_yellow_cards ?? 0}
+                      awayRedCards={match.away_red_cards ?? 0}
                       status={match.status}
                       onUpdateScore={updateMatchScore}
                       homeMembers={homeTeamMembers}

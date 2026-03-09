@@ -80,6 +80,11 @@ export type Match = {
   away_user_id: string | null; // Individual user for 1v1
   home_score: number | null;
   away_score: number | null;
+  // Disciplinary cards
+  home_yellow_cards: number;
+  home_red_cards: number;
+  away_yellow_cards: number;
+  away_red_cards: number;
   winner_participant_id: string | null;
   winner_team_id: string | null;
   winner_user_id: string | null; // Winner is always a user

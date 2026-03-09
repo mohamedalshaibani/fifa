@@ -1291,6 +1291,14 @@ export const translations = {
     ar: "اللاعب",
     en: "Player",
   },
+  "standingsPage.yellowCards": {
+    ar: "🟨",
+    en: "🟨",
+  },
+  "standingsPage.redCards": {
+    ar: "🟥",
+    en: "🟥",
+  },
 
   // ============ BRACKET PAGE ============
   "bracketPage.title": {
@@ -2310,6 +2318,22 @@ export const translations = {
   "matchEditor.saving": {
     ar: "جاري الحفظ...",
     en: "Saving...",
+  },
+  "matchEditor.disciplinaryCards": {
+    ar: "البطاقات التأديبية",
+    en: "Disciplinary Cards",
+  },
+  "matchEditor.yellowCards": {
+    ar: "بطاقات صفراء",
+    en: "Yellow Cards",
+  },
+  "matchEditor.redCards": {
+    ar: "بطاقات حمراء",
+    en: "Red Cards",
+  },
+  "matchEditor.cardsCannotBeNegative": {
+    ar: "عدد البطاقات لا يمكن أن يكون سالبًا",
+    en: "Card count cannot be negative",
   },
 
   // ============ EDIT TEAM NAME ============

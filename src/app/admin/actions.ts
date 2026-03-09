@@ -1205,6 +1205,12 @@ export async function updateMatchScore(formData: FormData) {
   const awayScore = Number(formData.get("awayScore"));
   const tournamentId = String(formData.get("tournamentId"));
   const round = Number(formData.get("round"));
+  
+  // Card data
+  const homeYellowCards = Number(formData.get("homeYellowCards")) || 0;
+  const homeRedCards = Number(formData.get("homeRedCards")) || 0;
+  const awayYellowCards = Number(formData.get("awayYellowCards")) || 0;
+  const awayRedCards = Number(formData.get("awayRedCards")) || 0;
 
   const supabase = createAdminClient();
 
@@ -1246,6 +1252,10 @@ export async function updateMatchScore(formData: FormData) {
     .update({
       home_score: Number.isNaN(homeScore) ? null : homeScore,
       away_score: Number.isNaN(awayScore) ? null : awayScore,
+      home_yellow_cards: homeYellowCards,
+      home_red_cards: homeRedCards,
+      away_yellow_cards: awayYellowCards,
+      away_red_cards: awayRedCards,
       status:
         Number.isNaN(homeScore) || Number.isNaN(awayScore)
           ? "scheduled"

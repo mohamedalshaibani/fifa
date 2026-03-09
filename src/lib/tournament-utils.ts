@@ -26,6 +26,8 @@ export type StandingRow = {
   goalsAgainst: number;
   goalDiff: number;
   points: number;
+  yellowCards: number;
+  redCards: number;
 };
 
 export function computeStandings(
@@ -45,6 +47,8 @@ export function computeStandings(
       goalsAgainst: 0,
       goalDiff: 0,
       points: 0,
+      yellowCards: 0,
+      redCards: 0,
     });
   }
 
@@ -70,6 +74,12 @@ export function computeStandings(
     away.goalsFor += match.away_score;
     away.goalsAgainst += match.home_score;
 
+    // Accumulate cards
+    home.yellowCards += match.home_yellow_cards ?? 0;
+    home.redCards += match.home_red_cards ?? 0;
+    away.yellowCards += match.away_yellow_cards ?? 0;
+    away.redCards += match.away_red_cards ?? 0;
+
     if (match.home_score > match.away_score) {
       home.wins += 1;
       home.points += 3;
@@ -90,10 +100,18 @@ export function computeStandings(
     row.goalDiff = row.goalsFor - row.goalsAgainst;
   }
 
+  // Tie-breaker order:
+  // 1. Points (desc)
+  // 2. Goal difference (desc)
+  // 3. Goals scored (desc)
+  // 4. Fewest red cards (asc)
+  // 5. Fewest yellow cards (asc)
   return Array.from(table.values()).sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points;
     if (b.goalDiff !== a.goalDiff) return b.goalDiff - a.goalDiff;
-    return b.goalsFor - a.goalsFor;
+    if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
+    if (a.redCards !== b.redCards) return a.redCards - b.redCards;
+    return a.yellowCards - b.yellowCards;
   });
 }
 
@@ -108,6 +126,8 @@ export type TeamStandingRow = {
   goalsAgainst: number;
   goalDiff: number;
   points: number;
+  yellowCards: number;
+  redCards: number;
 };
 
 export function computeTeamStandings(
@@ -127,6 +147,8 @@ export function computeTeamStandings(
       goalsAgainst: 0,
       goalDiff: 0,
       points: 0,
+      yellowCards: 0,
+      redCards: 0,
     });
   }
 
@@ -152,6 +174,12 @@ export function computeTeamStandings(
     away.goalsFor += match.away_score;
     away.goalsAgainst += match.home_score;
 
+    // Accumulate cards
+    home.yellowCards += match.home_yellow_cards ?? 0;
+    home.redCards += match.home_red_cards ?? 0;
+    away.yellowCards += match.away_yellow_cards ?? 0;
+    away.redCards += match.away_red_cards ?? 0;
+
     if (match.home_score > match.away_score) {
       home.wins += 1;
       home.points += 3;
@@ -172,10 +200,18 @@ export function computeTeamStandings(
     row.goalDiff = row.goalsFor - row.goalsAgainst;
   }
 
+  // Tie-breaker order:
+  // 1. Points (desc)
+  // 2. Goal difference (desc)
+  // 3. Goals scored (desc)
+  // 4. Fewest red cards (asc)
+  // 5. Fewest yellow cards (asc)
   return Array.from(table.values()).sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points;
     if (b.goalDiff !== a.goalDiff) return b.goalDiff - a.goalDiff;
-    return b.goalsFor - a.goalsFor;
+    if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
+    if (a.redCards !== b.redCards) return a.redCards - b.redCards;
+    return a.yellowCards - b.yellowCards;
   });
 }
 
