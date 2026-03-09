@@ -590,6 +590,8 @@ export interface ComputedUserStats {
   goalsScored: number;
   goalsConceded: number;
   winRate: number;
+  yellowCards: number;
+  redCards: number;
 }
 
 export interface TournamentActivity {
@@ -859,6 +861,8 @@ export async function computeUserStatsFromMatches(userId: string): Promise<Compu
     let losses = 0;
     let goalsScored = 0;
     let goalsConceded = 0;
+    let yellowCards = 0;
+    let redCards = 0;
 
     console.log("[computeUserStatsFromMatches] Fetching stats for user:", userId);
 
@@ -943,6 +947,15 @@ export async function computeUserStatsFromMatches(userId: string): Promise<Compu
             if (awayScore > homeScore) wins++;
             else losses++;
           }
+          
+          // Accumulate cards for individual matches
+          if (isHome) {
+            yellowCards += match.home_yellow_cards ?? 0;
+            redCards += match.home_red_cards ?? 0;
+          } else {
+            yellowCards += match.away_yellow_cards ?? 0;
+            redCards += match.away_red_cards ?? 0;
+          }
         }
       }
     }
@@ -986,18 +999,27 @@ export async function computeUserStatsFromMatches(userId: string): Promise<Compu
             if (awayScore > homeScore) wins++;
             else losses++;
           }
+          
+          // Accumulate cards for team matches (cards are shared by team)
+          if (isHomeTeam) {
+            yellowCards += match.home_yellow_cards ?? 0;
+            redCards += match.home_red_cards ?? 0;
+          } else {
+            yellowCards += match.away_yellow_cards ?? 0;
+            redCards += match.away_red_cards ?? 0;
+          }
         }
       }
     }
 
     const winRate = matchesPlayed > 0 ? Math.round((wins / matchesPlayed) * 100) : 0;
     
-    console.log("[computeUserStatsFromMatches] Final stats:", { matchesPlayed, wins, draws, losses, goalsScored, goalsConceded, winRate });
+    console.log("[computeUserStatsFromMatches] Final stats:", { matchesPlayed, wins, draws, losses, goalsScored, goalsConceded, winRate, yellowCards, redCards });
     
-    return { matchesPlayed, wins, draws, losses, goalsScored, goalsConceded, winRate };
+    return { matchesPlayed, wins, draws, losses, goalsScored, goalsConceded, winRate, yellowCards, redCards };
   } catch (err) {
     console.error("[computeUserStatsFromMatches] Exception:", err);
-    return { matchesPlayed: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, winRate: 0 };
+    return { matchesPlayed: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, winRate: 0, yellowCards: 0, redCards: 0 };
   }
 }
 
@@ -1171,40 +1193,363 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
   try {
     const supabase = createAdminClient();
     
-    // Get all user profiles
-    const { data: profiles, error: profilesError } = await supabase
-      .from("user_profiles")
-      .select("id, first_name, last_name, avatar_url");
+    // OPTIMIZED: Fetch all data in parallel with single bulk queries
+    const [
+      { data: profiles, error: profilesError },
+      { data: allParticipants, error: participantsError },
+      { data: allTeamMembers, error: teamMembersError },
+      { data: allCompletedMatches, error: matchesError },
+      { data: allTournaments, error: tournamentsError }
+    ] = await Promise.all([
+      supabase.from("user_profiles").select("id, first_name, last_name, avatar_url"),
+      supabase.from("participants").select("id, user_id, tournament_id, team_id"),
+      supabase.from("team_members").select("team_id, participant_id, user_id"),
+      supabase.from("matches").select("id, tournament_id, round, home_participant_id, away_participant_id, home_team_id, away_team_id, home_score, away_score, status, winner_participant_id, winner_team_id, winner_user_id, home_yellow_cards, home_red_cards, away_yellow_cards, away_red_cards").eq("status", "completed"),
+      supabase.from("tournaments").select("id, type, status, players_per_team")
+    ]);
     
     if (profilesError || !profiles) {
       console.error("[getLeaderboard] Error fetching profiles:", profilesError);
       return [];
     }
     
-    // For each user, compute their stats
+    // Build lookup maps for efficient processing
+    const participantsByUserId = new Map<string, Array<{ id: string; tournament_id: string }>>();
+    for (const p of allParticipants || []) {
+      if (p.user_id) {
+        if (!participantsByUserId.has(p.user_id)) {
+          participantsByUserId.set(p.user_id, []);
+        }
+        participantsByUserId.get(p.user_id)!.push({ id: p.id, tournament_id: p.tournament_id });
+      }
+    }
+    
+    // Build team membership maps
+    const teamIdsByUserId = new Map<string, Set<string>>();
+    const teamIdsByParticipantId = new Map<string, string>();
+    for (const tm of allTeamMembers || []) {
+      if (tm.user_id && tm.team_id) {
+        if (!teamIdsByUserId.has(tm.user_id)) {
+          teamIdsByUserId.set(tm.user_id, new Set());
+        }
+        teamIdsByUserId.get(tm.user_id)!.add(tm.team_id);
+      }
+      if (tm.participant_id && tm.team_id) {
+        teamIdsByParticipantId.set(tm.participant_id, tm.team_id);
+      }
+    }
+    
+    // Also add teams via participant mappings
+    for (const p of allParticipants || []) {
+      if (p.user_id) {
+        const teamId = teamIdsByParticipantId.get(p.id);
+        if (teamId) {
+          if (!teamIdsByUserId.has(p.user_id)) {
+            teamIdsByUserId.set(p.user_id, new Set());
+          }
+          teamIdsByUserId.get(p.user_id)!.add(teamId);
+        }
+      }
+    }
+    
+    // Build tournament info map
+    const tournamentInfo = new Map<string, { type: string | null; status: string; playersPerTeam: number }>();
+    for (const t of allTournaments || []) {
+      tournamentInfo.set(t.id, { 
+        type: t.type, 
+        status: t.status,
+        playersPerTeam: t.players_per_team ?? 1 
+      });
+    }
+    
+    // Group matches by tournament for standings calculation
+    type MatchData = NonNullable<typeof allCompletedMatches>[number];
+    const matchesByTournament = new Map<string, MatchData[]>();
+    for (const match of allCompletedMatches || []) {
+      if (!matchesByTournament.has(match.tournament_id)) {
+        matchesByTournament.set(match.tournament_id, []);
+      }
+      matchesByTournament.get(match.tournament_id)!.push(match);
+    }
+    
+    // Pre-calculate tournament standings for finished tournaments
+    const tournamentStandings = new Map<string, Array<{ entityId: string; points: number; goalDiff: number; participantId: string | null; teamId: string | null }>>();
+    const knockoutWinners = new Map<string, { first: string | null; second: string | null; thirdPlace: Set<string> }>();
+    
+    for (const [tournamentId, matches] of matchesByTournament) {
+      const tInfo = tournamentInfo.get(tournamentId);
+      if (!tInfo || tInfo.status !== "finished") continue;
+      
+      const isTeamBased = tInfo.playersPerTeam > 1;
+      const isKnockout = tInfo.type === "knockout";
+      
+      if (isKnockout) {
+        // For knockout: find final and semi-final results
+        const maxRound = Math.max(...matches.map(m => m.round));
+        const finalMatch = matches.find(m => m.round === maxRound);
+        
+        if (finalMatch) {
+          // Winner and runner-up from final
+          const winnerId = isTeamBased 
+            ? (finalMatch.winner_team_id || finalMatch.winner_participant_id)
+            : (finalMatch.winner_participant_id || finalMatch.winner_team_id);
+          
+          const homeId = isTeamBased ? finalMatch.home_team_id : finalMatch.home_participant_id;
+          const awayId = isTeamBased ? finalMatch.away_team_id : finalMatch.away_participant_id;
+          const loserId = winnerId === homeId ? awayId : homeId;
+          
+          // Third place from semi-finals
+          const semiFinalRound = maxRound - 1;
+          const semiFinals = matches.filter(m => m.round === semiFinalRound);
+          const thirdPlaceIds = new Set<string>();
+          
+          for (const semi of semiFinals) {
+            const semiWinnerId = isTeamBased 
+              ? (semi.winner_team_id || semi.winner_participant_id)
+              : (semi.winner_participant_id || semi.winner_team_id);
+            const semiHomeId = isTeamBased ? semi.home_team_id : semi.home_participant_id;
+            const semiAwayId = isTeamBased ? semi.away_team_id : semi.away_participant_id;
+            const semiLoserId = semiWinnerId === semiHomeId ? semiAwayId : semiHomeId;
+            if (semiLoserId) thirdPlaceIds.add(semiLoserId);
+          }
+          
+          knockoutWinners.set(tournamentId, {
+            first: winnerId || null,
+            second: loserId || null,
+            thirdPlace: thirdPlaceIds
+          });
+        }
+      } else {
+        // For league: calculate full standings
+        const standings = new Map<string, { points: number; goalDiff: number; participantId: string | null; teamId: string | null }>();
+        
+        for (const match of matches) {
+          const homeId = isTeamBased 
+            ? (match.home_team_id || match.home_participant_id)
+            : (match.home_participant_id || match.home_team_id);
+          const awayId = isTeamBased
+            ? (match.away_team_id || match.away_participant_id)
+            : (match.away_participant_id || match.away_team_id);
+          
+          if (!homeId || !awayId) continue;
+          
+          if (!standings.has(homeId)) {
+            standings.set(homeId, { points: 0, goalDiff: 0, participantId: match.home_participant_id, teamId: match.home_team_id });
+          }
+          if (!standings.has(awayId)) {
+            standings.set(awayId, { points: 0, goalDiff: 0, participantId: match.away_participant_id, teamId: match.away_team_id });
+          }
+          
+          const homeScore = match.home_score ?? 0;
+          const awayScore = match.away_score ?? 0;
+          
+          standings.get(homeId)!.goalDiff += homeScore - awayScore;
+          standings.get(awayId)!.goalDiff += awayScore - homeScore;
+          
+          if (homeScore > awayScore) {
+            standings.get(homeId)!.points += 3;
+          } else if (awayScore > homeScore) {
+            standings.get(awayId)!.points += 3;
+          } else {
+            standings.get(homeId)!.points += 1;
+            standings.get(awayId)!.points += 1;
+          }
+        }
+        
+        // Sort standings
+        const sorted = Array.from(standings.entries())
+          .map(([entityId, stats]) => ({ entityId, ...stats }))
+          .sort((a, b) => {
+            if (b.points !== a.points) return b.points - a.points;
+            return b.goalDiff - a.goalDiff;
+          });
+        
+        tournamentStandings.set(tournamentId, sorted);
+      }
+    }
+    
+    // Helper to find user's placement in a tournament
+    const getUserPlacement = (userId: string, participantIds: string[], teamIds: string[], tournamentId: string): number => {
+      const tInfo = tournamentInfo.get(tournamentId);
+      if (!tInfo || tInfo.status !== "finished") return -1;
+      
+      const isTeamBased = tInfo.playersPerTeam > 1;
+      const isKnockout = tInfo.type === "knockout";
+      
+      if (isKnockout) {
+        const results = knockoutWinners.get(tournamentId);
+        if (!results) return -1;
+        
+        // Check if user's entity won
+        for (const pId of participantIds) {
+          if (results.first === pId) return 1;
+          if (results.second === pId) return 2;
+          if (results.thirdPlace.has(pId)) return 3;
+        }
+        for (const tId of teamIds) {
+          if (results.first === tId) return 1;
+          if (results.second === tId) return 2;
+          if (results.thirdPlace.has(tId)) return 3;
+        }
+      } else {
+        const standings = tournamentStandings.get(tournamentId);
+        if (!standings) return -1;
+        
+        // Find user's position
+        for (let i = 0; i < standings.length && i < 3; i++) {
+          const entry = standings[i];
+          if (participantIds.includes(entry.entityId) || 
+              (entry.participantId && participantIds.includes(entry.participantId)) ||
+              teamIds.includes(entry.entityId) ||
+              (entry.teamId && teamIds.includes(entry.teamId))) {
+            return i + 1; // 1st, 2nd, or 3rd
+          }
+        }
+      }
+      
+      return -1; // Not in top 3
+    };
+    
+    // Process stats for each user in memory
     const entries: LeaderboardEntry[] = [];
     
     for (const profile of profiles) {
-      const stats = await computeUserStatsFromMatches(profile.id);
-      const placements = await getUserTournamentPlacementStats(profile.id);
+      const userId = profile.id;
+      const userParticipations = participantsByUserId.get(userId) || [];
+      const participantIds = userParticipations.map(p => p.id);
+      const teamIds = Array.from(teamIdsByUserId.get(userId) || []);
       
-      // Only include players who have played at least one match
-      if (stats.matchesPlayed === 0) continue;
+      // Skip users with no participation
+      if (participantIds.length === 0 && teamIds.length === 0) continue;
+      
+      let matchesPlayed = 0;
+      let wins = 0;
+      let draws = 0;
+      let losses = 0;
+      let goalsScored = 0;
+      let goalsConceded = 0;
+      let yellowCards = 0;
+      let redCards = 0;
+      const processedMatchIds = new Set<string>();
+      
+      // Process matches in memory
+      for (const match of allCompletedMatches || []) {
+        // Skip if already processed
+        if (processedMatchIds.has(match.id)) continue;
+        
+        // Check if this is a team match
+        const isTeamMatch = match.home_team_id || match.away_team_id;
+        
+        if (isTeamMatch) {
+          // Team match - check if user's team participated
+          const isHomeTeam = teamIds.includes(match.home_team_id);
+          const isAwayTeam = teamIds.includes(match.away_team_id);
+          if (!isHomeTeam && !isAwayTeam) continue;
+          
+          processedMatchIds.add(match.id);
+          matchesPlayed++;
+          
+          const homeScore = match.home_score ?? 0;
+          const awayScore = match.away_score ?? 0;
+          
+          if (isHomeTeam) {
+            goalsScored += homeScore;
+            goalsConceded += awayScore;
+            yellowCards += match.home_yellow_cards ?? 0;
+            redCards += match.home_red_cards ?? 0;
+            if (homeScore > awayScore) wins++;
+            else if (homeScore < awayScore) losses++;
+            else draws++;
+          } else {
+            goalsScored += awayScore;
+            goalsConceded += homeScore;
+            yellowCards += match.away_yellow_cards ?? 0;
+            redCards += match.away_red_cards ?? 0;
+            if (awayScore > homeScore) wins++;
+            else if (awayScore < homeScore) losses++;
+            else draws++;
+          }
+        } else {
+          // Individual match - check participant IDs
+          const isHome = participantIds.includes(match.home_participant_id);
+          const isAway = participantIds.includes(match.away_participant_id);
+          if (!isHome && !isAway) continue;
+          
+          processedMatchIds.add(match.id);
+          matchesPlayed++;
+          
+          const homeScore = match.home_score ?? 0;
+          const awayScore = match.away_score ?? 0;
+          
+          if (isHome) {
+            goalsScored += homeScore;
+            goalsConceded += awayScore;
+            yellowCards += match.home_yellow_cards ?? 0;
+            redCards += match.home_red_cards ?? 0;
+            if (homeScore > awayScore) wins++;
+            else if (homeScore < awayScore) losses++;
+            else draws++;
+          } else {
+            goalsScored += awayScore;
+            goalsConceded += homeScore;
+            yellowCards += match.away_yellow_cards ?? 0;
+            redCards += match.away_red_cards ?? 0;
+            if (awayScore > homeScore) wins++;
+            else if (awayScore < homeScore) losses++;
+            else draws++;
+          }
+        }
+      }
+      
+      // Skip users with no matches played
+      if (matchesPlayed === 0) continue;
+      
+      const winRate = Math.round((wins / matchesPlayed) * 100);
+      
+      // Calculate tournament achievements using pre-computed standings
+      let tournamentsWon = 0;
+      let podiumFinishes = 0;
+      
+      // Get unique tournament IDs for this user
+      const userTournamentIds = new Set<string>();
+      for (const p of userParticipations) {
+        userTournamentIds.add(p.tournament_id);
+      }
+      // Also add tournaments from team memberships
+      for (const tId of teamIds) {
+        // Find tournament for this team from participants
+        for (const p of allParticipants || []) {
+          if (p.team_id === tId) {
+            userTournamentIds.add(p.tournament_id);
+          }
+        }
+      }
+      
+      // Check placement in each finished tournament
+      for (const tournamentId of userTournamentIds) {
+        const placement = getUserPlacement(userId, participantIds, teamIds, tournamentId);
+        if (placement === 1) {
+          tournamentsWon++;
+          podiumFinishes++;
+        } else if (placement === 2 || placement === 3) {
+          podiumFinishes++;
+        }
+      }
       
       entries.push({
-        rank: 0, // Will be set after sorting
+        rank: 0,
         userId: profile.id,
         name: `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "لاعب",
         avatarUrl: profile.avatar_url || null,
-        matchesPlayed: stats.matchesPlayed,
-        wins: stats.wins,
-        losses: stats.losses,
-        draws: stats.draws,
-        winRate: stats.winRate,
-        goalsScored: stats.goalsScored,
-        goalsConceded: stats.goalsConceded,
-        tournamentsWon: placements.firstPlaceFinishes,
-        podiumFinishes: placements.podiumFinishes,
+        matchesPlayed,
+        wins,
+        losses,
+        draws,
+        winRate,
+        goalsScored,
+        goalsConceded,
+        tournamentsWon,
+        podiumFinishes,
       });
     }
     

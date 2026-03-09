@@ -1778,6 +1778,74 @@ export const translations = {
     en: "Change to League",
   },
 
+  // ============ GUIDED WORKFLOW ============
+  "admin.workflow.registrationClosed": {
+    ar: "تم إغلاق التسجيل بنجاح!",
+    en: "Registration Closed Successfully!",
+  },
+  "admin.workflow.drawTeamsPrompt": {
+    ar: "هل تريد إجراء قرعة الفرق الآن؟",
+    en: "Do you want to draw teams now?",
+  },
+  "admin.workflow.drawTeamsButton": {
+    ar: "سحب الفرق",
+    en: "Draw Teams",
+  },
+  "admin.workflow.readyToGenerate": {
+    ar: "جاهز لإنشاء المباريات!",
+    en: "Ready to Generate Matches!",
+  },
+  "admin.workflow.generateMatchesPrompt": {
+    ar: "هل تريد إنشاء جدول المباريات الآن؟",
+    en: "Do you want to generate the match schedule now?",
+  },
+  "admin.workflow.generateMatchesButton": {
+    ar: "إنشاء المباريات",
+    en: "Generate Matches",
+  },
+  "admin.workflow.matchesGenerated": {
+    ar: "تم إنشاء المباريات بنجاح!",
+    en: "Matches Generated Successfully!",
+  },
+  "admin.workflow.startTournamentPrompt": {
+    ar: "هل تريد بدء البطولة الآن؟",
+    en: "Do you want to start the tournament now?",
+  },
+  "admin.workflow.startTournamentButton": {
+    ar: "بدء البطولة",
+    en: "Start Tournament",
+  },
+  "admin.workflow.later": {
+    ar: "لاحقاً",
+    en: "Later",
+  },
+
+  // ============ KNOCKOUT STAGES ============
+  "knockout.final": {
+    ar: "النهائي",
+    en: "Final",
+  },
+  "knockout.semiFinal": {
+    ar: "نصف النهائي",
+    en: "Semi-Final",
+  },
+  "knockout.quarterFinal": {
+    ar: "ربع النهائي",
+    en: "Quarter-Final",
+  },
+  "knockout.roundOf16": {
+    ar: "دور الـ16",
+    en: "Round of 16",
+  },
+  "knockout.roundOf32": {
+    ar: "دور الـ32",
+    en: "Round of 32",
+  },
+  "knockout.round": {
+    ar: "الجولة",
+    en: "Round",
+  },
+
   // ============ TOURNAMENT STATUS ============
   "admin.status.pending": {
     ar: "قيد الانتظار",
@@ -2282,6 +2350,14 @@ export const translations = {
   "matchEditor.edit": {
     ar: "تعديل",
     en: "Edit",
+  },
+  "matchEditor.add": {
+    ar: "إضافة",
+    en: "Add",
+  },
+  "matchEditor.addResult": {
+    ar: "إضافة نتيجة",
+    en: "Add Result",
   },
   "matchEditor.save": {
     ar: "حفظ",
@@ -2888,6 +2964,18 @@ export const translations = {
   "player.goalsConceded": {
     ar: "أهداف استقبلها",
     en: "Goals Conceded",
+  },
+  "player.yellowCards": {
+    ar: "بطاقات صفراء",
+    en: "Yellow Cards",
+  },
+  "player.redCards": {
+    ar: "بطاقات حمراء",
+    en: "Red Cards",
+  },
+  "player.disciplinaryRecord": {
+    ar: "السجل التأديبي",
+    en: "Disciplinary Record",
   },
   "player.tournamentHistory": {
     ar: "سجل البطولات",

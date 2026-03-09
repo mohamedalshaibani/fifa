@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import Container from "@/components/Container";
 import AdminLayout from "@/components/AdminLayout";
 import SportCard from "@/components/ui/SportCard";
@@ -10,7 +11,8 @@ import ResetToStage from "@/components/ResetToStage";
 import { EditTeamNameButton } from "@/components/EditTeamNameButton";
 import MatchScoreEditor from "@/components/MatchScoreEditor";
 import BackLink from "@/components/BackLink";
-import { useLanguage } from "@/lib/i18n";
+import ConfirmationDialog from "@/components/ConfirmationDialog";
+import { useLanguage, type TranslationKey } from "@/lib/i18n";
 import { 
   Users, 
   Calendar, 
@@ -28,6 +30,127 @@ import type { Tournament, Participant, Match, Team, TeamMember } from "@/lib/typ
 
 // Extended Match type with computed names
 type MatchWithNames = Match & { home_name: string | null; away_name: string | null };
+
+// Type for the translation function
+type TFunction = (key: TranslationKey) => string;
+
+// Helper to get knockout stage name based on round number and total rounds
+function getKnockoutStageName(
+  round: number, 
+  maxRound: number, 
+  t: TFunction
+): string {
+  const roundsFromFinal = maxRound - round;
+  
+  if (roundsFromFinal === 0) return t("knockout.final");
+  if (roundsFromFinal === 1) return t("knockout.semiFinal");
+  if (roundsFromFinal === 2) return t("knockout.quarterFinal");
+  if (roundsFromFinal === 3) return t("knockout.roundOf16");
+  if (roundsFromFinal === 4) return t("knockout.roundOf32");
+  
+  return `${t("knockout.round")} ${round}`;
+}
+
+// Knockout matches display component with stage grouping
+function KnockoutMatchesDisplay({
+  matches,
+  teamMembersMap,
+  isTeamTournament,
+  tournamentId,
+  updateMatchScore,
+  t,
+}: {
+  matches: MatchWithNames[];
+  teamMembersMap: Map<string, { participantId: string; participantName: string }[]>;
+  isTeamTournament: boolean;
+  tournamentId: string;
+  updateMatchScore: (formData: FormData) => Promise<void>;
+  t: TFunction;
+}) {
+  // Group matches by round
+  const matchesByRound = new Map<number, MatchWithNames[]>();
+  let maxRound = 0;
+  
+  for (const match of matches) {
+    const round = match.round ?? 1;
+    if (round > maxRound) maxRound = round;
+    if (!matchesByRound.has(round)) {
+      matchesByRound.set(round, []);
+    }
+    matchesByRound.get(round)!.push(match);
+  }
+  
+  // Sort rounds in reverse order (final first)
+  const sortedRounds = Array.from(matchesByRound.keys()).sort((a, b) => b - a);
+  
+  return (
+    <div className="space-y-6">
+      {sortedRounds.map((round) => {
+        const roundMatches = matchesByRound.get(round)!;
+        const stageName = getKnockoutStageName(round, maxRound, t);
+        const isFinal = round === maxRound;
+        const isSemiFinal = round === maxRound - 1;
+        
+        return (
+          <div key={round} className="space-y-3">
+            {/* Stage Header */}
+            <div className={`flex items-center gap-3 ${isFinal ? 'justify-center' : ''}`}>
+              <div className={`
+                px-4 py-2 rounded-lg font-bold text-sm
+                ${isFinal 
+                  ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-white shadow-lg' 
+                  : isSemiFinal 
+                    ? 'bg-primary/20 text-primary' 
+                    : 'bg-muted/50 text-muted-foreground'}
+              `}>
+                {isFinal && <span className="mr-2">🏆</span>}
+                {stageName}
+                {isFinal && <span className="ml-2">🏆</span>}
+              </div>
+              {!isFinal && (
+                <div className="flex-1 h-px bg-border" />
+              )}
+            </div>
+            
+            {/* Matches in this stage */}
+            <div className={`grid gap-3 ${isFinal ? 'max-w-2xl mx-auto' : ''}`}>
+              {roundMatches.map((match) => {
+                const homeTeamMembers = isTeamTournament && match.home_team_id
+                  ? (teamMembersMap.get(match.home_team_id) || []).map(m => m.participantName)
+                  : [];
+                const awayTeamMembers = isTeamTournament && match.away_team_id
+                  ? (teamMembersMap.get(match.away_team_id) || []).map(m => m.participantName)
+                  : [];
+                
+                return (
+                  <MatchScoreEditor
+                    key={match.id}
+                    matchId={match.id}
+                    tournamentId={tournamentId}
+                    round={match.round ?? 1}
+                    homeName={match.home_name}
+                    awayName={match.away_name}
+                    homeScore={match.home_score}
+                    awayScore={match.away_score}
+                    homeYellowCards={match.home_yellow_cards ?? 0}
+                    homeRedCards={match.home_red_cards ?? 0}
+                    awayYellowCards={match.away_yellow_cards ?? 0}
+                    awayRedCards={match.away_red_cards ?? 0}
+                    status={match.status}
+                    onUpdateScore={updateMatchScore}
+                    homeMembers={homeTeamMembers}
+                    awayMembers={awayTeamMembers}
+                    hideRound
+                  />
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 interface AdminTournamentDashContentProps {
   tournament: Tournament;
@@ -81,12 +204,57 @@ export default function AdminTournamentDashContent({
 }: AdminTournamentDashContentProps) {
   const { t, language } = useLanguage();
   const tournamentId = tournament.id;
+  const [isPending, startTransition] = useTransition();
+
+  // Guided workflow state
+  const [showGenerateMatchesPrompt, setShowGenerateMatchesPrompt] = useState(false);
+  const [showStartTournamentPrompt, setShowStartTournamentPrompt] = useState(false);
+  const [showDrawTeamsPrompt, setShowDrawTeamsPrompt] = useState(false);
 
   // Team tournament detection
   const isTeamTournament = (tournament.players_per_team ?? 1) > 1;
   const isRandomDraw = tournament.team_formation_mode === "random_draw";
   const needsTeamDraw = isTeamTournament && isRandomDraw && teams.length === 0;
   const hasTeams = teams.length > 0;
+
+  // Guided workflow handlers
+  const handleCloseRegistration = async () => {
+    const formData = new FormData();
+    formData.append("tournamentId", tournamentId);
+    await closeRegistration(formData);
+    // After closing registration, prompt for next step
+    if (isTeamTournament && isRandomDraw && !hasTeams) {
+      setShowDrawTeamsPrompt(true);
+    } else if (!tournament.type) {
+      // Need to set tournament type first - no prompt needed, UI will show type selection
+    } else {
+      setShowGenerateMatchesPrompt(true);
+    }
+  };
+
+  const handleDrawTeams = async () => {
+    const formData = new FormData();
+    formData.append("tournamentId", tournamentId);
+    await runTeamDrawAction(formData);
+    // After drawing teams, prompt to generate matches
+    if (tournament.type) {
+      setShowGenerateMatchesPrompt(true);
+    }
+  };
+
+  const handleGenerateMatches = async () => {
+    const formData = new FormData();
+    formData.append("tournamentId", tournamentId);
+    await generateMatchesAction(formData);
+    // After generating matches, prompt to start tournament
+    setShowStartTournamentPrompt(true);
+  };
+
+  const handleStartTournament = async () => {
+    const formData = new FormData();
+    formData.append("tournamentId", tournamentId);
+    await startTournament(formData);
+  };
 
   // Build team-to-members map
   const teamMembersMap = new Map<string, { participantId: string; participantName: string }[]>();
@@ -320,13 +488,15 @@ export default function AdminTournamentDashContent({
             <h2 className="text-xl font-black text-foreground mb-4">{t("admin.tournamentDash.quickActions")}</h2>
             <div className="flex flex-wrap gap-3">
               {tournament.status === "registration_open" && (
-                <form action={closeRegistration}>
-                  <input type="hidden" name="tournamentId" value={tournamentId} />
-                  <SportButton type="submit" variant="danger" size="sm">
-                    <Lock className="w-4 h-4" />
-                    {t("admin.tournamentDash.closeRegistration")}
-                  </SportButton>
-                </form>
+                <SportButton 
+                  variant="danger" 
+                  size="sm"
+                  onClick={() => startTransition(handleCloseRegistration)}
+                  disabled={isPending}
+                >
+                  <Lock className="w-4 h-4" />
+                  {t("admin.tournamentDash.closeRegistration")}
+                </SportButton>
               )}
               {tournament.status === "registration_closed" && (
                 <>
@@ -337,38 +507,39 @@ export default function AdminTournamentDashContent({
                       {t("admin.tournamentDash.reopenRegistration")}
                     </SportButton>
                   </form>
-                  <form action={startTournament}>
-                    <input type="hidden" name="tournamentId" value={tournamentId} />
-                    <SportButton type="submit" variant="primary" size="sm">
-                      <Play className="w-4 h-4" />
-                      {t("admin.tournamentDash.startTournament")}
-                    </SportButton>
-                  </form>
+                  {matches.length > 0 && (
+                    <form action={startTournament}>
+                      <input type="hidden" name="tournamentId" value={tournamentId} />
+                      <SportButton type="submit" variant="primary" size="sm">
+                        <Play className="w-4 h-4" />
+                        {t("admin.tournamentDash.startTournament")}
+                      </SportButton>
+                    </form>
+                  )}
                 </>
               )}
               {(tournament.status === "running" || tournament.status === "registration_closed") && matches.length === 0 && (
                 <>
                   {isTeamTournament && isRandomDraw && (
-                    <form action={runTeamDrawAction}>
-                      <input type="hidden" name="tournamentId" value={tournamentId} />
-                      <SportButton type="submit" variant={hasTeams ? "secondary" : "success"} size="sm">
-                        <Shuffle className="w-4 h-4" />
-                        {hasTeams ? t("admin.tournamentDash.redrawTeams") : t("admin.tournamentDash.drawTeams")}
-                      </SportButton>
-                    </form>
-                  )}
-                  <form action={generateMatchesAction}>
-                    <input type="hidden" name="tournamentId" value={tournamentId} />
                     <SportButton 
-                      type="submit" 
-                      variant="success" 
+                      variant={hasTeams ? "secondary" : "success"} 
                       size="sm"
-                      disabled={needsTeamDraw || !tournament.type}
+                      onClick={() => startTransition(handleDrawTeams)}
+                      disabled={isPending}
                     >
-                      <Swords className="w-4 h-4" />
-                      {t("admin.tournamentDash.generateMatches")}
+                      <Shuffle className="w-4 h-4" />
+                      {hasTeams ? t("admin.tournamentDash.redrawTeams") : t("admin.tournamentDash.drawTeams")}
                     </SportButton>
-                  </form>
+                  )}
+                  <SportButton 
+                    variant="success" 
+                    size="sm"
+                    disabled={needsTeamDraw || !tournament.type || isPending}
+                    onClick={() => startTransition(handleGenerateMatches)}
+                  >
+                    <Swords className="w-4 h-4" />
+                    {t("admin.tournamentDash.generateMatches")}
+                  </SportButton>
                   {needsTeamDraw && (
                     <span className="text-sm text-warning">{t("admin.tournamentDash.needsTeamDraw")}</span>
                   )}
@@ -525,42 +696,55 @@ export default function AdminTournamentDashContent({
                 <Swords className="w-5 h-5 text-accent" />
                 {t("admin.tournamentDash.matches")} ({matches.length})
               </h2>
-              <div className="grid gap-3">
-                {matches.slice(0, 20).map((match) => {
-                  const homeTeamMembers = isTeamTournament && match.home_team_id
-                    ? (teamMembersMap.get(match.home_team_id) || []).map(m => m.participantName)
-                    : [];
-                  const awayTeamMembers = isTeamTournament && match.away_team_id
-                    ? (teamMembersMap.get(match.away_team_id) || []).map(m => m.participantName)
-                    : [];
-                  
-                  return (
-                    <MatchScoreEditor
-                      key={match.id}
-                      matchId={match.id}
-                      tournamentId={tournamentId}
-                      round={match.round ?? 1}
-                      homeName={match.home_name}
-                      awayName={match.away_name}
-                      homeScore={match.home_score}
-                      awayScore={match.away_score}
-                      homeYellowCards={match.home_yellow_cards ?? 0}
-                      homeRedCards={match.home_red_cards ?? 0}
-                      awayYellowCards={match.away_yellow_cards ?? 0}
-                      awayRedCards={match.away_red_cards ?? 0}
-                      status={match.status}
-                      onUpdateScore={updateMatchScore}
-                      homeMembers={homeTeamMembers}
-                      awayMembers={awayTeamMembers}
-                    />
-                  );
-                })}
-                {matches.length > 20 && (
-                  <p className="text-center text-muted py-2">
-                    + {matches.length - 20} {t("admin.tournamentDash.moreMatches")}
-                  </p>
-                )}
-              </div>
+              {tournament.type === "knockout" ? (
+                // Knockout: Group by stages
+                <KnockoutMatchesDisplay 
+                  matches={matches.slice(0, 20)} 
+                  teamMembersMap={teamMembersMap}
+                  isTeamTournament={isTeamTournament}
+                  tournamentId={tournamentId}
+                  updateMatchScore={updateMatchScore}
+                  t={t}
+                />
+              ) : (
+                // League: Show by round
+                <div className="grid gap-3">
+                  {matches.slice(0, 20).map((match) => {
+                    const homeTeamMembers = isTeamTournament && match.home_team_id
+                      ? (teamMembersMap.get(match.home_team_id) || []).map(m => m.participantName)
+                      : [];
+                    const awayTeamMembers = isTeamTournament && match.away_team_id
+                      ? (teamMembersMap.get(match.away_team_id) || []).map(m => m.participantName)
+                      : [];
+                    
+                    return (
+                      <MatchScoreEditor
+                        key={match.id}
+                        matchId={match.id}
+                        tournamentId={tournamentId}
+                        round={match.round ?? 1}
+                        homeName={match.home_name}
+                        awayName={match.away_name}
+                        homeScore={match.home_score}
+                        awayScore={match.away_score}
+                        homeYellowCards={match.home_yellow_cards ?? 0}
+                        homeRedCards={match.home_red_cards ?? 0}
+                        awayYellowCards={match.away_yellow_cards ?? 0}
+                        awayRedCards={match.away_red_cards ?? 0}
+                        status={match.status}
+                        onUpdateScore={updateMatchScore}
+                        homeMembers={homeTeamMembers}
+                        awayMembers={awayTeamMembers}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+              {matches.length > 20 && (
+                <p className="text-center text-muted py-2 mt-3">
+                  + {matches.length - 20} {t("admin.tournamentDash.moreMatches")}
+                </p>
+              )}
             </SportCard>
           )}
 
@@ -580,6 +764,40 @@ export default function AdminTournamentDashContent({
           />
         </div>
       </Container>
+
+      {/* Guided Workflow Dialogs */}
+      <ConfirmationDialog
+        isOpen={showDrawTeamsPrompt}
+        onClose={() => setShowDrawTeamsPrompt(false)}
+        title={t("admin.workflow.registrationClosed")}
+        message={t("admin.workflow.drawTeamsPrompt")}
+        confirmLabel={t("admin.workflow.drawTeamsButton")}
+        cancelLabel={t("admin.workflow.later")}
+        variant="success"
+        onConfirm={() => startTransition(handleDrawTeams)}
+      />
+
+      <ConfirmationDialog
+        isOpen={showGenerateMatchesPrompt}
+        onClose={() => setShowGenerateMatchesPrompt(false)}
+        title={t("admin.workflow.readyToGenerate")}
+        message={t("admin.workflow.generateMatchesPrompt")}
+        confirmLabel={t("admin.workflow.generateMatchesButton")}
+        cancelLabel={t("admin.workflow.later")}
+        variant="success"
+        onConfirm={() => startTransition(handleGenerateMatches)}
+      />
+
+      <ConfirmationDialog
+        isOpen={showStartTournamentPrompt}
+        onClose={() => setShowStartTournamentPrompt(false)}
+        title={t("admin.workflow.matchesGenerated")}
+        message={t("admin.workflow.startTournamentPrompt")}
+        confirmLabel={t("admin.workflow.startTournamentButton")}
+        cancelLabel={t("admin.workflow.later")}
+        variant="primary"
+        onConfirm={() => startTransition(handleStartTournament)}
+      />
     </AdminLayout>
   );
 }

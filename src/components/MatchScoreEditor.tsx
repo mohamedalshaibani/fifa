@@ -23,6 +23,8 @@ interface MatchScoreEditorProps {
   homeMembers?: string[];
   /** Team members for away team (for 2v2 display) */
   awayMembers?: string[];
+  /** Hide the round label (used when grouping by knockout stages) */
+  hideRound?: boolean;
 }
 
 export default function MatchScoreEditor({
@@ -41,16 +43,17 @@ export default function MatchScoreEditor({
   onUpdateScore,
   homeMembers = [],
   awayMembers = [],
+  hideRound = false,
 }: MatchScoreEditorProps) {
   const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [home, setHome] = useState<string>(homeScore?.toString() ?? '');
   const [away, setAway] = useState<string>(awayScore?.toString() ?? '');
-  // Card states
-  const [homeYellow, setHomeYellow] = useState<string>(homeYellowCards.toString());
-  const [homeRed, setHomeRed] = useState<string>(homeRedCards.toString());
-  const [awayYellow, setAwayYellow] = useState<string>(awayYellowCards.toString());
-  const [awayRed, setAwayRed] = useState<string>(awayRedCards.toString());
+  // Card states - show empty instead of 0 for cleaner UX
+  const [homeYellow, setHomeYellow] = useState<string>(homeYellowCards > 0 ? homeYellowCards.toString() : '');
+  const [homeRed, setHomeRed] = useState<string>(homeRedCards > 0 ? homeRedCards.toString() : '');
+  const [awayYellow, setAwayYellow] = useState<string>(awayYellowCards > 0 ? awayYellowCards.toString() : '');
+  const [awayRed, setAwayRed] = useState<string>(awayRedCards > 0 ? awayRedCards.toString() : '');
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -108,10 +111,10 @@ export default function MatchScoreEditor({
     setIsEditing(false);
     setHome(homeScore?.toString() ?? '');
     setAway(awayScore?.toString() ?? '');
-    setHomeYellow(homeYellowCards.toString());
-    setHomeRed(homeRedCards.toString());
-    setAwayYellow(awayYellowCards.toString());
-    setAwayRed(awayRedCards.toString());
+    setHomeYellow(homeYellowCards > 0 ? homeYellowCards.toString() : '');
+    setHomeRed(homeRedCards > 0 ? homeRedCards.toString() : '');
+    setAwayYellow(awayYellowCards > 0 ? awayYellowCards.toString() : '');
+    setAwayRed(awayRedCards > 0 ? awayRedCards.toString() : '');
     setError(null);
   };
 
@@ -218,10 +221,12 @@ export default function MatchScoreEditor({
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors sm:opacity-0 sm:group-hover:opacity-100"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
               title={t('matchEditor.editResult')}
             >
               <Edit2 className="w-4 h-4" />
+              <span className="hidden sm:inline">{status === 'completed' ? t('matchEditor.edit') : t('matchEditor.addResult')}</span>
+              <span className="sm:hidden">{status === 'completed' ? t('matchEditor.edit') : t('matchEditor.add')}</span>
             </button>
           </div>
         </div>
