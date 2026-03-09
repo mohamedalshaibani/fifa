@@ -12,7 +12,6 @@ import {
   User, 
   Trophy, 
   Target, 
-  TrendingUp, 
   Calendar, 
   Award,
   Medal,
