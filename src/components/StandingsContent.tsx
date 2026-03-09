@@ -27,15 +27,18 @@ export function StandingsContent({
   teamMembersMap,
   isTeamBased,
 }: StandingsContentProps) {
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, dir } = useLanguage();
 
   const participantStandings = isTeamBased ? [] : computeStandings(participants, matches);
   const teamStandings = isTeamBased ? computeTeamStandings(teams, matches) : [];
 
   const pageTitle = `${tournament.name} - ${isTeamBased ? t("standingsPage.teamsStandings") : t("standingsPage.playersStandings")}`;
 
+  // Text alignment class based on language direction
+  const nameAlignClass = isRTL ? 'text-right' : 'text-left';
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir={dir}>
       <Container>
         <PageHeader
           title={pageTitle}
@@ -63,7 +66,7 @@ export function StandingsContent({
                 <thead>
                   <tr className="bg-white/70 border-b border-slate-200">
                     <th className="w-16 px-2 sm:px-3 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">#</th>
-                    <th className={`px-2 sm:px-4 py-4 ${isRTL ? 'text-right' : 'text-left'} text-xs font-black uppercase tracking-wider text-primary`}>
+                    <th className={`px-2 sm:px-4 py-4 ${nameAlignClass} text-xs font-black uppercase tracking-wider text-primary`}>
                       {isTeamBased ? t("standingsPage.team").toUpperCase() : t("standingsPage.player").toUpperCase()}
                     </th>
                     <th className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">P</th>
@@ -108,7 +111,7 @@ export function StandingsContent({
                               </span>
                             </div>
                           </td>
-                          <td className={`px-2 sm:px-4 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                          <td className={`px-2 sm:px-4 py-4 ${nameAlignClass}`}>
                             <div className="flex items-center gap-2 sm:gap-3">
                               <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center flex-shrink-0">
                                 <span className="text-xs sm:text-sm font-bold text-primary">{(standing.team.name || "T").charAt(0)}</span>
@@ -191,7 +194,7 @@ export function StandingsContent({
                               </span>
                             </div>
                           </td>
-                          <td className={`px-2 sm:px-4 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                          <td className={`px-2 sm:px-4 py-4 ${nameAlignClass}`}>
                             <span className={`font-black text-sm sm:text-lg ${isChampion ? 'text-primary animate-pulse' : 'text-foreground'}`}>
                               {standing.participant.name}
                             </span>
