@@ -15,7 +15,7 @@ import { Avatar as AvatarType } from "@/lib/types";
 type Tab = "profile" | "avatar" | "stats" | "password";
 
 export default function AccountPage() {
-  const { t } = useLanguage();
+  const { t, dir, isRTL } = useLanguage();
   const [activeTab, setActiveTab] = useState<Tab>("profile");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -256,9 +256,9 @@ export default function AccountPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background py-8">
+      <div className="min-h-screen bg-background py-8" dir={dir}>
         <Container>
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="space-y-6">
             {/* Back Link Skeleton */}
             <div className="h-5 w-16 bg-primary/10 rounded animate-pulse mb-6"></div>
             
@@ -296,9 +296,9 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen bg-background py-8" dir={dir}>
       <Container>
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="space-y-6">
           
           {/* Back Link - Unified styling */}
           <BackLink fallbackHref="/" />
@@ -326,7 +326,7 @@ export default function AccountPage() {
               </div>
               
               {/* User Info */}
-              <div className="flex-1 text-right rtl:text-right ltr:text-left">
+              <div className="flex-1">
                 <h1 className="text-xl md:text-2xl font-black text-foreground mb-1">
                   {profile.first_name && profile.last_name 
                     ? `${profile.first_name} ${profile.last_name}` 
