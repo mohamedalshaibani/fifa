@@ -62,20 +62,18 @@ export function StandingsContent({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-white/70 border-b border-slate-200">
-                    <th className="w-16 px-2 sm:px-3 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">#</th>
-                    <th className="px-2 sm:px-4 py-4 text-start text-xs font-black uppercase tracking-wider text-primary">
+                    <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-wider text-primary">#</th>
+                    <th className="px-4 py-4 text-right text-xs font-black uppercase tracking-wider text-primary">
                       {isTeamBased ? t("standingsPage.team").toUpperCase() : t("standingsPage.player").toUpperCase()}
                     </th>
-                    <th className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">P</th>
-                    <th className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">W</th>
-                    <th className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden sm:table-cell">D</th>
-                    <th className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden sm:table-cell">L</th>
-                    <th className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden md:table-cell">GF</th>
-                    <th className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-primary hidden md:table-cell">GA</th>
-                    <th className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">GD</th>
-                    <th className="w-10 sm:w-12 px-1 py-4 text-center text-xs font-black uppercase tracking-wider text-yellow-600 hidden lg:table-cell">🟨</th>
-                    <th className="w-10 sm:w-12 px-1 py-4 text-center text-xs font-black uppercase tracking-wider text-red-600 hidden lg:table-cell">🟥</th>
-                    <th className="w-16 sm:w-20 px-2 sm:px-3 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">PTS</th>
+                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">P</th>
+                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">W</th>
+                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">D</th>
+                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">L</th>
+                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">GF</th>
+                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">GA</th>
+                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">GD</th>
+                    <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-primary">PTS</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -98,62 +96,56 @@ export function StandingsContent({
                           key={standing.team.id}
                           className={`border-b border-slate-200 transition-all duration-300 ${positionClass}`}
                         >
-                          <td className="w-16 px-2 sm:px-3 py-4 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <span className={`text-base sm:text-xl ${isChampion ? 'animate-float' : ''}`}>
+                          <td className="px-4 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <span className={`text-xl ${isChampion ? 'animate-float' : ''}`}>
                                 {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : ""}
                               </span>
-                              <span className={`font-black text-base sm:text-lg ${isPodium ? 'text-primary' : 'text-foreground'}`}>
+                              <span className={`font-black text-lg ${isPodium ? 'text-primary' : 'text-foreground'}`}>
                                 {index + 1}
                               </span>
                             </div>
                           </td>
-                          <td className="px-2 sm:px-4 py-4 text-start">
-                            <div className="flex items-center gap-2 sm:gap-3">
-                              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center flex-shrink-0">
-                                <span className="text-xs sm:text-sm font-bold text-primary">{(standing.team.name || "T").charAt(0)}</span>
-                              </div>
-                              <div className="min-w-0">
-                                <p className={`font-black text-sm sm:text-lg truncate ${isChampion ? 'text-primary animate-pulse' : 'text-foreground'}`}>
+                          <td className="px-4 py-4 text-right">
+                            <div className="flex items-center gap-3 justify-end">
+                              <div>
+                                <p className={`font-black text-lg ${isChampion ? 'text-primary animate-pulse' : 'text-foreground'}`}>
                                   {standing.team.name}
                                 </p>
                                 {members.length > 0 && (
-                                  <p className="text-[10px] sm:text-xs text-muted mt-0.5 leading-tight truncate">{members.join(' • ')}</p>
+                                  <p className="text-xs text-muted mt-0.5 leading-tight">{members.join(' • ')}</p>
                                 )}
+                              </div>
+                              <div className="h-10 w-10 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center flex-shrink-0">
+                                <span className="text-sm font-bold text-primary">{(standing.team.name || "T").charAt(0)}</span>
                               </div>
                             </div>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center">
-                            <span className="font-black text-foreground text-base sm:text-lg">{standing.played}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-black text-foreground text-lg">{standing.played}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center">
-                            <span className="font-black text-primary text-base sm:text-lg">{standing.wins}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-black text-primary text-lg">{standing.wins}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center hidden sm:table-cell">
-                            <span className="font-bold text-muted text-base sm:text-lg">{standing.draws}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-bold text-muted text-lg">{standing.draws}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center hidden sm:table-cell">
-                            <span className="font-black text-muted text-base sm:text-lg">{standing.losses}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-black text-muted text-lg">{standing.losses}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center hidden md:table-cell">
-                            <span className="font-bold text-foreground text-base sm:text-lg">{standing.goalsFor}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-bold text-foreground text-lg">{standing.goalsFor}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center hidden md:table-cell">
-                            <span className="font-bold text-muted text-base sm:text-lg">{standing.goalsAgainst}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-bold text-muted text-lg">{standing.goalsAgainst}</span>
                           </td>
-                          <td className={`w-12 sm:w-14 px-1 sm:px-2 py-4 text-center font-black text-base sm:text-lg ${
+                          <td className={`px-4 py-4 text-center font-black text-lg ${
                             standing.goalDiff > 0 ? 'text-primary' : standing.goalDiff < 0 ? 'text-muted' : 'text-muted'
                           }`}>
                             {standing.goalDiff >= 0 ? "+" : ""}{standing.goalDiff}
                           </td>
-                          <td className="w-10 sm:w-12 px-1 py-4 text-center hidden lg:table-cell">
-                            <span className="font-bold text-yellow-600 text-base sm:text-lg">{standing.yellowCards}</span>
-                          </td>
-                          <td className="w-10 sm:w-12 px-1 py-4 text-center hidden lg:table-cell">
-                            <span className="font-bold text-red-600 text-base sm:text-lg">{standing.redCards}</span>
-                          </td>
-                          <td className="w-16 sm:w-20 px-2 sm:px-3 py-4 text-center">
-                            <div className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg font-black text-base sm:text-lg border-2 ${
+                          <td className="px-4 py-4 text-center">
+                            <div className={`inline-flex items-center justify-center w-14 h-14 rounded-lg font-black text-xl border-2 ${
                               isChampion 
                                 ? 'bg-primary/15 text-foreground border-primary/30 shadow-lg animate-pulse' 
                                 : 'bg-white/70 text-primary border-primary/30'
@@ -181,52 +173,46 @@ export function StandingsContent({
                           key={standing.participant.id}
                           className={`border-b border-slate-200 transition-all duration-300 ${positionClass}`}
                         >
-                          <td className="w-16 px-2 sm:px-3 py-4 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <span className={`text-base sm:text-xl ${isChampion ? 'animate-float' : ''}`}>
+                          <td className="px-4 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <span className={`text-xl ${isChampion ? 'animate-float' : ''}`}>
                                 {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : ""}
                               </span>
-                              <span className={`font-black text-base sm:text-lg ${isPodium ? 'text-primary' : 'text-foreground'}`}>
+                              <span className={`font-black text-lg ${isPodium ? 'text-primary' : 'text-foreground'}`}>
                                 {index + 1}
                               </span>
                             </div>
                           </td>
-                          <td className="px-2 sm:px-4 py-4 text-start">
-                            <span className={`font-black text-sm sm:text-lg ${isChampion ? 'text-primary animate-pulse' : 'text-foreground'}`}>
+                          <td className="px-4 py-4 text-right">
+                            <span className={`font-black text-lg ${isChampion ? 'text-primary animate-pulse' : 'text-foreground'}`}>
                               {standing.participant.name}
                             </span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center">
-                            <span className="font-black text-foreground text-base sm:text-lg">{standing.played}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-black text-foreground text-lg">{standing.played}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center">
-                            <span className="font-black text-primary text-base sm:text-lg">{standing.wins}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-black text-primary text-lg">{standing.wins}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center hidden sm:table-cell">
-                            <span className="font-bold text-muted text-base sm:text-lg">{standing.draws}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-bold text-muted text-lg">{standing.draws}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center hidden sm:table-cell">
-                            <span className="font-black text-muted text-base sm:text-lg">{standing.losses}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-black text-muted text-lg">{standing.losses}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center hidden md:table-cell">
-                            <span className="font-bold text-foreground text-base sm:text-lg">{standing.goalsFor}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-bold text-foreground text-lg">{standing.goalsFor}</span>
                           </td>
-                          <td className="w-12 sm:w-14 px-1 sm:px-2 py-4 text-center hidden md:table-cell">
-                            <span className="font-bold text-muted text-base sm:text-lg">{standing.goalsAgainst}</span>
+                          <td className="px-4 py-4 text-center">
+                            <span className="font-bold text-muted text-lg">{standing.goalsAgainst}</span>
                           </td>
-                          <td className={`w-12 sm:w-14 px-1 sm:px-2 py-4 text-center font-black text-base sm:text-lg ${
+                          <td className={`px-4 py-4 text-center font-black text-lg ${
                             standing.goalDiff > 0 ? 'text-primary' : standing.goalDiff < 0 ? 'text-muted' : 'text-muted'
                           }`}>
                             {standing.goalDiff >= 0 ? "+" : ""}{standing.goalDiff}
                           </td>
-                          <td className="w-10 sm:w-12 px-1 py-4 text-center hidden lg:table-cell">
-                            <span className="font-bold text-yellow-600 text-base sm:text-lg">{standing.yellowCards}</span>
-                          </td>
-                          <td className="w-10 sm:w-12 px-1 py-4 text-center hidden lg:table-cell">
-                            <span className="font-bold text-red-600 text-base sm:text-lg">{standing.redCards}</span>
-                          </td>
-                          <td className="w-16 sm:w-20 px-2 sm:px-3 py-4 text-center">
-                            <div className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg font-black text-base sm:text-lg border-2 ${
+                          <td className="px-4 py-4 text-center">
+                            <div className={`inline-flex items-center justify-center w-14 h-14 rounded-lg font-black text-xl border-2 ${
                               isChampion 
                                 ? 'bg-primary/15 text-foreground border-primary/30 shadow-lg animate-pulse' 
                                 : 'bg-white/70 text-primary border-primary/30'

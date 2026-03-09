@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build and Deploy",
+			"type": "shell",
+			"command": "pnpm build && git add -A && git commit -m 'fix: improve standings table alignment for RTL/LTR and mobile' && git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "Clean Build",
+			"type": "shell",
+			"command": "rm -rf .next/lock && pnpm build",
+			"isBackground": false
+		},
+		{
+			"label": "Deploy",
+			"type": "shell",
+			"command": "git add -A && git commit -m 'fix: improve standings table alignment for RTL/LTR and mobile' && git push origin main",
+			"isBackground": false
+		}
+	]
+}
